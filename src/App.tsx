@@ -4,6 +4,7 @@ import { RelayPool } from 'nostr-relaypool';
 import { useState, useEffect } from "react";
 import defaultRelays from "./consts";
 import { convertTimestamp } from './utils';
+import ShortBountyInfo from './components/bounty/bountyCardShortInfo/bountyCardShortInfo';
 
 
 
@@ -17,20 +18,23 @@ const [ids, setIds] = useState([]);
 const [creationDate, setCreationDate] = useState([]);
 const [bountyNotFound, setBountyNotFound] = useState(false)
 const [iterator, setIterator] = useState(0)
+const [loading, setLoading] = useState('loading')
 
 function loadMoreContent(){
-let arr = [];
-arr.push([...content, 1]);
-setContent(arr)
+setIterator(iterator + 1)
+setLoading('loading')
 }
 
 useEffect(()=>{
 
 let relays = defaultRelays;
 let arr_content = [];
-let subMessage = [{
-  '#t':['bounties'],
-  limit:100
+let arr_pubkeys = [];
+let arr_ids = [];
+let arr_postDated = [];
+let subFilter = [{
+  //'#t':['bounty'],
+  kinds:[0]
 }]
 
 let relayPool = new RelayPool(relays);
@@ -42,28 +46,38 @@ relayPool.onnotice((relayUrl, notice) => {
   console.log("RelayPool notice", notice, " from relay ", relayUrl);
 });
 
-relayPool.subscribe([{
-  //'#t':['bounty'],
-  //authors:['8425d0460136752a32f77e311456ae97a89604ed8cab59bade6f422415751eeb'],
-  kinds:[1],
-}], relays, (event, isAfterEose, relayURL) => {
+relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
   // remember to parse the content
-  arr_content.push(event.content);
+  let date = convertTimestamp(event.created_at)
+  let parsedContent = JSON.parse(event.content)
+  arr_content.push(parsedContent);
+  arr_pubkeys.push(event.pubkey);
+  arr_ids.push(event.id);
+  arr_postDated.push(date)
+
   setContent(arr_content)
+  setPubkey(arr_pubkeys);
+  setIds(arr_ids);
+  setCreationDate(arr_postDated)
 })
 
 
-  setTimeout(() => {
+ setTimeout(() => {
+  if(arr_content.length === 0) setBountyNotFound(true)
   relayPool.close().then(()=>{
     console.log('connection closed')
   })
+  setLoading('not loading')
 }, 10000);
 
-},[])
+},[iterator])
 
 useEffect(()=>{
-//console.log(content)
-},[content])
+  console.log(content)
+  //console.log(pubkey)
+  //console.log(ids)
+  //console.log(creationDate)
+}, [content])
 
 
   return (
@@ -72,12 +86,9 @@ useEffect(()=>{
       <Header />
       </div>
       <div>
-      {content.map((item)=>{
-        return(<p class='pt-10'>{item}</p>)
-      })}
-  
+      <ShortBountyInfo content={content} metaData={pubkey} ids={ids}/>
       {bountyNotFound ? <p>We didn't find any bounty, try with differente relays</p> : null}
-      <button onClick={loadMoreContent}>click me to get more data</button>
+      <button onClick={loadMoreContent}>{loading === 'loading' ? 'wait until it load' : 'load more content'}</button>
       </div>
     </div>
   );

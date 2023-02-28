@@ -11,38 +11,29 @@ function shortBountyInfo({content, metaData, ids}) {
     const bountyHunterMetaData = metaData;
     const bountyIds = ids;
     let i = -1;
+    
+    /* button reward style
+class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-white mr-1 mt-1"*/
+
 
     function createComponent(i) {
-            console.log(bountyIds.length)
-            let finalData = JSON.parse(bountyInfor[i]);
-            let metadatafinal = JSON.parse(bountyHunterMetaData[i])
-            let fullInfoPath = `/b/${bountyIds[i]}`
+     let fullInfoPath = `/b/${bountyIds[i]}`       
             return(
             
                 <div class="my-2 mx-10 px-10 py-3 justify-between items-center flex shadow-md rounded-md max-w-7xl md: flex-wrap">
                 <div class="p-2">
-                  <div>
-                    <p class="font-sans text-base font-semibold">{finalData.title}</p>
-                  </div>
-                  <div>
-                    <p class="font-sans text-sm font-light">by {metadatafinal.name}</p>
-                  </div>
-                </div>
-                <div class="p-2 w-250">
-                  <p class="font-sans text-base font-light">
-                    {finalData.reward} sats
+                  <div class="flex-wrap">
+                    <p class="font-sans text-base font-semibold">{bountyInfor[i].about}</p>
+                    <p class="font-sans text-sm font-light">by {bountyInfor[i].name}</p>
+                    <div class="w-250">
+                  <p class="font-sans text-base font-light mr-1 mt-1">
+                    {bountyInfor[i].name} sats
                   </p>
+                  <button onClick={()=>navigate(fullInfoPath) } class="font-sans text-base font-light underline mr-3 mt-1">More info</button>
+                  <button onClick={()=>navigate(fullInfoPath) } class="font-sans text-base font-light underline mr-1 mt-1">add to reward</button>
+                  
                   </div>
-                <div class="p-2 w-91">
-                  <p class="text-green-900 font-sans text-base font-light">
-                    open
-                  </p>
                   </div>
-                <div class="p-2">
-                  <button class="font-sans text-base font-light underline">More info</button>
-                </div>
-                <div class="p-2">
-                  <button class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-white">Add to reward</button>
                 </div>
               </div>
         )
