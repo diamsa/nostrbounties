@@ -120,7 +120,7 @@ relayPool.onnotice((relayUrl, notice) => {
 
 
     
-    return ( <div class="max-w-7xl lg:px-30 sm:px-10">
+    return ( <div class="max-w-7xl lg:px-30 py-20 sm:px-10 py-5">
         <div>
             <Header />
         </div>
@@ -155,10 +155,16 @@ relayPool.onnotice((relayUrl, notice) => {
             <input type="number" onChange={handleWhatsapp} class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="+12068133616"/>
         </div>
         <div class="mt-4 flex">
-        <button onClick={postEvent} class="flex-shrink-0 px-3 py-1 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">post bounty</button>
+        <button onClick={postEvent} class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">post bounty</button>
         <div class="px-5">
         {extensionError ? <p class="text-red-900 ">You need an extension to post</p> : null}
-        {emptyFields ? <p class="text-red-900 ">title, description and reward fields required</p> : null}
+        {emptyFields ? <div class="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+  <svg aria-hidden="true" class="flex-shrink-0 inline w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+  <span class="sr-only">Info</span>
+  <div>
+     Title, description and reward fields are required
+  </div>
+</div> : null}
         
         </div>
         </div>

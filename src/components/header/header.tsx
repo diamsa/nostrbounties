@@ -1,9 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import { getPubKey } from "../../utils";
 
 
 function Header() {
     
     const navigate = useNavigate();
+
+    function goToProfile(){
+        getPubKey().then((data)=> navigate(`/profile/${data}`))
+        .catch((error)=> console.log(error))
+    }
           
 
     return ( <div class="w-full pr-12 pl-12 pt-12 bg-white sm:px-8">
@@ -13,11 +19,18 @@ function Header() {
                 Nostr Bounties
             </p>
         </div>
+        <div class='flex'>
+        <div>
+            <p onClick={goToProfile} class='mr-3 underline'>My profile</p>
+        </div>
         <div class="text-end">
-                    <button onClick={()=> navigate("/create")} class="flex-shrink-0 px-3 py-1 text-base font-semibold text-white bg-purple-600 rounded-lg shadow-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-purple-200">
+                    <button onClick={()=> navigate("/create")} class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300">
                         Create Bounty
                     </button>
-            </div>
+
+        </div> 
+        </div>
+        
         </div>
     </div>
 )}

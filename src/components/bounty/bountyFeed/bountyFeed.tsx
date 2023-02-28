@@ -1,49 +1,84 @@
 import BountyCard from "../bountyCardShortInfo/bountyCardShortInfo";
 import {useState, useEffect} from "react"
-import { getEventData } from "../../../utils";
-import convertDate from "timestamp-conv";
+import { convertTimestamp } from "../../../utils";
+import defaultRelays from "../../../consts";
+import { RelayPool } from 'nostr-relaypool';
 
 function bountyFeed() {
 
-let [content, setContent] = useState({})
-let [metaData, setMetadata] = useState({})
-let [ids, setIds] = useState([]);
-let [date, setDate] = useState([]);
+    const [content, setContent] = useState([]);
+    const [pubkey, setPubkey] = useState([]);
+    const [ids, setIds] = useState([]);
+    const [creationDate, setCreationDate] = useState([]);
+    const [bountyNotFound, setBountyNotFound] = useState(false)
+    const [iterator, setIterator] = useState(0)
+    const [loading, setLoading] = useState('loading')
     
-useEffect(()=>{
-  
-
-       getEventData("content", "1").then((content)=>{
-        let contentDataExample = [`{\"title\":\"Bounty manager\",\"description\":\"easy\",\"reward\":\"39000\",\"discord\":\"@diamsa\",\"telegram\":\"diego\",\"email\":\"diamsa03@gmail.com\",\"whatsapp\":\"54655445\"}`,`{\"title\":\"filesharing app\",\"description\":\"easy\",\"reward\":\"1200\",\"discord\":\"@diamsa\",\"telegram\":\"diego\",\"email\":\"diamsa03@gmail.com\",\"whatsapp\":\"54655445\"}`,`{\"title\":\"hello\",\"description\":\"easy\",\"reward\":\"200\",\"discord\":\"@diamsa\",\"telegram\":\"diego\",\"email\":\"diamsa03@gmail.com\",\"whatsapp\":\"54655445\"}`, `{\"title\":\"hello\",\"description\":\"easy\",\"reward\":\"200\",\"discord\":\"@diamsa\",\"telegram\":\"diego\",\"email\":\"diamsa03@gmail.com\",\"whatsapp\":\"54655445\"}`, `{\"title\":\"hello\",\"description\":\"easy\",\"reward\":\"200\",\"discord\":\"@diamsa\",\"telegram\":\"diego\",\"email\":\"diamsa03@gmail.com\",\"whatsapp\":\"54655445\"}`, `{\"title\":\"hello\",\"description\":\"easy\",\"reward\":\"200\",\"discord\":\"@diamsa\",\"telegram\":\"diego\",\"email\":\"diamsa03@gmail.com\",\"whatsapp\":\"54655445\"}` ]
-        setContent(contentDataExample)
-        console.log(content)
+    function loadMoreContent(){
+    setIterator(iterator + 1)
+    setLoading('loading')
+    }
+    
+    useEffect(()=>{
+    
+    let relays = defaultRelays;
+    let arr_content = [];
+    let arr_pubkeys = [];
+    let arr_ids = [];
+    let arr_postDated = [];
+    let subFilter = [{
+      //'#t':['bounty'],
+      kinds:[0]
+    }]
+    
+    let relayPool = new RelayPool(relays);
+    
+    relayPool.onerror((err, relayUrl) => {
+      console.log("RelayPool error", err, " from relay ", relayUrl);
     });
-
-       getEventData("content", "0").then((content)=>{
-        let metaDataExample = [`{\"name\":\"Juan pepe\",\"about\":\"#nostr\"}`,`{\"name\":\"diamsa\",\"about\":\"#nostr\"}`,`{\"name\":\"Shaw\",\"about\":\"#nostr\"}`, `{\"name\":\"Shaw\",\"about\":\"#nostr\"}`, `{\"name\":\"Shaw\",\"about\":\"#nostr\"}`, `{\"name\":\"Shaw\",\"about\":\"#nostr\"}`]
-        setMetadata(metaDataExample)
-        console.log(content);
-    });
-
-
-       getEventData("id", "1").then((content)=>{
-        let idsDataExample = ["123","456","789","123","456","789"];
-        setIds(idsDataExample)
-        console.log(content);
+    relayPool.onnotice((relayUrl, notice) => {
+      console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
     
-
-
-
-
-         
-//setTimeout(()=>console.log(events), 5000) <BountyCard content={content}/>
-},[])
+    relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
+      // remember to parse the content
+      let date = convertTimestamp(event.created_at)
+      let parsedContent = JSON.parse(event.content)
+      arr_content.unshift(parsedContent);
+      arr_pubkeys.push(event.pubkey);
+      arr_ids.push(event.id);
+      arr_postDated.push(date)
+    
+      setContent(arr_content)
+      setPubkey(arr_pubkeys);
+      setIds(arr_ids);
+      setCreationDate(arr_postDated)
+    })
+    
+    
+     setTimeout(() => {
+      if(arr_content.length === 0) setBountyNotFound(true)
+      relayPool.close().then(()=>{
+        console.log('connection closed')
+      })
+      setLoading('not loading')
+    }, 10000);
+    
+    },[iterator])
+    
+    useEffect(()=>{
+      console.log(content)
+      //console.log(pubkey)
+      //console.log(ids)
+      //console.log(creationDate)
+    }, [content])
 
 
 return(
     <div >
-        <BountyCard content={content} metaData={metaData} ids={ids} />
+        <BountyCard content={content} metaData={pubkey} ids={ids} />
+        {bountyNotFound ? <p>We didn't find any bounty, try with differente relays</p> : null}
+        <button onClick={loadMoreContent}>{loading === 'loading' ? 'wait until it load' : 'load more content'}</button>
     </div>
 )
 }

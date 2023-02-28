@@ -9,6 +9,7 @@ let personalRelays = await window.nostr.getRelays();
 return personalRelays
 }
 
-export function addRelays(){
-    
+export async function getPubKey(){
+    let pubKey = await window.nostr.getPublicKey();
+    return pubKey
 }

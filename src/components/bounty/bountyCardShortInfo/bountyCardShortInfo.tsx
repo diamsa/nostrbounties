@@ -20,7 +20,7 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
      let fullInfoPath = `/b/${bountyIds[i]}`       
             return(
             
-                <div class="my-2 mx-10 px-10 py-3 justify-between items-center flex shadow-md rounded-md max-w-7xl md: flex-wrap">
+                <div class="my-2 mx-10 px-10 py-3 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl md: flex-wrap">
                 <div class="p-2">
                   <div class="flex-wrap">
                     <p class="font-sans text-base font-semibold">{bountyInfor[i].about}</p>
