@@ -70,12 +70,12 @@ function Profile() {
 
     
     
-     /*setTimeout(() => {
+     setTimeout(() => {
       relayPool.close().then(()=>{
         console.log('connection closed')
       })
       
-    }, 10000);*/
+    }, 10000);
     
     },[])
 

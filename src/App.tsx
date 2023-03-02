@@ -79,7 +79,7 @@ function App() {
     },[iterator])
     
     useEffect(()=>{
-      //console.log(pubkey)
+      console.log(pubkeys)
       //console.log(ids)
       //console.log(creationDate)
     }, [content])

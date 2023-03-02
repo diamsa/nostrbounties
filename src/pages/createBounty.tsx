@@ -7,8 +7,6 @@ import defaultRelays from "../consts";
 import Header from "../components/header/header";
 
 
-
-
 function CreateBounty() {
 
     let [title, setTitle] = useState(null);
