@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {RelayPool} from "nostr-relaypool";
+import defaultRelays from "../consts";
 
 
 import Header from "../components/header/header";
@@ -19,6 +20,7 @@ function CreateBounty() {
     let [whatsapp, setWhatsapp] = useState(null);
     let [extensionError, setExtensionError] = useState(false)
     let [emptyFields, setEmptyFields] = useState(false)
+    let [text, setText] = useState()
     let navigate = useNavigate()
     
     let eventData ={
@@ -63,7 +65,7 @@ function CreateBounty() {
             "pubkey":null,
             "created_at":Math.floor(Date.now() / 1000),
             "kind":789,
-            "tags":[],
+            "tags":[["t", "bounty"]],
             "content": contentDataStringify,
             "sig":null
           };
@@ -78,45 +80,13 @@ function CreateBounty() {
           } else{
 
             let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-          console.log(EventMessageSigned)
+            let relays = defaultRelays;
+            let relayPool = new RelayPool(relays);
+
+            relayPool.publish(EventMessageSigned, relays)
+            
           }
-
-          
-
-         let relays = ['wss://relay.damus.io', 'wss://nostr.bitcoiner.social'];
-
-         let relayPool = new RelayPool(relays);
-
-let unsub = relayPool.subscribe(
-  [
-    {
-      authors: [
-        "32e1827635450ebb3c5a7d12c1f8e7b2b514439ac10a67eef3d9fd9c5c68e245",
-      ],
-      kinds:[1],
-      limit:10
-    },
-  ],
-  relays,
-  (event, isAfterEose, relayURL) => {
-    console.log(event.kind, isAfterEose, relayURL);
-  },
-  undefined,
-  (events, relayURL) => {
-    console.log(events, relayURL);
-  }
-);
-
-relayPool.onerror((err, relayUrl) => {
-  console.log("RelayPool error", err, " from relay ", relayUrl);
-});
-relayPool.onnotice((relayUrl, notice) => {
-  console.log("RelayPool notice", notice, " from relay ", relayUrl);
-});
-
-
-
-    }
+        }
 
 
     
@@ -164,6 +134,7 @@ relayPool.onnotice((relayUrl, notice) => {
   <div>
      Title, description and reward fields are required
   </div>
+  
 </div> : null}
         
         </div>

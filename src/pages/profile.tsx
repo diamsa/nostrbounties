@@ -5,9 +5,9 @@ import Header from "../components/header/header";
 import AvatarImage from "../assets/avatarImg.png"
 import { getPersonalRelays } from '../utils';
 import BountyCard from '../components/bounty/bountyCardShortInfo/bountyCardShortInfo';
-import BountyFeed from '../components/bounty/bountyFeed/bountyFeed';
 import defaultRelays from '../consts';
 import { RelayPool } from 'nostr-relaypool';
+import { convertTimestamp } from '../utils';
 
 function Profile() {
 
@@ -17,15 +17,24 @@ function Profile() {
   let [LnAddress, setLnAddress] = useState()
   let [content, setContent] = useState([])
   let [ids, setIds] = useState([])
-  let [pubkey, setPubkey] = useState([])
+  let [pubkey, setPubkeys] = useState([])
+  let [creationDate, setCreationDate] = useState([])
   
   useEffect(()=>{
     
     let relays = defaultRelays;
+    let arr_content = [];
+    let arr_pubkeys = [];
+    let arr_ids = [];
+    let arr_postDated = [];
     let subFilter = [{
       authors:[`${params.id}`],
       kinds:[0]
     }]
+    let subFilterContent = [{
+      authors:[`${params.id}`],
+      '#t':['bounty']
+    }]
     
     let relayPool = new RelayPool(relays);
     
@@ -38,66 +47,37 @@ function Profile() {
     
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
       let parsedContent = JSON.parse(event.content)
-      setName(parsedContent.name);
+      setName(parsedContent.display_name);
       setProfilePic(parsedContent.picture);
       setLnAddress(parsedContent.lud16)
     })
-    
-    
-     setTimeout(() => {
-      relayPool.close().then(()=>{
-        console.log('connection closed')
-      })
-      
-    }, 5000);
-    
-    },[])
 
-  useEffect(()=>{
-    
-    let relays = defaultRelays;
-    let subFilter = [{
-      authors:[`${params.id}`],
-      //'#t':['bounty'],
-      kind:[0]
-    }]
-    let arr_content = [];
-    let arr_ids = [];
-    let arr_pubkey = [];
-    
-    let relayPool = new RelayPool(relays);
-    
-    relayPool.onerror((err, relayUrl) => {
-      console.log("RelayPool error", err, " from relay ", relayUrl);
-    });
-    relayPool.onnotice((relayUrl, notice) => {
-      console.log("RelayPool notice", notice, " from relay ", relayUrl);
-    });
-    
-    relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
+    relayPool.subscribe(subFilterContent, relays, (event, isAfterEose, relayURL) => {
+      let date = convertTimestamp(event.created_at)
       let parsedContent = JSON.parse(event.content)
-      arr_content.push(parsedContent)
-      arr_ids.push(event.id)
-      arr_content.push(event.pubkey)
-      console.log(arr_content)
+      arr_content.push(parsedContent);
+      arr_pubkeys.push(event.pubkey)
+      arr_ids.push(event.id);
+      arr_postDated.push(date)
+    
       setContent(arr_content)
-      setIds(arr_ids)
-      setPubkey(arr_pubkey)
+      setIds(arr_ids);
+      setCreationDate(arr_postDated)
+      setPubkeys(arr_pubkeys)
+
     })
+
+
     
     
-     setTimeout(() => {
+     /*setTimeout(() => {
       relayPool.close().then(()=>{
         console.log('connection closed')
       })
       
-    }, 5000);
+    }, 10000);*/
     
     },[])
-
-
-
- 
 
   return (
     <div class="max-w-7xl lg:px-40 sm:px-10">
@@ -119,7 +99,7 @@ function Profile() {
     </div>
 </div>
 
-<BountyFeed />
+<BountyCard content={content} dates={creationDate} ids={ids} pubkeys={pubkey} />
 
       </div>
 

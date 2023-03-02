@@ -16,8 +16,8 @@ import { getMetaData } from './utils';
 function App() {
 
     const [content, setContent] = useState([]);
-    const [names, setNames] = useState([])
     const [ids, setIds] = useState([]);
+    const [pubkeys, setPubkeys] = useState([])
     const [creationDate, setCreationDate] = useState([]);
     const [bountyNotFound, setBountyNotFound] = useState(false)
     const [iterator, setIterator] = useState(0)
@@ -32,22 +32,17 @@ function App() {
     
     let relays = defaultRelays;
     let arr_content = [];
-    let arr_names = [];
+    let arr_pubkeys = [];
     let arr_ids = [];
     let arr_postDated = [];
     let subFilter = [{
-      //'#t':['bounty'],
-      kinds:[0],
-      limit:50
-    }]
-    let subFilter2 = [{
-      kinds:[0],
-      limit:50
+      '#t':['bounty'],
+      kinds:[789],
+    
     }]
     
     let relayPool = new RelayPool(relays);
 
-    relayPool.sendSubscriptions
     
     relayPool.onerror((err, relayUrl) => {
       console.log("RelayPool error", err, " from relay ", relayUrl);
@@ -59,25 +54,17 @@ function App() {
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
       // remember to parse the content
       let date = convertTimestamp(event.created_at)
-      let pubkeyList = event.pubkey
       let parsedContent = JSON.parse(event.content)
       arr_content.push(parsedContent);
+      arr_pubkeys.push(event.pubkey)
       arr_ids.push(event.id);
       arr_postDated.push(date)
     
       setContent(arr_content)
       setIds(arr_ids);
       setCreationDate(arr_postDated)
+      setPubkeys(arr_pubkeys)
 
-
-    })
-
-    relayPool.subscribe(subFilter2, relays, (event, isAfterEose, relayURL) => {
-      // remember to parse the content
-      let parsedContent = JSON.parse(event.content)
-      arr_names.push(parsedContent.name);
-    
-      setNames(arr_names)
     })
     
     
@@ -92,7 +79,6 @@ function App() {
     },[iterator])
     
     useEffect(()=>{
-      console.log(names)
       //console.log(pubkey)
       //console.log(ids)
       //console.log(creationDate)
@@ -106,7 +92,7 @@ function App() {
       <Header />
       </div>
       <div>
-      <BountyCard content={content} ids={ids} />
+      <BountyCard content={content} ids={ids} dates={creationDate} pubkeys={pubkeys}/>
         {bountyNotFound ? <p>We didn't find any bounty, try with differente relays</p> : null}
         <button onClick={loadMoreContent}>{loading === 'loading' ? 'wait until it load' : 'load more content'}</button>
       </div>
