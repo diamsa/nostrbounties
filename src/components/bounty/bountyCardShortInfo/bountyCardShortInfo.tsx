@@ -4,11 +4,10 @@ import bountyInfo from "../../../pages/bountyFullInfo";
 import { getEventData } from "../../../utils";
 
 
-function shortBountyInfo({content, metaData, ids}) {
+function shortBountyInfo({content, ids}) {
 
     const navigate = useNavigate()
     const bountyInfor = content;
-    const bountyHunterMetaData = metaData;
     const bountyIds = ids;
     let i = -1;
     
@@ -39,7 +38,7 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
         )
     }
 
-console.log(bountyInfor, bountyHunterMetaData, bountyIds)
+
     return ( <div>
         {bountyIds.map(()=>{
             i++
