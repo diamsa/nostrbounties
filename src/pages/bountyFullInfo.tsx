@@ -12,9 +12,10 @@ function bountyInfo() {
 
     const params = useParams();
     const [content, setContent] = useState({})
-    const [contactDetails, setContactDetails] = useState({})
+    const [contactDetails, setContactDetails] = useState([{}])
     const [pubKey, setPubkey] = useState()
     const [date, setDate] = useState()
+    const [addedReward, setAddedReward] = useState([])
     const [status, setStatus] = useState(null)
 
     useEffect(()=>{
@@ -24,12 +25,16 @@ function bountyInfo() {
           ids:[params.id],
         }]
         let subFilterStatus = [{
-          '#e':[params.id]
+          '#e':[params.id],
+          '#t':['bounty-reply']
         }]
         let subFilterAddedReward = [{
-          '#t':['bounty-added-reward']
+            "#e": [params.id],
+          '#t':['bounty-added-reward'],
+          
         }]
         let arr_status = [];
+        let arr_addedReward = [];
 
         let relayPool = new RelayPool(relays);
     
@@ -45,18 +50,18 @@ function bountyInfo() {
           let date = convertTimestamp(event.created_at)
           let parsedContent = JSON.parse(event.content)
         
-          setContent({
+        setContent({
             title:parsedContent.title, 
             description:parsedContent.description,
             reward:parsedContent.reward
         })
 
-        setContactDetails({
+        setContactDetails([{
             discord:parsedContent.discord,
             telegram:parsedContent.telegram,
             email:parsedContent.email,
             whatsapp:parsedContent.whatsapp
-        })
+        }])
           setDate(date)
           setPubkey(event.pubkey)
           
@@ -67,20 +72,31 @@ function bountyInfo() {
             
             arr_status.push(event.content)
             setStatus(arr_status[0])
+            console.log(arr_status)
+  
         })
 
         //subscribe for bounty-added-reward
         relayPool.subscribe(subFilterAddedReward, relays, (event, isAfterEose, relayURL)=>{
+
+            let data = {
+                posterPubkey:event.pubkey,
+                amount:event.content
+            };
+            arr_addedReward.push(data);
             
-            console.log(event)
+            
         })
 
          setTimeout(() => {
-          
           relayPool.close().then(()=>{
             console.log('connection closed')
           })
-        }, 10000);
+        }, 20000);
+
+         setTimeout(() => {
+          setAddedReward(arr_addedReward)
+        }, 2500);
         
         },[])
 
@@ -91,7 +107,7 @@ function bountyInfo() {
          <Header />
         </div>
         <div>
-        <BountyLargeInfor content={content} pubkey={pubKey} date={date} status={status} contact={contactDetails} id={params.id}/>
+        <BountyLargeInfor content={content} pubkey={pubKey} date={date} status={status} contact={contactDetails} id={params.id} addedReward={addedReward}/>
         </div>
         
     </div> );

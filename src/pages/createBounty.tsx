@@ -82,7 +82,8 @@ function CreateBounty() {
             let relayPool = new RelayPool(relays);
 
             relayPool.publish(EventMessageSigned, relays)
-            
+
+            navigate('/')
           }
         }
 

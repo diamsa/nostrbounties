@@ -1,5 +1,7 @@
 import defaultRelays from "./consts";
 import { RelayPool } from "nostr-relaypool";
+import { nip19 } from "nostr-tools";
+import {useState} from 'react'
 
 export function convertTimestamp (unixTimestamp: number): string{
     var myDate = new Date( unixTimestamp * 1000);
@@ -37,7 +39,7 @@ export async function sendReply(status: string, id: string, pubKey: string){
         "pubkey":null,
         "created_at":Math.floor(Date.now() / 1000),
         "kind":789,
-        "tags":[["e", `${id}`]],
+        "tags":[["e", `${id}`], ["t", `bounty-reply`]],
         "content": "in progress",
         "sig":null
       };
@@ -65,7 +67,7 @@ export async function sendReply(status: string, id: string, pubKey: string){
             "pubkey":null,
             "created_at":Math.floor(Date.now() / 1000),
             "kind":789,
-            "tags":[["e", `${id}`]],
+            "tags":[["e", `${id}`], ['t', 'bounty-reply']],
             "content": "paid",
             "sig":null
           };
@@ -91,6 +93,7 @@ export async function sendReply(status: string, id: string, pubKey: string){
         }
 
 }
+
 export async function addReward(amount, id){
 
     let eventMessage = {
@@ -114,4 +117,14 @@ export async function addReward(amount, id){
 
       relayPool.publish(EventMessageSigned, relays)
       console.log('posted')
+}
+
+export function getNpub(pubkey){
+let npub = nip19.npubEncode(pubkey);
+let arr_shortnpub = [];
+for(let i = 0; i < 20; i++){
+  arr_shortnpub.push(npub[i])
+}
+let npubShortened = arr_shortnpub.join('');
+return npubShortened + '...'
 }

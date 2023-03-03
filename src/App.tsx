@@ -16,6 +16,7 @@ import { getMetaData } from './utils';
 function App() {
 
     const [content, setContent] = useState([]);
+    const [test, setTest] = useState([])
     const [ids, setIds] = useState([]);
     const [pubkeys, setPubkeys] = useState([])
     const [creationDate, setCreationDate] = useState([]);
@@ -64,7 +65,7 @@ function App() {
       setIds(arr_ids);
       setCreationDate(arr_postDated)
       setPubkeys(arr_pubkeys)
-
+      setTest(event.content)
     })
     
     
@@ -76,10 +77,10 @@ function App() {
       setLoading('not loading')
     }, 10000);
     
-    },[iterator])
+    },[])
     
     useEffect(()=>{
-      console.log(pubkeys)
+      //console.log(content)
       //console.log(ids)
       //console.log(creationDate)
     }, [content])
@@ -93,6 +94,7 @@ function App() {
       </div>
       <div>
       <BountyCard content={content} ids={ids} dates={creationDate} pubkeys={pubkeys}/>
+      
         {bountyNotFound ? <p>We didn't find any bounty, try with differente relays</p> : null}
         <button onClick={loadMoreContent}>{loading === 'loading' ? 'wait until it load' : 'load more content'}</button>
       </div>
