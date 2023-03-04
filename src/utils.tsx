@@ -1,7 +1,6 @@
 import defaultRelays from "./consts";
 import { RelayPool } from "nostr-relaypool";
 import { nip19 } from "nostr-tools";
-import {useState} from 'react'
 
 export function convertTimestamp (unixTimestamp: number): string{
     var myDate = new Date( unixTimestamp * 1000);
@@ -19,17 +18,6 @@ export async function getPubKey(){
     return pubKey
 }
 
-export function getMetaData(pubKey){
-
-   let data = fetch(`https://rbr.bio/${pubKey}/metadata.json`, {
-        method:'GET',
-        mode:'cors',
-        credentials: "same-origin",
-    })
-      .then((response) => response.json())
-
-      return data
-}
 
 export async function sendReply(status: string, id: string, pubKey: string){
     if(status === null){
@@ -94,7 +82,7 @@ export async function sendReply(status: string, id: string, pubKey: string){
 
 }
 
-export async function addReward(amount, id){
+export async function addReward(amount:string, id: string){
 
     let eventMessage = {
         "id":null,
@@ -119,7 +107,7 @@ export async function addReward(amount, id){
       console.log('posted')
 }
 
-export function getNpub(pubkey){
+export function getNpub(pubkey: string){
 let npub = nip19.npubEncode(pubkey);
 let arr_shortnpub = [];
 for(let i = 0; i < 20; i++){
@@ -127,4 +115,10 @@ for(let i = 0; i < 20; i++){
 }
 let npubShortened = arr_shortnpub.join('');
 return npubShortened + '...'
+}
+
+export function formatReward(event: string){
+  const rewardUnformatted = parseInt(event.target.value);
+  const rewardFormatted = rewardUnformatted.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+  return rewardFormatted
 }

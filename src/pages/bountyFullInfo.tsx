@@ -72,7 +72,6 @@ function bountyInfo() {
             
             arr_status.push(event.content)
             setStatus(arr_status[0])
-            console.log(arr_status)
   
         })
 
@@ -84,7 +83,7 @@ function bountyInfo() {
                 amount:event.content
             };
             arr_addedReward.push(data);
-            
+            console.log(arr_addedReward)
             
         })
 
@@ -95,7 +94,7 @@ function bountyInfo() {
         }, 20000);
 
          setTimeout(() => {
-          setAddedReward(arr_addedReward)
+         setAddedReward(arr_addedReward)
         }, 2500);
         
         },[])

@@ -7,19 +7,16 @@ import { useState, useEffect } from "react";
 import { convertTimestamp } from './utils';
 import { RelayPool } from 'nostr-relaypool';
 import defaultRelays from './consts';
-import { getMetaData } from './utils';
-
-
-
+import { bountyContent } from './interfaces';
 
 
 function App() {
 
-    const [content, setContent] = useState([]);
+    const [content, setContent] = useState<bountyContent[]>([]);
     const [test, setTest] = useState([])
-    const [ids, setIds] = useState([]);
-    const [pubkeys, setPubkeys] = useState([])
-    const [creationDate, setCreationDate] = useState([]);
+    const [ids, setIds] = useState<string[]>([]);
+    const [pubkeys, setPubkeys] = useState<string[]>([])
+    const [creationDate, setCreationDate] = useState<string[]>([]);
     const [bountyNotFound, setBountyNotFound] = useState(false)
     const [iterator, setIterator] = useState(0)
     const [loading, setLoading] = useState('loading')
@@ -32,10 +29,10 @@ function App() {
     useEffect(()=>{
     
     let relays = defaultRelays;
-    let arr_content = [];
-    let arr_pubkeys = [];
-    let arr_ids = [];
-    let arr_postDated = [];
+    let arr_content : bountyContent[] = [];
+    let arr_pubkeys: string[] = [];
+    let arr_ids: string[] = [];
+    let arr_postDated: string[] = [];
     let subFilter = [{
       '#t':['bounty'],
       kinds:[789],
@@ -56,6 +53,7 @@ function App() {
       // remember to parse the content
       let date = convertTimestamp(event.created_at)
       let parsedContent = JSON.parse(event.content)
+
       arr_content.push(parsedContent);
       arr_pubkeys.push(event.pubkey)
       arr_ids.push(event.id);
@@ -79,13 +77,6 @@ function App() {
     
     },[])
     
-    useEffect(()=>{
-      //console.log(content)
-      //console.log(ids)
-      //console.log(creationDate)
-    }, [content])
-  
-  
 
   return (
     <div class="max-w-7xl lg:px-40 sm:px-10">
@@ -94,9 +85,8 @@ function App() {
       </div>
       <div>
       <BountyCard content={content} ids={ids} dates={creationDate} pubkeys={pubkeys}/>
-      
-        {bountyNotFound ? <p>We didn't find any bounty, try with differente relays</p> : null}
-        <button onClick={loadMoreContent}>{loading === 'loading' ? 'wait until it load' : 'load more content'}</button>
+      {bountyNotFound ? <p>We didn't find any bounty, try with differente relays</p> : null}
+      <button onClick={loadMoreContent}>{loading === 'loading' ? 'wait until it load' : 'load more content'}</button>
       </div>
     </div>
   );

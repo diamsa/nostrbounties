@@ -2,62 +2,70 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {RelayPool} from "nostr-relaypool";
 import defaultRelays from "../consts";
+import { formatReward } from "../utils";
 
 
 import Header from "../components/header/header";
 
+type content = {
+  title:string | null,
+  description:string | null,
+  reward: string | null,
+  discord:string | null,
+  telegram:string | null,
+  email:string | null,
+  whatsapp:string | null
+}
+
+type event = {
+  target:{
+    value:string
+  }
+}
+
 
 function CreateBounty() {
 
-    let [title, setTitle] = useState(null);
-    let [description, setDescription] = useState(null);
-    let [reward, setReward] = useState(null);
-    let [discord, setDiscord] = useState(null);
-    let [telegram, setTelegram] = useState(null);
-    let [email, setEmail] = useState(null);
-    let [whatsapp, setWhatsapp] = useState(null);
+    let [content, setContent] = useState<content>({
+      title:null,
+      description:null,
+      reward:null,
+      discord:null,
+      telegram:null,
+      email:null,
+      whatsapp:null
+    })
     let [extensionError, setExtensionError] = useState(false)
     let [emptyFields, setEmptyFields] = useState(false)
-    let [text, setText] = useState()
     let navigate = useNavigate()
-    
-    let eventData ={
-        title:title,
-        description:description,
-        reward: reward,
-        discord: discord,
-        telegram: telegram,
-        email: email,
-        whatsapp:whatsapp
-    }
 
-    const handleTitle = (event)=>{
-      setTitle(event.target.value)
+    const handleTitle = (event:event)=>{
+      setContent({...content, title:event.target.value})
     }
-    const handleDescription = (event)=>{
-      setDescription(event.target.value)
+    const handleDescription = (event:event)=>{
+      setContent({...content, description:event.target.value})
     }
-    const handleReward = (event)=>{
-      const rewardUnformatted = parseInt(event.target.value);
-      const rewardFormatted = rewardUnformatted.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-      setReward(rewardFormatted)
+    const handleReward = (event:event)=>{
+      let reward = formatReward(event)
+      setContent({...content, reward:reward})
     }
-    const handleDiscord = (event)=>{
-      setDiscord(event.target.value)
+    const handleDiscord = (event:event)=>{
+      setContent({...content, discord:event.target.value})
     }
-    const handleTelegram = (event)=>{
-      setTelegram(event.target.value)
+    const handleTelegram = (event:event)=>{
+      setContent({...content, telegram:event.target.value})
     }
-    const handleEmail = (event)=>{
-      setEmail(event.target.value)
+    const handleEmail = (event:event)=>{
+      setContent({...content, email:event.target.value})
     }
-    const handleWhatsapp = (event)=>{
-      setWhatsapp(event.target.value)
+    const handleWhatsapp = (event: event)=>{
+      setContent({...content, whatsapp:event.target.value})
+      console.log(event)
     }
 
     async function postEvent() {
         
-        let contentDataStringify = JSON.stringify(eventData)
+        let contentDataStringify = JSON.stringify(content)
         let eventMessage = {
             "id":null,
             "pubkey":null,
@@ -73,7 +81,7 @@ function CreateBounty() {
             setExtensionError(true)
           }
 
-          if(!title || !description || !reward){
+          if(!content.title || !content.description || !content.reward){
             setEmptyFields(true)
           } else{
 

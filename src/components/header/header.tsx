@@ -13,9 +13,9 @@ function Header() {
           
 
     return ( <div class="w-full pr-12 pl-12 pt-12 bg-white sm:px-8">
-    <div class="flex items-end justify-between mb-12 header content-end">
+    <div class="flex flex-wrap items-end justify-between mb-12 header content-end">
         <div>
-            <p onClick={()=> navigate("/")} class="text-4xl font-bold text-gray-800">
+            <p onClick={()=> navigate("/")} class="text-4xl font-semibold text-gray-800">
                 Nostr Bounties
             </p>
         </div>
