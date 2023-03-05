@@ -5,7 +5,7 @@ import ProfileCard from "../components/profileCard/profileCard";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import defaultRelays from "../consts";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp } from "../utils";
+import { convertTimestamp, getMetaData } from "../utils";
 import { bountyContent } from "../interfaces";
 
 function Profile() {
@@ -13,6 +13,8 @@ function Profile() {
   let [metaData, setMetada] = useState({});
   let [content, setContent] = useState<any>([]);
   let [ids, setIds] = useState<string[]>([]);
+  let [names, setNames] = useState<string[]>([]);
+  let [profilePic, setProfilePic] = useState<string[]>([]);
   let [pubkey, setPubkeys] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [test, setTest] = useState();
@@ -22,6 +24,8 @@ function Profile() {
     let arr_content: bountyContent[] = [];
     let arr_pubkeys: string[] = [];
     let arr_ids: string[] = [];
+    let arr_names: string[] = [];
+    let arr_profilePic: string[] = [];
     let arr_postDated: string[] = [];
     let subFilterMetaData = [
       {
@@ -65,12 +69,24 @@ function Profile() {
       subFilterContent,
       relays,
       (event, isAfterEose, relayURL) => {
+
         let date = convertTimestamp(event.created_at);
         let parsedContent = JSON.parse(event.content);
+
         arr_content.push(parsedContent);
         arr_pubkeys.push(event.pubkey);
         arr_ids.push(event.id);
         arr_postDated.push(date);
+        getMetaData(event.pubkey)
+        .then((response) => response.json())
+        .then((data) => {
+          let metaData = JSON.parse(data.content);
+          arr_names.push(metaData.display_name);
+          arr_profilePic.push(metaData.picture);
+
+          setNames(arr_names);
+          setProfilePic(arr_profilePic);
+        });
 
         setContent(arr_content);
         setIds(arr_ids);
@@ -101,6 +117,8 @@ function Profile() {
           dates={creationDate}
           ids={ids}
           pubkeys={pubkey}
+          names={names}
+          profilePic={profilePic}
         />
       </div>
 

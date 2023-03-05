@@ -2,19 +2,21 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { addReward, getNpub, formatReward } from "../../../utils";
 import { bountyContent } from "../../../interfaces";
+import avatarImage from "../../../assets/avatarImg.png"
 
 type props = {
   content: bountyContent;
   ids: string[];
   dates: string[];
   pubkeys: string[];
+  names:string[];
+  profilePic:string[];
 };
 
-function ShortBountyInfo({ content, ids, dates, pubkeys }: props) {
+function ShortBountyInfo({ content, ids, dates, pubkeys, names, profilePic }: props) {
   const navigate = useNavigate();
   const [displayAddReward, setDisplayAddReward] = useState(true);
   const [rewardToAdd, setRewardToAdd] = useState<string>();
-  let i = -1;
 
   /* button reward style
 class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-white mr-1 mt-1"*/
@@ -56,43 +58,43 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
   const handleRewardToAdd = (event: any) => {
     setRewardToAdd(formatReward(event));
   };
-
-  function createComponent(i: number) {
-    let bountyInfoPath = `/b/${ids[i]}`;
-    let bountyPosterPath = `/profile/${pubkeys[i]}`;
-    let npub = getNpub(pubkeys[i]);
-
-    return (
-      <div className="my-2 mx-10 px-12 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl md: flex-wrap sm: px-5 py-3 mx-4">
-        <p className="font-sans text-base font-semibold">{content[i].title}</p>
-        <p
-          onClick={() => navigate(bountyPosterPath)}
-          className="font-sans text-sm font-light underline"
-        >
-          by {npub}
-        </p>
-        <span className="font-sans text-sm font-light">{dates[i]}</span>
-        <p className="font-sans text-base font-light mr-1 mt-1">
-          {content[i].reward} sats
-        </p>
-        <button
-          onClick={() => navigate(bountyInfoPath)}
-          className="font-sans text-base font-light underline mr-3 mt-1"
-        >
-          More info
-        </button>
-        {displayAddReward
-          ? displayAddRewardBtn()
-          : displayAddRewardInput(ids[i])}
-      </div>
-    );
-  }
-
+  
   return (
     <div>
-      {ids.map(() => {
-        i++;
-        return <div>{createComponent(i)}</div>;
+      {ids.map((item, index) => {
+
+        let bountyInfoPath = `/b/${ids[index]}`;
+        let bountyPosterPath = `/profile/${pubkeys[index]}`;
+        let npub = getNpub(pubkeys[index]);
+       
+
+        return (
+          <div className="my-2 mx-10 px-12 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl md: flex-wrap sm: px-5 py-3 mx-4">
+            <p className="font-sans text-base font-semibold">
+              {content[index].title}
+            </p>
+            <p
+              onClick={() => navigate(bountyPosterPath)}
+              className="font-sans text-sm font-light underline"
+            >
+              by {names[index] === '' ? npub : names[index]}
+            </p>
+            <img className="w-8 h-8 rounded-full" src={profilePic[index] === '' ? avatarImage : profilePic[index]} alt="Rounded avatar"></img>
+            <span className="font-sans text-sm font-light">{dates[index]}</span>
+            <p className="font-sans text-base font-light mr-1 mt-1">
+              {content[index].reward} sats
+            </p>
+            <button
+              onClick={() => navigate(bountyInfoPath)}
+              className="font-sans text-base font-light underline mr-3 mt-1"
+            >
+              More info
+            </button>
+            {displayAddReward
+              ? displayAddRewardBtn()
+              : displayAddRewardInput(ids[index])}
+          </div>
+        );
       })}
     </div>
   );
