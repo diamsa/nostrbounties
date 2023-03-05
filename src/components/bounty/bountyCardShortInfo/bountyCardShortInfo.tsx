@@ -10,7 +10,7 @@ type props = {
   pubkeys: string[];
 };
 
-function shortBountyInfo({ content, ids, dates, pubkeys }: props) {
+function ShortBountyInfo({ content, ids, dates, pubkeys }: props) {
   const navigate = useNavigate();
   const [displayAddReward, setDisplayAddReward] = useState(true);
   const [rewardToAdd, setRewardToAdd] = useState<string>();
@@ -35,7 +35,7 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
         <input
           type="number"
           onChange={handleRewardToAdd}
-          class="bg-gray-50 mt-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          className="bg-gray-50 mt-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
           placeholder="Amount in sats"
           required
         />
@@ -53,7 +53,7 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
     );
   }
 
-  const handleRewardToAdd = (event: string) => {
+  const handleRewardToAdd = (event: any) => {
     setRewardToAdd(formatReward(event));
   };
 
@@ -98,4 +98,4 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
   );
 }
 
-export default shortBountyInfo;
+export default ShortBountyInfo;

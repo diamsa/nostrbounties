@@ -20,7 +20,7 @@ export async function getPubKey() {
   return pubKey;
 }
 
-export async function sendReply(status: string, id: string, pubKey: string) {
+export async function sendReply(status: string | null, id: string, pubKey: string | undefined) {
   if (status === null) {
     let eventMessage = {
       id: null,
@@ -84,7 +84,7 @@ export async function sendReply(status: string, id: string, pubKey: string) {
   }
 }
 
-export async function addReward(amount: string, id: string) {
+export async function addReward(amount: string | undefined, id: string) {
   let eventMessage = {
     id: null,
     pubkey: null,

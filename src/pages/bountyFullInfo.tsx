@@ -8,7 +8,7 @@ import Header from "../components/header/header";
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
 
 
-function bountyInfo() {
+function BountyInfo() {
   const params:any = useParams();
   const [content, setContent] = useState<any>({});
   const [contactDetails, setContactDetails] = useState<any>({});
@@ -50,6 +50,7 @@ function bountyInfo() {
     });
     //subscribe for content
     relayPool.subscribe(
+      // @ts-ignore
       subFilterContent,
       relays,
       (event, isAfterEose, relayURL) => {
@@ -80,6 +81,7 @@ function bountyInfo() {
       relays,
       (event, isAfterEose, relayURL) => {
         arr_status.push(event.content);
+        // @ts-ignore
         setStatus(arr_status[0]);
       }
     );
@@ -105,8 +107,9 @@ function bountyInfo() {
     }, 20000);
 
     setTimeout(() => {
+      // @ts-ignore
       setAddedReward(arr_addedReward);
-    }, 2500);
+    }, 3500);
   }, []);
 
   return (
@@ -129,4 +132,4 @@ function bountyInfo() {
   );
 }
 
-export default bountyInfo;
+export default BountyInfo;

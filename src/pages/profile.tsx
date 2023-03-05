@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Header from "../components/header/header";
 import ProfileCard from "../components/profileCard/profileCard";
-import { getPersonalRelays } from "../utils";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import defaultRelays from "../consts";
 import { RelayPool } from "nostr-relaypool";
@@ -12,7 +11,7 @@ import { bountyContent } from "../interfaces";
 function Profile() {
   const params = useParams();
   let [metaData, setMetada] = useState({});
-  let [content, setContent] = useState([]);
+  let [content, setContent] = useState<any>([]);
   let [ids, setIds] = useState<string[]>([]);
   let [pubkey, setPubkeys] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
@@ -20,10 +19,10 @@ function Profile() {
 
   useEffect(() => {
     let relays = defaultRelays;
-    let arr_content:bountyContent[]= [];
-    let arr_pubkeys:string[] = [];
-    let arr_ids:string[] = [];
-    let arr_postDated:string[] = [];
+    let arr_content: bountyContent[] = [];
+    let arr_pubkeys: string[] = [];
+    let arr_ids: string[] = [];
+    let arr_postDated: string[] = [];
     let subFilterMetaData = [
       {
         authors: [`${params.id}`],
@@ -77,6 +76,7 @@ function Profile() {
         setIds(arr_ids);
         setCreationDate(arr_postDated);
         setPubkeys(arr_pubkeys);
+        // @ts-ignore
         setTest(event.content);
       }
     );

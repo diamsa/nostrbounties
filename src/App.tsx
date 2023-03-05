@@ -10,7 +10,7 @@ import defaultRelays from "./consts";
 import { bountyContent } from "./interfaces";
 
 function App() {
-  const [content, setContent] = useState<bountyContent[]>([]);
+  const [content, setContent] = useState<any>([]);
   const [test, setTest] = useState([]);
   const [ids, setIds] = useState<string[]>([]);
   const [pubkeys, setPubkeys] = useState<string[]>([]);
@@ -26,7 +26,7 @@ function App() {
 
   useEffect(() => {
     let relays = defaultRelays;
-    let arr_content: bountyContent[] = [];
+    let arr_content: any[] = [];
     let arr_names: string[] = [];
     let arr_pubkeys: string[] = [];
     let arr_ids: string[] = [];
@@ -61,6 +61,7 @@ function App() {
       setIds(arr_ids);
       setCreationDate(arr_postDated);
       setPubkeys(arr_pubkeys);
+      // @ts-ignore
       setTest(event.content);
     });
 
