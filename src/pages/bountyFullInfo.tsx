@@ -113,7 +113,7 @@ function BountyInfo() {
   }, []);
 
   return (
-    <div className="max-w-7xl lg:px-40 sm:px-10">
+    <div className="max-w-7xl lg:px-40">
       <div>
         <Header />
       </div>

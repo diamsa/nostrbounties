@@ -89,11 +89,12 @@ function App() {
   }, []);
 
   return (
-    <div className="max-w-7xl lg:px-40 sm:px-10">
+    <div className="max-w-7xl lg:px-40">
       <div>
         <Header />
       </div>
       <div>
+      {ids.length === 0 ? <p>nothing was found</p> : null}
         <BountyCard
           content={content}
           ids={ids}

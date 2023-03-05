@@ -92,19 +92,19 @@ function CreateBounty() {
   }
 
   return (
-    <div className="max-w-7xl lg:px-30 py-20 sm:px-10 py-5">
+    <div className="max-w-7xl lg:px-40">
       <div>
         <Header />
       </div>
-      <div className="max-w-7xl lg:px-30 sm:px-12">
-        <div>
+      <div className="sm:px-4">
+        <div className="mt-4">
           <label className="block text-sm font-medium text-gray-900">
             Bounty title
           </label>
           <input
             type="text"
             onChange={handleTitle}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            className="peer min-h-[auto] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="i.e. Bounty manager"
             required
           />
@@ -115,7 +115,7 @@ function CreateBounty() {
           </label>
           <textarea
             onChange={handleDescription}
-            className="peer block min-h-[auto] w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            className="peer min-h-[auto] bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             placeholder="i.e. A simple bounty manager for people..."
             required
           ></textarea>
@@ -176,16 +176,35 @@ function CreateBounty() {
             placeholder="+12068133616"
           />
         </div>
-        <div className="mt-4 flex">
+        <div className="my-4">
           <button
             onClick={postEvent}
-            className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+            className="w-full  px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
             post bounty
           </button>
-          <div className="px-5">
+          <div className="w-full mt-4">
             {extensionError ? (
-              <p className="text-red-900 ">You need an extension to post</p>
+              <div
+              className="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+              role="alert"
+            >
+              <svg
+                aria-hidden="true"
+                className="flex-shrink-0 inline w-5 h-5 mr-3"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+              <span className="sr-only">Info</span>
+              <div>You need an extension to post</div>
+            </div>
             ) : null}
             {emptyFields ? (
               <div
@@ -212,7 +231,6 @@ function CreateBounty() {
           </div>
         </div>
 
-        <div></div>
       </div>
     </div>
   );
