@@ -7,3 +7,8 @@ export type bountyContent = [{
     email:string,
     whatsapp:string
 }]
+
+export type bountyMetaData = [{
+    profilePic:string,
+    name:string
+}]
