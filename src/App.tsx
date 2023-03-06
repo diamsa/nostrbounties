@@ -6,11 +6,10 @@ import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortI
 import { useState, useEffect } from "react";
 import { convertTimestamp, getMetaData } from "./utils";
 import { RelayPool } from "nostr-relaypool";
-import defaultRelays from "./consts";
 import { bountyContent } from "./interfaces";
 
 function App() {
-  const [content, setContent] = useState<any>([]);
+  const [content, setContent] = useState<bountyContent[]>([]);
   const [test, setTest] = useState([]);
   const [ids, setIds] = useState<string[]>([]);
   const [names, setNames] = useState<string[]>([]);
@@ -25,6 +24,15 @@ function App() {
     setIterator(iterator + 1);
     setLoading("loading");
   }
+
+  if (localStorage.getItem("relays") === null) {
+    localStorage.setItem(
+      "relays",
+      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social"]'
+    );
+  }
+
+  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
 
   useEffect(() => {
     let relays = defaultRelays;
@@ -76,7 +84,7 @@ function App() {
 
       setPubkeys(arr_pubkeys);
       // @ts-ignore
-      setTest(event.content);
+      setTest(event.pubkey);
     });
 
     setTimeout(() => {
@@ -94,7 +102,7 @@ function App() {
         <Header />
       </div>
       <div>
-      {ids.length === 0 ? <p>nothing was found</p> : null}
+        {ids.length === 0 ? <p>nothing was found</p> : null}
         <BountyCard
           content={content}
           ids={ids}

@@ -1,6 +1,7 @@
 import defaultRelays from "./consts";
 import { RelayPool } from "nostr-relaypool";
 import { nip19 } from "nostr-tools";
+import { useState } from "react";
 
 export function convertTimestamp(unixTimestamp: number): string {
   var myDate = new Date(unixTimestamp * 1000);
@@ -137,4 +138,8 @@ export function getMetaData(pubkey: string) {
   });
 
   return data;
+}
+
+export function deleteRelay(){
+  
 }
