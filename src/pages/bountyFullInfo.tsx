@@ -6,6 +6,7 @@ import { convertTimestamp } from "../utils";
 
 import Header from "../components/header/header";
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
+import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
 
 function BountyInfo() {
@@ -113,11 +114,11 @@ function BountyInfo() {
   }, []);
 
   return (
-    <div className="max-w-7xl lg:px-40">
-      <div>
-        <Header />
+    <div className="flex justify-between">
+      <div className="basis-3/12">
+        <SideBarMenu />
       </div>
-      <div>
+      <div className="h-screen overflow-y-scroll basis-9/12 px-10">
         <BountyLargeInfor
           content={content}
           pubkey={pubKey}

@@ -1,6 +1,7 @@
 //components
 import Header from "./components/header/header";
 import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortInfo";
+import SideBarMenu from "./components/sidebarMenu/sidebarMenu";
 
 //functions
 import { useState, useEffect } from "react";
@@ -97,12 +98,12 @@ function App() {
   }, []);
 
   return (
-    <div className="max-w-7xl lg:px-40">
-      <div>
-        <Header />
+    <div className="flex justify-between">
+      <div className="basis-3/12">
+        <SideBarMenu />
       </div>
-      <div>
-        {ids.length === 0 ? <p>nothing was found</p> : null}
+      <div className="h-screen overflow-y-scroll basis-9/12 px-10">
+        {ids.length === 0 ? <p className="p-4 mb-4 max-w-7xl lg:px-40 text-sm text-dark-text rounded-lg bg-alert-2">nothing was found</p> : null}
         <BountyCard
           content={content}
           ids={ids}

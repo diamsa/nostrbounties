@@ -3,6 +3,7 @@ import { useState } from "react";
 import { addReward, getNpub, formatReward } from "../../../utils";
 import { bountyContent } from "../../../interfaces";
 import avatarImage from "../../../assets/avatarImg.png";
+import bitcoinIcon from "../../../assets/bitcoin-icon.png";
 
 type props = {
   content: bountyContent[];
@@ -74,13 +75,18 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
         let npub = getNpub(pubkeys[index]);
 
         return (
-          <div className="my-2 mx-10 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl md: flex-wrap sm: px-5 py-3 mx-4">
+          <div className="my-2 mx-5 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl md: flex-wrap sm: px-5 py-3 mx-4">
             <div className="basis-6/12">
-              <p className="font-sans text-base font-normal">
+              <p className="font-sans text-base font-medium">
                 {content[index].title}
               </p>
-              <div>
-                <p className="font-sans text-sm text-blue-700 font-semibold mr-1 mt-0.5">
+              <div className="flex flex-wrap">
+              <img
+                  className="w-4 h-4 rounded-full my-1 mx-0.5"
+                  src={bitcoinIcon}
+                  alt="avatar image"
+                ></img>
+                <p className="font-sans text-sm text-dark-text font-normal mr-1 mt-0.5">
                   {content[index].reward} sats
                 </p>
               </div>
@@ -109,7 +115,7 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
               <div>
                 <button
                   onClick={() => navigate(bountyInfoPath)}
-                  className="font-sans text-sm font-light inline-flex items-center px-2 py-1 text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+                  className="font-sans text-sm font-light inline-flex items-center px-2 py-1 text-center text-gray-1 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
                 >
                   More info
                 </button>

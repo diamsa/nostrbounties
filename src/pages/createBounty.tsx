@@ -4,7 +4,7 @@ import { RelayPool } from "nostr-relaypool";
 import defaultRelays from "../consts";
 import { formatReward } from "../utils";
 
-import Header from "../components/header/header";
+import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
 type content = {
   title: string | null;
@@ -13,7 +13,7 @@ type content = {
   discord: string | null;
   telegram: string | null;
   email: string | null;
-  whatsapp: string | null;
+  other: string | null;
 };
 
 type event = {
@@ -30,7 +30,7 @@ function CreateBounty() {
     discord: null,
     telegram: null,
     email: null,
-    whatsapp: null,
+    other: null,
   });
   let [extensionError, setExtensionError] = useState(false);
   let [emptyFields, setEmptyFields] = useState(false);
@@ -55,8 +55,8 @@ function CreateBounty() {
   const handleEmail = (event: event) => {
     setContent({ ...content, email: event.target.value });
   };
-  const handleWhatsapp = (event: event) => {
-    setContent({ ...content, whatsapp: event.target.value });
+  const handleOther = (event: event) => {
+    setContent({ ...content, other: event.target.value });
     console.log(event);
   };
 
@@ -92,11 +92,11 @@ function CreateBounty() {
   }
 
   return (
-    <div className="max-w-7xl lg:px-40">
-      <div>
-        <Header />
+    <div className="flex justify-between">
+      <div className="basis-3/12">
+        <SideBarMenu />
       </div>
-      <div className="sm:px-4">
+      <div className="h-screen overflow-y-scroll basis-9/12 px-10">
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-900">
             Bounty title
@@ -167,26 +167,26 @@ function CreateBounty() {
         </div>
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-900">
-            WhatsApp
+            Other
           </label>
           <input
-            type="number"
-            onChange={handleWhatsapp}
+            type="text"
+            onChange={handleOther}
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            placeholder="+12068133616"
+            placeholder="whatsApp, NIP-04..."
           />
         </div>
         <div className="my-4">
           <button
             onClick={postEvent}
-            className="w-full  px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+            className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-1 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
           >
             post bounty
           </button>
           <div className="w-full mt-4">
             {extensionError ? (
               <div
-              className="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+              className="flex p-4 mb-4 text-sm text-alert-1 rounded-lg bg-alert-2"
               role="alert"
             >
               <svg
@@ -208,7 +208,7 @@ function CreateBounty() {
             ) : null}
             {emptyFields ? (
               <div
-                className="flex p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50"
+                className="flex p-4 mb-4 text-sm text-dark-text rounded-lg bg-alert-2"
                 role="alert"
               >
                 <svg

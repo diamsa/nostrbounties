@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import Header from "../components/header/header";
 import ProfileCard from "../components/profileCard/profileCard";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import defaultRelays from "../consts";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp, getMetaData } from "../utils";
 import { bountyContent } from "../interfaces";
+import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
 function Profile() {
   const params = useParams();
@@ -104,17 +104,17 @@ function Profile() {
   }, []);
 
   return (
-    <div className="max-w-7xl lg:px-40">
-      <div>
-        <Header />
+    <div className="flex justify-between">
+      <div className="basis-3/12">
+        <SideBarMenu />
       </div>
 
-      <div>
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 px-10">
         <ProfileCard metaData={metaData} />
         {ids.length === 0 ? (
           <div className="mx-4">
             <div
-              className="flex p-4 mb-4 max-w-7xl lg:px-40 text-sm text-red-800 rounded-lg bg-red-50"
+              className="flex p-4 mb-4 max-w-7xl lg:px-40 text-sm text-dark-text rounded-lg bg-alert-2"
               role="alert"
             >
               <svg
