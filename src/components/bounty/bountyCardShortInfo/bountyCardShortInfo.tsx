@@ -11,8 +11,6 @@ type props = {
   id: string;
   dates: string;
   pubkeys: string;
-  names: string;
-  profilePic: string;
 };
 
 function ShortBountyInfo({
@@ -21,8 +19,6 @@ function ShortBountyInfo({
   id,
   dates,
   pubkeys,
-  names,
-  profilePic,
 }: props) {
   const navigate = useNavigate();
   const [displayAddReward, setDisplayAddReward] = useState(true);
@@ -74,8 +70,8 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
   let npub = getNpub(pubkeys);
   return (
     <div>
-      <div className="my-2 mx-5 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl md: flex-wrap sm: px-5 py-3 mx-4 dark:bg-sidebar-bg">
-        <div className="basis-6/12">
+      <div className="my-2 mx-5 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
+        <div className="basis-6/12 sm:basis-10/12">
           <p className="font-sans text-base font-medium dark:text-gray-1">
             {title}
           </p>
@@ -96,13 +92,8 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
               onClick={() => navigate(bountyPosterPath)}
               className="font-sans text-sm font-light underline p-1 dark:text-gray-1"
             >
-              by: {names === undefined || "" ? npub : names}
+              by: {npub}
             </p>
-            <img
-              className="w-8 h-8 rounded-full"
-              src={profilePic === "" || undefined ? avatarImage : profilePic}
-              alt="avatar image"
-            ></img>
           </div>
           <div>
             <span className="font-sans text-sm font-light dark:text-gray-1">

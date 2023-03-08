@@ -15,20 +15,12 @@ function Profile() {
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
-  let [names, setNames] = useState<string[]>([]);
-  let [profilePic, setProfilePic] = useState<string[]>([]);
+
   let [pubkey, setPubkeys] = useState<string[]>([]);
-  const [bountyNotFound, setBountyNotFound] = useState(false);
   let [creationDate, setCreationDate] = useState<string[]>([]);
-  let [test, setTest] = useState();
+
   let relays = defaultRelays;
-  let arr_titles: string[] = [];
-  let arr_rewards: string[] = [];
-  let arr_pubkeys: string[] = [];
-  let arr_ids: string[] = [];
-  let arr_names: string[] = [];
-  let arr_profilePic: string[] = [];
-  let arr_postDated: string[] = [];
+
   let subFilterMetaData = [
     {
       authors: [`${params.id}`],
@@ -79,34 +71,15 @@ function Profile() {
         let bountyReward = event.tags[2][1];
         let bountyDatePosted = date;
 
-        arr_titles.push(bountyTitle);
-        arr_rewards.push(bountyReward);
-        arr_pubkeys.push(event.pubkey);
-        arr_ids.push(event.id);
-        arr_postDated.push(bountyDatePosted);
-        getMetaData(event.pubkey)
-          .then((response) => response.json())
-          .then((data) => {
-            let metaData = JSON.parse(data.content);
-            arr_names.push(metaData.display_name);
-            arr_profilePic.push(metaData.picture);
-
-            setNames(arr_names);
-            setProfilePic(arr_profilePic);
-          });
-
-        setTitles(arr_titles);
-        setRewards(arr_rewards);
-        setIds(arr_ids);
-        setCreationDate(arr_postDated);
-        setPubkeys(arr_pubkeys);
-        // @ts-ignore
-        setTest(event.content);
+        setIds((arr) => [...arr, event.id]);
+        setCreationDate((arr) => [...arr, bountyDatePosted]);
+        setTitles((arr) => [...arr, bountyTitle]);
+        setRewards((arr) => [...arr, bountyReward]);
+        setPubkeys((arr) => [...arr, event.pubkey]);
       }
     );
 
     setTimeout(() => {
-      if (arr_postDated.length === 0) setBountyNotFound(true);
       relayPool.close().then(() => {
         console.log("connection closed");
       });
@@ -121,7 +94,7 @@ function Profile() {
 
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 dark:bg-background-dark-mode">
         <ProfileCard metaData={metaData} />
-        {bountyNotFound ? <BountiesNotFound /> : null}
+        {ids.length === 0 ? <BountiesNotFound /> : null}
         {titles.map((item, index) => {
           return (
             <div>
@@ -131,15 +104,11 @@ function Profile() {
                 id={ids[index]}
                 dates={creationDate[index]}
                 pubkeys={pubkey[index]}
-                names={names[index]}
-                profilePic={profilePic[index]}
               />
             </div>
           );
         })}
       </div>
-
-      <div></div>
     </div>
   );
 }
