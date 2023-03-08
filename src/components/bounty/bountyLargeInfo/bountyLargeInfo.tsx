@@ -1,6 +1,8 @@
 import { sendReply, getNpub } from "../../../utils";
 import { Link } from "react-router-dom";
 
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+
 type content = {
   title: string;
   description: string;
@@ -38,17 +40,23 @@ function BountyLargeInfor({
   id,
   addedReward,
 }: props) {
+  const aja = `# hello world`;
+
   return (
-    <div className="my-4 mx-10 px-10 py-5 justify-between items-center flex border border-gray-200 rounded-lg shadow-md max-w-7xl md: flex-wrap sm:flex-wrap px-5 py-3 mx-4">
+    <div className="my-4 mx-10 px-10 py-5 justify-between items-center flex border border-gray-200 rounded-lg shadow-md max-w-7xl md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
       <div>
         <div className="flex justify-between">
           <div className="basis-7/12">
-            <p className="font-sans text-2xl font-semibold">{content.title}</p>
-            <p className="font-sans text-sm font-light mb-2">posted: {date}</p>
+            <p className="font-sans text-2xl font-semibold dark:text-gray-1">
+              {content.title}
+            </p>
+            <p className="font-sans text-sm font-light mb-2 dark:text-gray-1">
+              posted: {date}
+            </p>
           </div>
           <div className="flex justify-between">
             <div>
-              <p className="font-sans text-base font-light py-1 px-2 mr-1 rounded-lg bg-status-paid-text text-status-paid font-medium">
+              <p className="font-sans text-base py-1 px-2 mr-1 rounded-lg bg-status-paid-text text-status-paid font-medium dark:text-status-paid">
                 {content.reward} sats
               </p>
             </div>
@@ -70,45 +78,22 @@ function BountyLargeInfor({
           </div>
         </div>
         <div>
-          <p className="font-sans text-sm text-dark-text font-ligh whitespace-pre-line">
+          <p className="font-sans text-sm text-dark-text font-ligh whitespace-pre-line dark:text-gray-1">
             {content.description}
-          </p>
-        </div>
-
-        <div className="flex justify-between my-3">
-          <p className="font-sans text-base font-light mr-3 mt-1">
-            Discord:
-            {contact.discord === null || ""
-              ? "no added discord"
-              : contact.discord}
-          </p>
-          <p className="font-sans text-base font-light mr-3 mt-1">
-            Telegram:
-            {contact.telegram === null || ""
-              ? "no added Telegram"
-              : contact.telegram}
-          </p>
-          <p className="font-sans text-base font-light mr-3 mt-1">
-            Email:{" "}
-            {contact.email === null || "" ? "no added email" : contact.email}
-          </p>
-          <p className="font-sans text-base font-light mr-3 mt-1">
-            Other:
-            {contact.other === null || "" ? "no added whatsapp" : contact.other}
           </p>
         </div>
       </div>
 
       <Link
         to={`/profile/${pubkey}`}
-        className="font-sans text-sm font-light underline"
+        className="font-sans text-sm font-light underline  dark:text-gray-1"
       >
         Poster information
       </Link>
 
       <button
         onClick={() => sendReply(status, id, pubkey)}
-        className="font-sans text-base font-light underline mr-3 mt-1"
+        className="font-sans text-base font-light underline mr-3 mt-1  dark:text-gray-1"
       >
         Reply new state
       </button>
@@ -120,7 +105,7 @@ function BountyLargeInfor({
               className="font-sans text-base font-light mr-3 mt-1 underline"
             >
               {getNpub(item.posterPubkey)} added{" "}
-              <span className="font-sans text-base font-medium">
+              <span className="font-sans text-base font-medium  dark:text-gray-1">
                 {item.amount}
               </span>{" "}
               sats

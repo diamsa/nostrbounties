@@ -40,9 +40,9 @@ function SideBarMenu() {
     setRelay(event.target.value);
   };
   return (
-    <div className="bg-gray-1 h-screen p-8 text-center">
+    <div className="bg-sidebar-gray lg:h-screen md:h-screen p-8 text-center sm:p-4 h-1/2 dark:bg-sidebar-bg">
       <h1
-        className="text-white font-semibold text-lg"
+        className="text-white font-semibold text-lg dark:text-gray-1"
         onClick={() => navigate("/")}
       >
         Nostr bounties
@@ -53,7 +53,7 @@ function SideBarMenu() {
             {relays.map((item: string) => {
               return (
                 <div className="mt-2 flex text-white text-sm">
-                  <p>{item}</p>
+                  <p className=" dark:text-gray-1">{item}</p>
                   <img
                     className="w-6 h-4 rounded-full my-1 mx-0.5 cursor-pointer"
                     onClick={() => deleteRelay(item)}
@@ -67,12 +67,12 @@ function SideBarMenu() {
               <input
                 onChange={handleNewRelay}
                 type="text"
-                className="peer min-h-[auto] mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1"
+                className="peer min-h-[auto] mt-2 bg-gray-50 p-2 border-y border-x border-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1  dark:bg-input-bg-dm text-gray-1 border-0"
                 placeholder="wss://nostr.damus.io"
                 value={relay}
               />
               <button
-                className="text-xs font-light mt-2 ml-2 px-2 bg-green-500 text-white rounded-lg"
+                className="text-xs font-light mt-2 ml-2 px-2 bg-green-500 text-white rounded-lg  dark:text-gray-1"
                 onClick={() => {
                   addRelay(relay);
                   setRelay("");
@@ -83,19 +83,19 @@ function SideBarMenu() {
             </div>
           </div>
         </div>
-        <div className="text-start p-3 flex justify-between">
+        <div className="text-start p-3 flex flex-wrap justify-between">
           <button
             onClick={() => navigate("/create")}
-            className="inline-flex items-center px-4 py-2 text-sm font-normal text-center text-gray-1 bg-blue-1 rounded-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300"
+            className="inline-flex items-center px-3 py-1 m-1 text-sm font-semibold text-center text-gray-2 bg-blue-1 rounded-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
           >
             Create Bounty
           </button>
           <div>
             <p
               onClick={goToProfile}
-              className="content-start underline text-dark-text font-normal border border-gray-200 rounded-md px-4 py-2"
+              className="content-start text-sm text-dark-text font-normal border border-gray-200 rounded-md px-3 m-1 py-1  dark:text-gray-1"
             >
-              My profile
+              My bounties
             </p>
           </div>
         </div>

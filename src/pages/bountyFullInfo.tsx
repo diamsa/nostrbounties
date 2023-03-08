@@ -1,15 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import defaultRelays from "../consts";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp } from "../utils";
 
-import Header from "../components/header/header";
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
 
 function BountyInfo() {
+  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   const params:any = useParams();
   const [content, setContent] = useState<any>({});
   const [contactDetails, setContactDetails] = useState<any>({});
@@ -114,11 +113,11 @@ function BountyInfo() {
   }, []);
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between sm:block">
       <div className="basis-3/12">
         <SideBarMenu />
       </div>
-      <div className="h-screen overflow-y-scroll basis-9/12 px-10">
+      <div className="h-screen overflow-y-scroll basis-9/12 px-10 sm:h-screen dark:bg-background-dark-mode">
         <BountyLargeInfor
           content={content}
           pubkey={pubKey}

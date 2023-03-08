@@ -2,44 +2,47 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProfileCard from "../components/profileCard/profileCard";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
-import defaultRelays from "../consts";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp, getMetaData } from "../utils";
 import { bountyContent } from "../interfaces";
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
+import BountiesNotFound from "../components/errors/bountiesNotFound";
 
 function Profile() {
+  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   const params = useParams();
   let [metaData, setMetada] = useState({});
-  let [content, setContent] = useState<any>([]);
+  let [titles, setTitles] = useState<string[]>([]);
+  let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
   let [names, setNames] = useState<string[]>([]);
   let [profilePic, setProfilePic] = useState<string[]>([]);
   let [pubkey, setPubkeys] = useState<string[]>([]);
+  const [bountyNotFound, setBountyNotFound] = useState(false);
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [test, setTest] = useState();
-
+  let relays = defaultRelays;
+  let arr_titles: string[] = [];
+  let arr_rewards: string[] = [];
+  let arr_pubkeys: string[] = [];
+  let arr_ids: string[] = [];
+  let arr_names: string[] = [];
+  let arr_profilePic: string[] = [];
+  let arr_postDated: string[] = [];
+  let subFilterMetaData = [
+    {
+      authors: [`${params.id}`],
+      kinds: [0],
+    },
+  ];
+  let subFilterContent = [
+    {
+      authors: [`${params.id}`],
+      kinds: [30023],
+      //"#t": ["bounty"],
+    },
+  ];
   useEffect(() => {
-    let relays = defaultRelays;
-    let arr_content: bountyContent[] = [];
-    let arr_pubkeys: string[] = [];
-    let arr_ids: string[] = [];
-    let arr_names: string[] = [];
-    let arr_profilePic: string[] = [];
-    let arr_postDated: string[] = [];
-    let subFilterMetaData = [
-      {
-        authors: [`${params.id}`],
-        kinds: [0],
-      },
-    ];
-    let subFilterContent = [
-      {
-        authors: [`${params.id}`],
-        "#t": ["bounty"],
-      },
-    ];
-
     let relayPool = new RelayPool(relays);
 
     relayPool.onerror((err, relayUrl) => {
@@ -69,13 +72,18 @@ function Profile() {
       subFilterContent,
       relays,
       (event, isAfterEose, relayURL) => {
-        let date = convertTimestamp(event.created_at);
-        let parsedContent = JSON.parse(event.content);
+        let parseDate = parseInt(event.tags[3][1]);
+        let date = convertTimestamp(parseDate);
 
-        arr_content.push(parsedContent);
+        let bountyTitle = event.tags[1][1];
+        let bountyReward = event.tags[2][1];
+        let bountyDatePosted = date;
+
+        arr_titles.push(bountyTitle);
+        arr_rewards.push(bountyReward);
         arr_pubkeys.push(event.pubkey);
         arr_ids.push(event.id);
-        arr_postDated.push(date);
+        arr_postDated.push(bountyDatePosted);
         getMetaData(event.pubkey)
           .then((response) => response.json())
           .then((data) => {
@@ -87,7 +95,8 @@ function Profile() {
             setProfilePic(arr_profilePic);
           });
 
-        setContent(arr_content);
+        setTitles(arr_titles);
+        setRewards(arr_rewards);
         setIds(arr_ids);
         setCreationDate(arr_postDated);
         setPubkeys(arr_pubkeys);
@@ -97,6 +106,7 @@ function Profile() {
     );
 
     setTimeout(() => {
+      if (arr_postDated.length === 0) setBountyNotFound(true);
       relayPool.close().then(() => {
         console.log("connection closed");
       });
@@ -104,45 +114,29 @@ function Profile() {
   }, []);
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between sm:block">
       <div className="basis-3/12">
         <SideBarMenu />
       </div>
 
-      <div className="p-3 h-screen overflow-y-scroll basis-9/12 px-10">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 dark:bg-background-dark-mode">
         <ProfileCard metaData={metaData} />
-        {ids.length === 0 ? (
-          <div className="mx-4">
-            <div
-              className="flex p-4 mb-4 max-w-7xl lg:px-40 text-sm text-dark-text rounded-lg bg-alert-2"
-              role="alert"
-            >
-              <svg
-                aria-hidden="true"
-                className="flex-shrink-0 inline w-5 h-5 mr-3"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clip-rule="evenodd"
-                ></path>
-              </svg>
-              <span className="sr-only">Info</span>
-              <div>Bounties for this user weren't found</div>
+        {bountyNotFound ? <BountiesNotFound /> : null}
+        {titles.map((item, index) => {
+          return (
+            <div>
+              <BountyCard
+                title={titles[index]}
+                reward={rewards[index]}
+                id={ids[index]}
+                dates={creationDate[index]}
+                pubkeys={pubkey[index]}
+                names={names[index]}
+                profilePic={profilePic[index]}
+              />
             </div>
-          </div>
-        ) : null}
-        <BountyCard
-          content={content}
-          dates={creationDate}
-          ids={ids}
-          pubkeys={pubkey}
-          names={names}
-          profilePic={profilePic}
-        />
+          );
+        })}
       </div>
 
       <div></div>

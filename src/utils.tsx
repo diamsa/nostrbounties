@@ -122,8 +122,8 @@ export function getNpub(pubkey: string) {
   return npubShortened + "...";
 }
 
-export function formatReward(event: any) {
-  const rewardUnformatted = parseInt(event.target.value);
+export function formatReward(event: string) {
+  const rewardUnformatted = parseInt(event);
   const rewardFormatted = rewardUnformatted
     .toFixed(2)
     .replace(/\d(?=(\d{3})+\.)/g, "$&,");

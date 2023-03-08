@@ -2,6 +2,7 @@
 import Header from "./components/header/header";
 import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import SideBarMenu from "./components/sidebarMenu/sidebarMenu";
+import BountiesNotFound from "./components/errors/bountiesNotFound";
 
 //functions
 import { useState, useEffect } from "react";
@@ -10,8 +11,8 @@ import { RelayPool } from "nostr-relaypool";
 import { bountyContent } from "./interfaces";
 
 function App() {
-  const [content, setContent] = useState<bountyContent[]>([]);
-  const [test, setTest] = useState([]);
+  const [titles, setTitles] = useState<string[]>([]);
+  const [rewards, setRewards] = useState<string[]>([]);
   const [ids, setIds] = useState<string[]>([]);
   const [names, setNames] = useState<string[]>([]);
   const [profilePic, setProfilePic] = useState<string[]>([]);
@@ -19,6 +20,7 @@ function App() {
   const [creationDate, setCreationDate] = useState<string[]>([]);
   const [bountyNotFound, setBountyNotFound] = useState(false);
   const [iterator, setIterator] = useState(0);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [loading, setLoading] = useState("loading");
 
   function loadMoreContent() {
@@ -37,7 +39,8 @@ function App() {
 
   useEffect(() => {
     let relays = defaultRelays;
-    let arr_content: any[] = [];
+    let arr_titles: string[] = [];
+    let arr_rewards: string[] = [];
     let arr_names: string[] = [];
     let arr_profilePic: string[] = [];
     let arr_pubkeys: string[] = [];
@@ -45,8 +48,9 @@ function App() {
     let arr_postDated: string[] = [];
     let subFilter = [
       {
-        "#t": ["bounty"],
-        kinds: [789],
+        //"#t": ["bounty"],
+        kinds: [30023],
+
       },
     ];
 
@@ -61,60 +65,70 @@ function App() {
 
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
       // remember to parse the content
-      let date = convertTimestamp(event.created_at);
-      let parsedContent = JSON.parse(event.content);
+      setDataLoaded(true);
 
-      arr_content.push(parsedContent);
+      let parseDate = parseInt(event.tags[3][1]);
+      let date = convertTimestamp(parseDate);
+
+      let bountyTitle = event.tags[1][1];
+      let bountyReward = event.tags[2][1];
+      let bountyDatePosted = date;
+
       arr_pubkeys.push(event.pubkey);
+      arr_titles.push(bountyTitle);
+      arr_rewards.push(bountyReward);
       arr_ids.push(event.id);
-      arr_postDated.push(date);
+      arr_postDated.push(bountyDatePosted);
+
       getMetaData(event.pubkey)
         .then((response) => response.json())
         .then((data) => {
           let metaData = JSON.parse(data.content);
           arr_names.push(metaData.display_name);
           arr_profilePic.push(metaData.picture);
-
+          console.log(arr_names);
           setNames(arr_names);
           setProfilePic(arr_profilePic);
         });
 
-      setContent(arr_content);
       setIds(arr_ids);
       setCreationDate(arr_postDated);
-
+      setTitles(arr_titles);
+      setRewards(arr_rewards);
       setPubkeys(arr_pubkeys);
       // @ts-ignore
-      setTest(event.pubkey);
-    });
 
-    setTimeout(() => {
-      if (arr_content.length === 0) setBountyNotFound(true);
-      relayPool.close().then(() => {
-        console.log("connection closed");
-      });
-      setLoading("not loading");
-    }, 10000);
+      console.log(arr_ids);
+    });
   }, []);
 
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between sm:block">
       <div className="basis-3/12">
         <SideBarMenu />
       </div>
-      <div className="h-screen overflow-y-scroll basis-9/12 px-10">
-        {ids.length === 0 ? <p className="p-4 mb-4 max-w-7xl lg:px-40 text-sm text-dark-text rounded-lg bg-alert-2">nothing was found</p> : null}
-        <BountyCard
-          content={content}
-          ids={ids}
-          dates={creationDate}
-          pubkeys={pubkeys}
-          names={names}
-          profilePic={profilePic}
-        />
-        {bountyNotFound ? (
-          <p>We didn't find any bounty, try with differente relays</p>
-        ) : null}
+      <div className=" lg:h-screen  overflow-y-scroll  basis-9/12 px-10 sm:h-screen sm:px-3 dark:bg-background-dark-mode">
+        {dataLoaded ? (
+          titles.map((item, index) => {
+            return (
+              <div>
+                <BountyCard
+                  title={titles[index]}
+                  reward={rewards[index]}
+                  id={ids[index]}
+                  dates={creationDate[index]}
+                  pubkeys={pubkeys[index]}
+                  names={names[index]}
+                  profilePic={profilePic[index]}
+                />
+              </div>
+            );
+          })
+        ) : (
+          <div className="animate-pulse text-gray-2">Loading</div>
+        )}
+
+        {bountyNotFound ? <BountiesNotFound /> : null}
         <button onClick={loadMoreContent}>
           {loading === "loading" ? "wait until it load" : "load more content"}
         </button>
