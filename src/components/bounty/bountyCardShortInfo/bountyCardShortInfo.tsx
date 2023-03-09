@@ -20,7 +20,7 @@ function ShortBountyInfo({ title, reward, id, dates, pubkeys }: props) {
   let npub = getNpub(pubkeys);
   return (
     <div>
-      <div className="lg:my-2 mx-5 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
+      <div className="my-2  justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
         <div className="basis-6/12 sm:basis-10/12">
           <p className="font-sans text-base font-medium dark:text-gray-1">
             {title}

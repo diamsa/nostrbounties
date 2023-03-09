@@ -22,7 +22,7 @@ function BountyInfo() {
       {
         // @ts-ignore
         ids: [params.id],
-        kind: [780],
+        kind: [30023],
       },
     ];
 
@@ -30,9 +30,9 @@ function BountyInfo() {
       {
         "#e": [params.id],
         "#t": ["bounty-added-reward"],
+        kind: 1,
       },
     ];
-    let arr_addedReward: { posterPubkey: string; amount: string }[] = [];
     let arr_status: string[] = [];
 
     let relayPool = new RelayPool(relays);
@@ -43,13 +43,13 @@ function BountyInfo() {
     relayPool.onnotice((relayUrl, notice) => {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
+
     //subscribe for content
     relayPool.subscribe(
       // @ts-ignore
       subFilterContent,
       relays,
       (event, isAfterEose, relayURL) => {
-        // remember to parse the content
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
 
@@ -70,6 +70,7 @@ function BountyInfo() {
 
         setPubkey(event.pubkey);
 
+        // suscrbibe for bounty status
         relayPool.subscribe(
           [
             {
@@ -96,7 +97,7 @@ function BountyInfo() {
           posterPubkey: event.pubkey,
           amount: event.content,
         };
-        setAddedReward((arr:string[]) => [...arr, data]);
+        setAddedReward((arr: string[]) => [...arr, data]);
       }
     );
 

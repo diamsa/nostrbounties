@@ -1,27 +1,26 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import ProfileCard from "../components/profileCard/profileCard";
-import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp, getMetaData } from "../utils";
-import { bountyContent } from "../interfaces";
+import { convertTimestamp} from "../utils";
+
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../components/errors/bountiesNotFound";
+import ProfileCard from "../components/profileCard/profileCard";
+import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
+
 
 function Profile() {
-  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
+  let relays = JSON.parse(localStorage.getItem("relays")!);
   const params = useParams();
+
   let [metaData, setMetada] = useState({});
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
-  const [bountyNotFound, setBountyNotFound] = useState(false);
-  const [dataLoaded, setDataLoaded] = useState(false);
-
+  let [bountyNotFound, setBountyNotFound] = useState(false);
+  let [dataLoaded, setDataLoaded] = useState(false);
   let [pubkey, setPubkeys] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
-
-  let relays = defaultRelays;
 
   let subFilterMetaData = [
     {
@@ -32,7 +31,7 @@ function Profile() {
   let subFilterContent = [
     {
       authors: [`${params.id}`],
-      kinds: [780],
+      kinds: [30023],
       "#t": ["bounty"],
     },
   ];
@@ -86,7 +85,7 @@ function Profile() {
         console.log("connection closed");
       });
       setBountyNotFound(true);
-    }, 10000);
+    }, 20000);
   }, []);
 
   return (

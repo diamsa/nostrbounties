@@ -5,10 +5,6 @@ import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import avatarImage from "../../../assets/avatarImg.png";
 import { useState } from "react";
 
-type addedToReward = {
-  posterPubKey: string;
-  amount: string;
-};
 
 type content = {
   title: string;
@@ -39,7 +35,7 @@ function BountyLargeInfor({
   let npub = getNpub(pubkey);
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
   return (
-    <div className="my-4 mx-10 px-10 py-5 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
+    <div className="my-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
       <div>
         <div>
           <div className="flex flex-wrap">

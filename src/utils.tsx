@@ -1,7 +1,7 @@
-import defaultRelays from "./consts";
 import { RelayPool } from "nostr-relaypool";
 import { nip19 } from "nostr-tools";
-import { useState } from "react";
+
+let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
 
 export function convertTimestamp(unixTimestamp: number): string {
   var myDate = new Date(unixTimestamp * 1000);
@@ -31,7 +31,7 @@ export async function sendReply(
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
-      kind: 780,
+      kind: 1,
       tags: [
         ["e", `${id}`],
         ["t", `bounty-reply`],
@@ -60,7 +60,7 @@ export async function sendReply(
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
-      kind: 789,
+      kind: 1,
       tags: [
         ["e", `${id}`],
         ["t", "bounty-reply"],
@@ -98,7 +98,7 @@ export async function addReward(amount: string, id: string) {
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
-      kind: 789,
+      kind: 1,
       tags: [
         ["t", "bounty-added-reward"],
         ["e", `${id}`],
@@ -149,4 +149,3 @@ export function getMetaData(pubkey: string) {
   return data;
 }
 
-export function deleteRelay() {}

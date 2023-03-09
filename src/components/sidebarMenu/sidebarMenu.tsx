@@ -67,7 +67,7 @@ function SideBarMenu() {
               <input
                 onChange={handleNewRelay}
                 type="text"
-                className="peer min-h-[auto] mt-2 bg-gray-50 p-2 border-y border-x border-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1  dark:bg-input-bg-dm text-gray-1 border-0"
+                className="peer min-h-[auto] mt-2 bg-gray-50 p-2 border-y border-x border-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  dark:bg-input-bg-dm text-gray-1 border-0"
                 placeholder="wss://nostr.damus.io"
                 value={relay}
               />

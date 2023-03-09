@@ -22,7 +22,7 @@ function App() {
   if (localStorage.getItem("relays") === null) {
     localStorage.setItem(
       "relays",
-      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social"]'
+      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
     );
   }
 
@@ -34,7 +34,7 @@ function App() {
     let subFilter = [
       {
         "#t": ["bounty"],
-        kinds: [780],
+        kinds: [30023],
       },
     ];
 

@@ -23,9 +23,6 @@
     @apply  border-l-8 bg-sidebar-gray py-3 pl-2 border-blue-1 text-dark-text font-normal text-base italic dark:text-dark-text;
   }
   .markdown > hr {
-    @apply border-l-2 border-dark-text dark:text-gray-2 border-gray-2;
-  }
-  .markdown > a {
-    @apply text-blue-1 underline dark:text-alert-1 underline;
+    @apply border-l-2 border-dark-text dark:text-gray-2 dark:border-gray-2;
   }
 }

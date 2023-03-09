@@ -7,11 +7,6 @@ import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
 import EmptyFields from "../components/errors/emptyFields";
 
-type event = {
-  target: {
-    value: string;
-  };
-};
 
 function CreateBounty() {
   let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
@@ -29,7 +24,7 @@ function CreateBounty() {
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
-      kind: 780,
+      kind: 30023,
       tags: [
         ["t", "bounty"],
         ["title", `${title}`],
@@ -96,7 +91,7 @@ function CreateBounty() {
           </label>
           <textarea
             onChange={(e) => setContent(e.target.value)}
-            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg text-gray-1 border-0"
+            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg text-gray-1 border-0"
             placeholder="give your bounty a title and a description. Add your contact details. In markdown"
             value={content}
             rows={9}
