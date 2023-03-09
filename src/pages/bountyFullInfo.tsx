@@ -1,44 +1,39 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp } from "../utils";
+import { convertTimestamp, getMetaData } from "../utils";
 
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
-
 function BountyInfo() {
   let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
-  const params:any = useParams();
+  const params: any = useParams();
   const [content, setContent] = useState<any>({});
-  const [contactDetails, setContactDetails] = useState<any>({});
-  const [pubKey, setPubkey] = useState<string | undefined>();
-  const [date, setDate] = useState<string | undefined>();
-  const [addedReward, setAddedReward] = useState([]);
+  const [pubKey, setPubkey] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [profilePic, setProfilePic] = useState<string>("");
+  const [addedReward, setAddedReward] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
 
   useEffect(() => {
     let relays = defaultRelays;
-    let subFilterContent:{ids:string}[] = [
+    let subFilterContent: { ids: string }[] = [
       {
         // @ts-ignore
         ids: [params.id],
+        kind: [780],
       },
     ];
-    let subFilterStatus = [
-      {
-        "#e": [params.id],
-        "#t": ["bounty-reply"],
-      },
-    ];
+
     let subFilterAddedReward = [
       {
         "#e": [params.id],
         "#t": ["bounty-added-reward"],
       },
     ];
-    let arr_status: Array<string | undefined> = [];
     let arr_addedReward: { posterPubkey: string; amount: string }[] = [];
+    let arr_status: string[] = [];
 
     let relayPool = new RelayPool(relays);
 
@@ -55,34 +50,40 @@ function BountyInfo() {
       relays,
       (event, isAfterEose, relayURL) => {
         // remember to parse the content
-        let date: string = convertTimestamp(event.created_at);
-        let parsedContent = JSON.parse(event.content);
+        let parseDate = parseInt(event.tags[3][1]);
+        let date = convertTimestamp(parseDate);
+
+        getMetaData(event.pubkey)
+          .then((response) => response.json())
+          .then((data) => {
+            let parseContent = JSON.parse(data.content);
+            setName(parseContent.display_name);
+            setProfilePic(parseContent.picture);
+          });
 
         setContent({
-          title: parsedContent.title,
-          description: parsedContent.description,
-          reward: parsedContent.reward,
+          title: event.tags[1][1],
+          content: event.content,
+          reward: event.tags[2][1],
+          publishedAt: date,
         });
 
-        setContactDetails({
-          discord: parsedContent.discord,
-          telegram: parsedContent.telegram,
-          email: parsedContent.email,
-          whatsapp: parsedContent.whatsapp,
-        });
-        setDate(date);
         setPubkey(event.pubkey);
-      }
-    );
 
-    //subscribe for status
-    relayPool.subscribe(
-      subFilterStatus,
-      relays,
-      (event, isAfterEose, relayURL) => {
-        arr_status.push(event.content);
-        // @ts-ignore
-        setStatus(arr_status[0]);
+        relayPool.subscribe(
+          [
+            {
+              authors: [event.pubkey],
+              "#e": [params.id],
+              "#t": ["bounty-reply"],
+            },
+          ],
+          relays,
+          (event, isAfterEose, relayURL) => {
+            arr_status.push(event.content);
+            setStatus(arr_status[0]);
+          }
+        );
       }
     );
 
@@ -95,8 +96,7 @@ function BountyInfo() {
           posterPubkey: event.pubkey,
           amount: event.content,
         };
-        arr_addedReward.push(data);
-        console.log(arr_addedReward);
+        setAddedReward((arr:string[]) => [...arr, data]);
       }
     );
 
@@ -105,11 +105,6 @@ function BountyInfo() {
         console.log("connection closed");
       });
     }, 20000);
-
-    setTimeout(() => {
-      // @ts-ignore
-      setAddedReward(arr_addedReward);
-    }, 3500);
   }, []);
 
   return (
@@ -117,15 +112,15 @@ function BountyInfo() {
       <div className="basis-3/12">
         <SideBarMenu />
       </div>
-      <div className="h-screen overflow-y-scroll basis-9/12 px-10 sm:h-screen dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-1 dark:bg-background-dark-mode">
         <BountyLargeInfor
           content={content}
           pubkey={pubKey}
-          date={date}
           status={status}
-          contact={contactDetails}
           id={params.id}
           addedReward={addedReward}
+          name={name}
+          profilePic={profilePic}
         />
       </div>
     </div>

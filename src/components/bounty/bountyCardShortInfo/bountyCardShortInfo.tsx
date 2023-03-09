@@ -1,8 +1,7 @@
 import { useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
-import { addReward, getNpub, formatReward } from "../../../utils";
-import { bountyContent } from "../../../interfaces";
-import avatarImage from "../../../assets/avatarImg.png";
+
+import { getNpub } from "../../../utils";
+
 import bitcoinIcon from "../../../assets/bitcoin-icon.png";
 
 type props = {
@@ -13,64 +12,15 @@ type props = {
   pubkeys: string;
 };
 
-function ShortBountyInfo({
-  title,
-  reward,
-  id,
-  dates,
-  pubkeys,
-}: props) {
+function ShortBountyInfo({ title, reward, id, dates, pubkeys }: props) {
   const navigate = useNavigate();
-  const [displayAddReward, setDisplayAddReward] = useState(true);
-  const [rewardToAdd, setRewardToAdd] = useState<string>();
-
-  /* button reward style
-class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-white mr-1 mt-1"*/
-  function displayAddRewardBtn() {
-    return (
-      <button
-        onClick={() => setDisplayAddReward(false)}
-        className="font-sans text-base font-light underline mr-1 mt-1"
-      >
-        add to reward
-      </button>
-    );
-  }
-
-  function displayAddRewardInput(id: string) {
-    return (
-      <div>
-        <input
-          type="number"
-          onChange={handleRewardToAdd}
-          className="bg-gray-50 mt-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-          placeholder="Amount in sats"
-          required
-        />
-        <button
-          onClick={() => {
-            setDisplayAddReward(true);
-            addReward(rewardToAdd, id);
-          }}
-          className='class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300'
-        >
-          add reward
-        </button>
-        <p onClick={() => setDisplayAddReward(true)}>close</p>
-      </div>
-    );
-  }
-
-  const handleRewardToAdd = (event: any) => {
-    setRewardToAdd(formatReward(event));
-  };
 
   let bountyInfoPath = `/b/${id}`;
   let bountyPosterPath = `/profile/${pubkeys}`;
   let npub = getNpub(pubkeys);
   return (
     <div>
-      <div className="my-2 mx-5 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
+      <div className="lg:my-2 mx-5 px-15 py-5 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
         <div className="basis-6/12 sm:basis-10/12">
           <p className="font-sans text-base font-medium dark:text-gray-1">
             {title}
@@ -90,7 +40,7 @@ class="font-sans text-base font-light bg-blue-700 py-1 px-3 rounded-md text-whit
           <div className="flex flex-wrap">
             <p
               onClick={() => navigate(bountyPosterPath)}
-              className="font-sans text-sm font-light underline p-1 dark:text-gray-1"
+              className="font-sans text-sm font-light underline p-1 cursor-pointer dark:text-gray-1"
             >
               by: {npub}
             </p>

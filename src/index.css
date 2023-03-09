@@ -1,6 +1,31 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.markdown > * {
-    all: revert;
+@layer components {
+  .markdown > h1 {
+    @apply font-medium font-sans text-xl mb-2 mr-2 text-dark-text dark:text-gray-2;
   }
+  .markdown > h2 {
+    @apply font-normal font-sans text-base mb-2 mr-2 text-dark-text dark:text-gray-2;
+  }
+  .markdown > ul {
+    @apply font-light font-sans text-sm ml-5 my-2 text-dark-text list-disc dark:text-gray-2;
+  }
+  .markdown > ol {
+    @apply font-light font-sans text-sm ml-5 my-2 text-dark-text list-decimal dark:text-gray-2;
+  }
+
+  .markdown > p {
+    @apply font-normal font-sans text-sm mt-2 mb-2 mr-2 text-dark-text dark:text-gray-2;
+  }
+
+  .markdown > blockquote {
+    @apply  border-l-8 bg-sidebar-gray py-3 pl-2 border-blue-1 text-dark-text font-normal text-base italic dark:text-dark-text;
+  }
+  .markdown > hr {
+    @apply border-l-2 border-dark-text dark:text-gray-2 border-gray-2;
+  }
+  .markdown > a {
+    @apply text-blue-1 underline dark:text-alert-1 underline;
+  }
+}

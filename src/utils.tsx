@@ -21,13 +21,17 @@ export async function getPubKey() {
   return pubKey;
 }
 
-export async function sendReply(status: string | null, id: string, pubKey: string | undefined) {
+export async function sendReply(
+  status: string | null,
+  id: string,
+  pubKey: string | undefined
+) {
   if (status === null) {
     let eventMessage = {
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
-      kind: 789,
+      kind: 780,
       tags: [
         ["e", `${id}`],
         ["t", `bounty-reply`],
@@ -85,31 +89,36 @@ export async function sendReply(status: string | null, id: string, pubKey: strin
   }
 }
 
-export async function addReward(amount: string | undefined, id: string) {
-  let eventMessage = {
-    id: null,
-    pubkey: null,
-    created_at: Math.floor(Date.now() / 1000),
-    kind: 789,
-    tags: [
-      ["t", "bounty-added-reward"],
-      ["e", `${id}`],
-    ],
-    content: amount,
-    sig: null,
-  };
-  // @ts-ignore
-  if (!window.nostr) {
-    console.log("you need to install an extension");
-  }
-  // @ts-ignore
-  let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-  console.log(EventMessageSigned.content);
-  let relays = defaultRelays;
-  let relayPool = new RelayPool(relays);
+export async function addReward(amount: string, id: string) {
+  if (amount === "") {
+    console.log("add a value");
+  } else {
+    let formattedAmount = formatReward(amount);
+    let eventMessage = {
+      id: null,
+      pubkey: null,
+      created_at: Math.floor(Date.now() / 1000),
+      kind: 789,
+      tags: [
+        ["t", "bounty-added-reward"],
+        ["e", `${id}`],
+      ],
+      content: formattedAmount,
+      sig: null,
+    };
+    // @ts-ignore
+    if (!window.nostr) {
+      console.log("you need to install an extension");
+    }
+    // @ts-ignore
+    let EventMessageSigned = await window.nostr.signEvent(eventMessage);
+    console.log(EventMessageSigned.content);
+    let relays = defaultRelays;
+    let relayPool = new RelayPool(relays);
 
-  relayPool.publish(EventMessageSigned, relays);
-  console.log("posted");
+    relayPool.publish(EventMessageSigned, relays);
+    console.log("posted");
+  }
 }
 
 export function getNpub(pubkey: string) {
@@ -140,6 +149,4 @@ export function getMetaData(pubkey: string) {
   return data;
 }
 
-export function deleteRelay(){
-  
-}
+export function deleteRelay() {}

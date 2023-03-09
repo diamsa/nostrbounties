@@ -15,6 +15,8 @@ function Profile() {
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
+  const [bountyNotFound, setBountyNotFound] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   let [pubkey, setPubkeys] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
@@ -30,8 +32,8 @@ function Profile() {
   let subFilterContent = [
     {
       authors: [`${params.id}`],
-      kinds: [30023],
-      //"#t": ["bounty"],
+      kinds: [780],
+      "#t": ["bounty"],
     },
   ];
   useEffect(() => {
@@ -66,7 +68,7 @@ function Profile() {
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
-
+        setDataLoaded(true);
         let bountyTitle = event.tags[1][1];
         let bountyReward = event.tags[2][1];
         let bountyDatePosted = date;
@@ -83,6 +85,7 @@ function Profile() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
+      setBountyNotFound(true);
     }, 10000);
   }, []);
 
@@ -94,20 +97,26 @@ function Profile() {
 
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 dark:bg-background-dark-mode">
         <ProfileCard metaData={metaData} />
-        {ids.length === 0 ? <BountiesNotFound /> : null}
-        {titles.map((item, index) => {
-          return (
-            <div>
-              <BountyCard
-                title={titles[index]}
-                reward={rewards[index]}
-                id={ids[index]}
-                dates={creationDate[index]}
-                pubkeys={pubkey[index]}
-              />
-            </div>
-          );
-        })}
+        {dataLoaded ? (
+          titles.map((item, index) => {
+            return (
+              <div>
+                <BountyCard
+                  title={titles[index]}
+                  reward={rewards[index]}
+                  id={ids[index]}
+                  dates={creationDate[index]}
+                  pubkeys={pubkey[index]}
+                />
+              </div>
+            );
+          })
+        ) : (
+          <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
+            Loading...
+          </div>
+        )}
+        {bountyNotFound ? <BountiesNotFound /> : null}
       </div>
     </div>
   );

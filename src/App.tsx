@@ -6,22 +6,19 @@ import BountiesNotFound from "./components/errors/bountiesNotFound";
 
 //functions
 import { useState, useEffect } from "react";
-import { convertTimestamp, getMetaData } from "./utils";
+import { convertTimestamp } from "./utils";
 import { RelayPool } from "nostr-relaypool";
 
 function App() {
   const [titles, setTitles] = useState<string[]>([]);
   const [rewards, setRewards] = useState<string[]>([]);
   const [ids, setIds] = useState<string[]>([]);
-  
 
   const [pubkeys, setPubkeys] = useState<string[]>([]);
   const [creationDate, setCreationDate] = useState<string[]>([]);
   const [bountyNotFound, setBountyNotFound] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
- 
 
- 
   if (localStorage.getItem("relays") === null) {
     localStorage.setItem(
       "relays",
@@ -36,9 +33,8 @@ function App() {
 
     let subFilter = [
       {
-        //"#t": ["bounty"],
-        kinds: [30023],
-        limit: 100,
+        "#t": ["bounty"],
+        kinds: [780],
       },
     ];
 
@@ -62,13 +58,19 @@ function App() {
       let bountyReward = event.tags[2][1];
       let bountyDatePosted = date;
 
-
       setIds((arr) => [...arr, event.id]);
       setCreationDate((arr) => [...arr, bountyDatePosted]);
       setTitles((arr) => [...arr, bountyTitle]);
       setRewards((arr) => [...arr, bountyReward]);
       setPubkeys((arr) => [...arr, event.pubkey]);
     });
+
+    setTimeout(() => {
+      relayPool.close().then(() => {
+        console.log("connection closed");
+      });
+      if (titles.length === 0) setBountyNotFound(true);
+    }, 40000);
   }, []);
 
   return (
@@ -76,7 +78,7 @@ function App() {
       <div className="basis-3/12">
         <SideBarMenu />
       </div>
-      <div className=" lg:h-screen  overflow-y-scroll  basis-9/12 px-10 sm:h-screen sm:px-1 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
         {dataLoaded ? (
           titles.map((item, index) => {
             return (
@@ -87,17 +89,17 @@ function App() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
-                
                 />
               </div>
             );
           })
         ) : (
-          <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">Loading...</div>
+          <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
+            Loading...
+          </div>
         )}
 
-        {ids.length === 0 ? <BountiesNotFound /> : null}
-        
+        {bountyNotFound ? <BountiesNotFound /> : null}
       </div>
     </div>
   );
