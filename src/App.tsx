@@ -10,14 +10,16 @@ import { convertTimestamp } from "./utils";
 import { RelayPool } from "nostr-relaypool";
 
 function App() {
-  const [titles, setTitles] = useState<string[]>([]);
-  const [rewards, setRewards] = useState<string[]>([]);
-  const [ids, setIds] = useState<string[]>([]);
+  let [titles, setTitles] = useState<string[]>([]);
+  let [rewards, setRewards] = useState<string[]>([]);
+  let [ids, setIds] = useState<string[]>([]);
 
-  const [pubkeys, setPubkeys] = useState<string[]>([]);
-  const [creationDate, setCreationDate] = useState<string[]>([]);
-  const [bountyNotFound, setBountyNotFound] = useState(false);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  let [pubkeys, setPubkeys] = useState<string[]>([]);
+  let [names, setNames] = useState<string[]>([]);
+  let [pictures, setPictures] = useState<string[]>([]);
+  let [creationDate, setCreationDate] = useState<string[]>([]);
+  let [bountyNotFound, setBountyNotFound] = useState(false);
+  let [dataLoaded, setDataLoaded] = useState(false);
 
   if (localStorage.getItem("relays") === null) {
     localStorage.setItem(
@@ -63,6 +65,22 @@ function App() {
       setTitles((arr) => [...arr, bountyTitle]);
       setRewards((arr) => [...arr, bountyReward]);
       setPubkeys((arr) => [...arr, event.pubkey]);
+
+      //subscribe metadata
+      relayPool.subscribe(
+        [
+          {
+            authors: [event.pubkey],
+            kinds: [0],
+          },
+        ],
+        relays,
+        (event, isAfterEose, relayURL) => {
+          let data = JSON.parse(event.content);
+          setNames((arr) => [...arr, data.display_name]);
+          setPictures((arr) => [...arr, data.picture]);
+        }
+      );
     });
 
     setTimeout(() => {
@@ -89,6 +107,8 @@ function App() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
+                  name={names[index]}
+                  picture={pictures[index]}
                 />
               </div>
             );

@@ -16,6 +16,8 @@ function Profile() {
   let [metaData, setMetada] = useState({});
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
+  let [name, setName] = useState<string>('');
+  let [picture, setPicture] = useState<string>('');
   let [ids, setIds] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
@@ -58,6 +60,8 @@ function Profile() {
           nip05: parsedContent.nip05,
         };
         setMetada(data);
+        setName(parsedContent.display_name)
+        setPicture(parsedContent.picture)
       }
     );
 
@@ -77,6 +81,7 @@ function Profile() {
         setTitles((arr) => [...arr, bountyTitle]);
         setRewards((arr) => [...arr, bountyReward]);
         setPubkeys((arr) => [...arr, event.pubkey]);
+
       }
     );
 
@@ -106,6 +111,8 @@ function Profile() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkey[index]}
+                  name={name}
+                  picture={picture}
                 />
               </div>
             );

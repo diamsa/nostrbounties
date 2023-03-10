@@ -5,7 +5,6 @@ import deleteIcon from "../../assets/icon-delete.png";
 
 function SideBarMenu() {
   const navigate = useNavigate();
-  const [dropDown, setDropDown] = useState(false);
   const defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   const [relays, setRelays] = useState(defaultRelays);
   const [relay, setRelay] = useState<string>("");
@@ -39,6 +38,7 @@ function SideBarMenu() {
   const handleNewRelay = (event: { target: { value: string } }) => {
     setRelay(event.target.value);
   };
+
   return (
     <div className="bg-sidebar-gray lg:h-screen md:h-screen p-8 text-center sm:p-4 h-1/2 dark:bg-sidebar-bg">
       <h1
@@ -55,7 +55,7 @@ function SideBarMenu() {
                 <div className="mt-2 flex text-white text-sm">
                   <p className=" dark:text-gray-1">{item}</p>
                   <img
-                    className="w-6 h-4 rounded-full my-1 mx-0.5 cursor-pointer"
+                    className="w-6 h-4 rounded-full my-1 mx-1.5 cursor-pointer"
                     onClick={() => deleteRelay(item)}
                     src={deleteIcon}
                     alt="delete icon"
