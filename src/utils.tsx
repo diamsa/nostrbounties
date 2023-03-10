@@ -93,7 +93,6 @@ export async function addReward(amount: string, id: string) {
   if (amount === "") {
     console.log("add a value");
   } else {
-    let formattedAmount = formatReward(amount);
     let eventMessage = {
       id: null,
       pubkey: null,
@@ -103,7 +102,7 @@ export async function addReward(amount: string, id: string) {
         ["t", "bounty-added-reward"],
         ["e", `${id}`],
       ],
-      content: formattedAmount,
+      content: amount,
       sig: null,
     };
     // @ts-ignore

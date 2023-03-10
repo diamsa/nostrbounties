@@ -15,6 +15,7 @@ function BountyInfo() {
   const [profilePic, setProfilePic] = useState<string>("");
   const [addedReward, setAddedReward] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
+  const [totalReward, setTotalReward] = useState(0)
 
   useEffect(() => {
     let relays = defaultRelays;
@@ -64,7 +65,7 @@ function BountyInfo() {
         setContent({
           title: event.tags[1][1],
           content: event.content,
-          reward: event.tags[2][1],
+          reward: parseInt(event.tags[2][1]),
           publishedAt: date,
         });
 
@@ -97,6 +98,7 @@ function BountyInfo() {
           posterPubkey: event.pubkey,
           amount: event.content,
         };
+        setTotalReward((item)=>item + parseInt(event.content))
         setAddedReward((arr: string[]) => [...arr, data]);
       }
     );
@@ -122,6 +124,7 @@ function BountyInfo() {
           addedReward={addedReward}
           name={name}
           profilePic={profilePic}
+          totalReward={totalReward}
         />
       </div>
     </div>

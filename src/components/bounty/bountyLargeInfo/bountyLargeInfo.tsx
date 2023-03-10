@@ -1,10 +1,9 @@
-import { sendReply, getNpub, addReward } from "../../../utils";
+import { sendReply, getNpub, addReward, formatReward } from "../../../utils";
 import { Link } from "react-router-dom";
 
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import avatarImage from "../../../assets/avatarImg.png";
 import { useState } from "react";
-
 
 type content = {
   title: string;
@@ -21,6 +20,7 @@ type props = {
   addedReward: any;
   name: string;
   profilePic: string;
+  totalReward: number;
 };
 
 function BountyLargeInfor({
@@ -31,9 +31,11 @@ function BountyLargeInfor({
   addedReward,
   name,
   profilePic,
+  totalReward,
 }: props) {
   let npub = getNpub(pubkey);
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
+  console.log(content.reward);
   return (
     <div className="my-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
       <div>
@@ -41,7 +43,7 @@ function BountyLargeInfor({
           <div className="flex flex-wrap">
             <div>
               <p className="font-sans text-base py-1 px-2 mr-1 mt-2 rounded-lg bg-status-paid-text text-status-paid font-medium sm:text-sm dark:text-status-paid">
-                {content.reward} sats
+                {formatReward(totalReward + content.reward)} sats
               </p>
             </div>
             <div className="flex">
@@ -129,7 +131,7 @@ function BountyLargeInfor({
             >
               {getNpub(item.posterPubkey)} added{" "}
               <span className="font-sans text-base underline font-medium  dark:text-gray-2">
-                {item.amount} sats
+                {formatReward(item.amount)} sats
               </span>{" "}
             </Link>
           );

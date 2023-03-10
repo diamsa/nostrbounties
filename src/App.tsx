@@ -6,7 +6,7 @@ import BountiesNotFound from "./components/errors/bountiesNotFound";
 
 //functions
 import { useState, useEffect } from "react";
-import { convertTimestamp } from "./utils";
+import { convertTimestamp, formatReward } from "./utils";
 import { RelayPool } from "nostr-relaypool";
 
 function App() {
@@ -57,7 +57,7 @@ function App() {
       let date = convertTimestamp(parseDate);
 
       let bountyTitle = event.tags[1][1];
-      let bountyReward = event.tags[2][1];
+      let bountyReward = formatReward(event.tags[2][1]) ;
       let bountyDatePosted = date;
 
       setIds((arr) => [...arr, event.id]);

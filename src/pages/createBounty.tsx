@@ -19,7 +19,6 @@ function CreateBounty() {
   let [emptyFields, setEmptyFields] = useState(false);
 
   async function postEvent() {
-    let finalReward = formatReward(reward!);
     let eventMessage = {
       id: null,
       pubkey: null,
@@ -28,7 +27,7 @@ function CreateBounty() {
       tags: [
         ["t", "bounty"],
         ["title", `${title}`],
-        ["reward", `${finalReward}`],
+        ["reward", `${reward}`],
         ["published_at", Math.floor(Date.now() / 1000)],
       ],
       content: content,
