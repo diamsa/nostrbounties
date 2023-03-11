@@ -35,7 +35,6 @@ function BountyLargeInfor({
 }: props) {
   let npub = getNpub(pubkey);
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
-  console.log(content.reward);
   return (
     <div className="my-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
       <div>
@@ -65,7 +64,7 @@ function BountyLargeInfor({
                   onClick={() => sendReply(status, id, pubkey)}
                   className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
                 >
-                  Reply new state
+                  Change bounty state
                 </button>
               )}
             </div>

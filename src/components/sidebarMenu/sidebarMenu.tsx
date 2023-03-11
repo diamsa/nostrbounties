@@ -1,7 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { getPubKey } from "../../utils";
+import { getPubKey, isDarkTheme } from "../../utils";
 import deleteIcon from "../../assets/icon-delete.png";
+import homeIcon from "../../assets/home-icon-dm.svg";
+import addIcon from "../../assets/add-icon-dm.svg";
+import profileIcon from "../../assets/profile-icon-dm.svg";
+import homeIconLg from "../../assets/home-icon-lg.svg";
+import createIconLg from "../../assets/create-icon-lg.svg";
+import profileIconLg from "../../assets/profile-icon-lg.svg";
+
 
 function SideBarMenu() {
   const navigate = useNavigate();
@@ -30,9 +37,13 @@ function SideBarMenu() {
   }
 
   function addRelay(relayName: string | undefined) {
-    setRelays([...relays, relayName]);
-    let siu = JSON.stringify([...relays, relayName]);
-    localStorage.setItem("relays", siu);
+    if (relayName === "" || !relayName?.includes("wss://")) {
+      console.log("No valid relay");
+    } else {
+      setRelays([...relays, relayName]);
+      let siu = JSON.stringify([...relays, relayName]);
+      localStorage.setItem("relays", siu);
+    }
   }
 
   const handleNewRelay = (event: { target: { value: string } }) => {
@@ -41,15 +52,45 @@ function SideBarMenu() {
 
   return (
     <div className="bg-sidebar-gray lg:h-screen md:h-screen p-8 text-center sm:p-4 h-1/2 dark:bg-sidebar-bg">
-      <h1
-        className="text-white font-semibold text-lg dark:text-gray-1"
-        onClick={() => navigate("/")}
-      >
-        Nostr bounties
-      </h1>
       <div className="space-y-3">
+        <div className="text-start block">
+          <div onClick={()=> navigate("/")} className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm">
+            <img
+              className="w-8 h-6 my-1"
+              src={isDarkTheme() ? homeIcon : homeIconLg}
+              alt="delete icon"
+            ></img>
+            <p className="content-start text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
+              Home
+            </p>
+          </div>
+          <div onClick={()=> navigate("/create")} className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm">
+            <img
+              className="w-8 h-6 my-1"
+              src={isDarkTheme() ? addIcon : createIconLg}
+              alt="delete icon"
+            ></img>
+            <p className="content-start text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
+              Create
+            </p>
+          </div>
+          <div onClick={goToProfile} className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm">
+            <img
+              className="w-8 h-6 my-1"
+              src={isDarkTheme() ? profileIcon : profileIconLg}
+              alt="delete icon"
+            ></img>
+            <p className="content-start text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
+              My bounties
+            </p>
+          </div>
+        </div>
+        <hr className="border-l-2 border-dark-text dark:text-gray-2 dark:border-gray-2"/>
         <div>
-          <div className="p-3 mt-2 rounded-md py-5">
+          <div className="p-3 rounded-md py-5">
+          <p className="text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
+              Relays
+            </p>
             {relays.map((item: string) => {
               return (
                 <div className="mt-2 flex text-white text-sm">
@@ -81,22 +122,6 @@ function SideBarMenu() {
                 add
               </button>
             </div>
-          </div>
-        </div>
-        <div className="text-start p-3 flex flex-wrap justify-between">
-          <button
-            onClick={() => navigate("/create")}
-            className="inline-flex items-center px-3 py-1 m-1 text-sm font-semibold text-center text-gray-2 bg-blue-1 rounded-md hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
-          >
-            Create Bounty
-          </button>
-          <div>
-            <p
-              onClick={goToProfile}
-              className="content-start text-sm text-dark-text font-normal border border-gray-200 rounded-md px-3 m-1 py-1  dark:text-gray-1"
-            >
-              My bounties
-            </p>
           </div>
         </div>
       </div>

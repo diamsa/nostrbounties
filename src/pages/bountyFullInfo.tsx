@@ -84,6 +84,7 @@ function BountyInfo() {
           (event, isAfterEose, relayURL) => {
             arr_status.push(event.content);
             setStatus(arr_status[0]);
+            console.log(arr_status)
           }
         );
       }
