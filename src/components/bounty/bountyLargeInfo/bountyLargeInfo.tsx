@@ -2,7 +2,7 @@ import { sendReply, getNpub, addReward, formatReward } from "../../../utils";
 import { Link } from "react-router-dom";
 
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import avatarImage from "../../../assets/avatarImg.png";
+import avatarImage from "../../../assets/nostr-icon-user.avif";
 import { useState } from "react";
 
 type content = {
@@ -59,14 +59,15 @@ function BountyLargeInfor({
                   Status: Paid
                 </p>
               )}
-              {status === "paid" ? null : (
-                <button
-                  onClick={() => sendReply(status, id, pubkey)}
-                  className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
-                >
-                  Change bounty state
-                </button>
-              )}
+
+              <button
+                onClick={() => sendReply(status, id, pubkey)}
+                className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
+              >
+              {status === 'paid' ? 'Change status to: In progress':null}
+              {status === 'in progress' ? 'Change status to: Paid':null}
+              {status === null ? 'Change status to: In progress':null}
+              </button>
             </div>
           </div>
           <div className="basis-7/12 mt-3">

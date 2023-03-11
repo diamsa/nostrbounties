@@ -65,7 +65,7 @@ function CreateBounty() {
           <input
             type="text"
             onChange={(e) => setTitle(e.target.value)}
-            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg text-gray-1 border-0"
+            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
             placeholder="i.e. Bounty manager"
             value={title}
             required
@@ -78,7 +78,7 @@ function CreateBounty() {
           <input
             type="number"
             onChange={(e) => setReward(e.target.value)}
-            className="bg-gray-50 border-y border-x border-dark-text text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg text-gray-1 border-0"
+            className="bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
             placeholder="1200 sats"
             value={reward}
             required
@@ -90,7 +90,7 @@ function CreateBounty() {
           </label>
           <textarea
             onChange={(e) => setContent(e.target.value)}
-            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-gray-900 text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg text-gray-1 border-0"
+            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
             placeholder="give your bounty a title and a description. Add your contact details. In markdown"
             value={content}
             rows={9}

@@ -1,4 +1,4 @@
-import AvatarImage from "../../assets/avatarImg.png";
+import AvatarImage from "../../assets/nostr-icon-user.avif";
 
 function profileCard({ metaData }: any) {
   return (

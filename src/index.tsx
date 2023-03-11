@@ -8,6 +8,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Profile from "./pages/profile"
 import CreateBounty from "./pages/createBounty";
 import BountyFullInfo from "./pages/bountyFullInfo";
+import EditBounty from "./pages/editBounty";
+
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,10 @@ const router = createBrowserRouter([
       {
         path:"/b/:id",
         element: <BountyFullInfo />
+      },
+      {
+        path:"/edit/:id",
+        element: <EditBounty />
       }
     ],
   },

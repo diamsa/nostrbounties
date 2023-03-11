@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { getNpub } from "../../../utils";
 
 import bitcoinIcon from "../../../assets/bitcoin-icon.png";
-import avatarImage from "../../../assets/avatarImg.png";
+import avatarImage from "../../../assets/nostr-icon-user.avif";
 
 type props = {
   title: string;

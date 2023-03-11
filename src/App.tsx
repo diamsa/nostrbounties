@@ -1,5 +1,4 @@
 //components
-import Header from "./components/header/header";
 import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import SideBarMenu from "./components/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "./components/errors/bountiesNotFound";
@@ -77,7 +76,7 @@ function App() {
         relays,
         (event, isAfterEose, relayURL) => {
           let data = JSON.parse(event.content);
-          setNames((arr) => [...arr, data.display_name]);
+          setNames((arr) => [...arr, data.name]);
           setPictures((arr) => [...arr, data.picture]);
         }
       );

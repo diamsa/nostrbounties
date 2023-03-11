@@ -85,7 +85,32 @@ export async function sendReply(
   }
 
   if (status === "paid") {
-    console.log("bounty paid");
+    let eventMessage = {
+      id: null,
+      pubkey: null,
+      created_at: Math.floor(Date.now() / 1000),
+      kind: 1,
+      tags: [
+        ["e", `${id}`],
+        ["t", "bounty-reply"],
+      ],
+      content: "in progress",
+      sig: null,
+    };
+    // @ts-ignore
+    if (!window.nostr) {
+      console.log("you need to install an extension");
+    }
+    // @ts-ignore
+    let EventMessageSigned = await window.nostr.signEvent(eventMessage);
+    if (EventMessageSigned.pubkey === pubKey) {
+      let relays = defaultRelays;
+      let relayPool = new RelayPool(relays);
+
+      relayPool.publish(EventMessageSigned, relays);
+    } else {
+      console.log("you are not allowed to reply status");
+    }
   }
 }
 
@@ -132,9 +157,7 @@ export function getNpub(pubkey: string) {
 
 export function formatReward(event: string) {
   const rewardUnformatted = parseInt(event);
-  const rewardFormatted = rewardUnformatted
-    .toFixed(2)
-    .replace(/\d(?=(\d{3})+\.)/g, "$&,");
+  const rewardFormatted = Intl.NumberFormat().format(rewardUnformatted);
   return rewardFormatted;
 }
 
@@ -148,7 +171,9 @@ export function getMetaData(pubkey: string) {
   return data;
 }
 
-export function isDarkTheme(){
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+export function isDarkTheme() {
+  return (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 }
-

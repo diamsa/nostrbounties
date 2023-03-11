@@ -53,12 +53,13 @@ function BountyInfo() {
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
+        console.log(event)
 
         getMetaData(event.pubkey)
           .then((response) => response.json())
           .then((data) => {
             let parseContent = JSON.parse(data.content);
-            setName(parseContent.display_name);
+            setName(parseContent.name);
             setProfilePic(parseContent.picture);
           });
 
