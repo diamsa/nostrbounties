@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { getPubKey, isDarkTheme } from "../../utils";
-import deleteIcon from "../../assets/icon-delete.png";
+
 import homeIcon from "../../assets/home-icon-dm.svg";
 import addIcon from "../../assets/add-icon-dm.svg";
 import profileIcon from "../../assets/profile-icon-dm.svg";
 import homeIconLg from "../../assets/home-icon-lg.svg";
 import createIconLg from "../../assets/create-icon-lg.svg";
 import profileIconLg from "../../assets/profile-icon-lg.svg";
+import deleteIcon from "../../assets/delete-icon.svg";
 
 
 function SideBarMenu() {

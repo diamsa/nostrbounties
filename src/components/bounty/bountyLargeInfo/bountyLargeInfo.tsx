@@ -101,25 +101,27 @@ function BountyLargeInfor({
           </ReactMarkdown>
         </div>
       </div>
-      <div className="flex">
-        <input
-          type="number"
-          onChange={(e) => setRewardToAdd(e.target.value)}
-          className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm text-gray-1 border-0"
-          placeholder="add sats to the initial reward"
-          value={rewardToAdd}
-          required
-        />
-        <button
-          onClick={() => {
-            addReward(rewardToAdd, id);
-            setRewardToAdd("");
-          }}
-          className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
-        >
-          add sats
-        </button>
-      </div>
+      {status === "paid" ? null : (
+        <div className="flex">
+          <input
+            type="number"
+            onChange={(e) => setRewardToAdd(e.target.value)}
+            className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm text-gray-1 border-0"
+            placeholder="add sats to the initial reward"
+            value={rewardToAdd}
+            required
+          />
+          <button
+            onClick={() => {
+              addReward(rewardToAdd, id);
+              setRewardToAdd("");
+            }}
+            className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
+          >
+            add sats
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-wrap">
         {addedReward.map((item: any) => {
