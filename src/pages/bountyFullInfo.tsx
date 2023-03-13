@@ -7,6 +7,13 @@ import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeIn
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
 function BountyInfo() {
+  if (localStorage.getItem("relays") === null) {
+    localStorage.setItem(
+      "relays",
+      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
+    );
+  }
+
   let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   const params: any = useParams();
   const [content, setContent] = useState<any>({});
@@ -15,7 +22,7 @@ function BountyInfo() {
   const [profilePic, setProfilePic] = useState<string>("");
   const [addedReward, setAddedReward] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
-  const [totalReward, setTotalReward] = useState(0)
+  const [totalReward, setTotalReward] = useState(0);
 
   useEffect(() => {
     let relays = defaultRelays;
@@ -53,7 +60,7 @@ function BountyInfo() {
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
-        console.log(event)
+        console.log(event);
 
         getMetaData(event.pubkey)
           .then((response) => response.json())
@@ -85,7 +92,7 @@ function BountyInfo() {
           (event, isAfterEose, relayURL) => {
             arr_status.push(event.content);
             setStatus(arr_status[0]);
-            console.log(arr_status)
+            console.log(arr_status);
           }
         );
       }
@@ -100,7 +107,7 @@ function BountyInfo() {
           posterPubkey: event.pubkey,
           amount: event.content,
         };
-        setTotalReward((item)=>item + parseInt(event.content))
+        setTotalReward((item) => item + parseInt(event.content));
         setAddedReward((arr: string[]) => [...arr, data]);
       }
     );

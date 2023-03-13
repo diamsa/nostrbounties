@@ -1,23 +1,29 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp} from "../utils";
+import { convertTimestamp } from "../utils";
 
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../components/errors/bountiesNotFound";
 import ProfileCard from "../components/profileCard/profileCard";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 
-
 function Profile() {
+  if (localStorage.getItem("relays") === null) {
+    localStorage.setItem(
+      "relays",
+      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
+    );
+  }
+
   let relays = JSON.parse(localStorage.getItem("relays")!);
   const params = useParams();
 
   let [metaData, setMetada] = useState({});
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
-  let [name, setName] = useState<string>('');
-  let [picture, setPicture] = useState<string>('');
+  let [name, setName] = useState<string>("");
+  let [picture, setPicture] = useState<string>("");
   let [ids, setIds] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
@@ -60,8 +66,8 @@ function Profile() {
           nip05: parsedContent.nip05,
         };
         setMetada(data);
-        setName(parsedContent.display_name)
-        setPicture(parsedContent.picture)
+        setName(parsedContent.display_name);
+        setPicture(parsedContent.picture);
       }
     );
 
@@ -81,7 +87,6 @@ function Profile() {
         setTitles((arr) => [...arr, bountyTitle]);
         setRewards((arr) => [...arr, bountyReward]);
         setPubkeys((arr) => [...arr, event.pubkey]);
-
       }
     );
 

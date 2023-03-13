@@ -10,7 +10,6 @@ import createIconLg from "../../assets/create-icon-lg.svg";
 import profileIconLg from "../../assets/profile-icon-lg.svg";
 import deleteIcon from "../../assets/delete-icon.svg";
 
-
 function SideBarMenu() {
   const navigate = useNavigate();
   const defaultRelays = JSON.parse(localStorage.getItem("relays")!);
@@ -32,8 +31,8 @@ function SideBarMenu() {
       });
 
       setRelays(newRelays);
-      let aja = JSON.stringify(newRelays);
-      localStorage.setItem("relays", aja);
+      let newRelaysLocalStg = JSON.stringify(newRelays);
+      localStorage.setItem("relays", newRelaysLocalStg);
     }
   }
 
@@ -42,8 +41,8 @@ function SideBarMenu() {
       console.log("No valid relay");
     } else {
       setRelays([...relays, relayName]);
-      let siu = JSON.stringify([...relays, relayName]);
-      localStorage.setItem("relays", siu);
+      let newRelay = JSON.stringify([...relays, relayName]);
+      localStorage.setItem("relays", newRelay);
     }
   }
 
@@ -55,7 +54,10 @@ function SideBarMenu() {
     <div className="bg-sidebar-gray lg:h-screen md:h-screen p-8 text-center sm:p-4 h-1/2 dark:bg-sidebar-bg">
       <div className="space-y-3">
         <div className="text-start block">
-          <div onClick={()=> navigate("/")} className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm">
+          <div
+            onClick={() => navigate("/")}
+            className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm"
+          >
             <img
               className="w-8 h-6 my-1"
               src={isDarkTheme() ? homeIcon : homeIconLg}
@@ -65,7 +67,10 @@ function SideBarMenu() {
               Home
             </p>
           </div>
-          <div onClick={()=> navigate("/create")} className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm">
+          <div
+            onClick={() => navigate("/create")}
+            className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm"
+          >
             <img
               className="w-8 h-6 my-1"
               src={isDarkTheme() ? addIcon : createIconLg}
@@ -75,7 +80,10 @@ function SideBarMenu() {
               Create
             </p>
           </div>
-          <div onClick={goToProfile} className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm">
+          <div
+            onClick={goToProfile}
+            className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm"
+          >
             <img
               className="w-8 h-6 my-1"
               src={isDarkTheme() ? profileIcon : profileIconLg}
@@ -86,10 +94,10 @@ function SideBarMenu() {
             </p>
           </div>
         </div>
-        <hr className="border-l-2 border-dark-text dark:text-gray-2 dark:border-gray-2"/>
+        <hr className="border-l-2 border-dark-text dark:text-gray-2 dark:border-gray-2" />
         <div>
           <div className="p-3 rounded-md py-5">
-          <p className="text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
+            <p className="text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
               Relays
             </p>
             {relays.map((item: string) => {

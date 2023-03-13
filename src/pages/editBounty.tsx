@@ -6,6 +6,13 @@ import { convertTimestamp } from "../utils";
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 
 function EditBounty() {
+  if (localStorage.getItem("relays") === null) {
+    localStorage.setItem(
+      "relays",
+      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
+    );
+  }
+
   let relays = JSON.parse(localStorage.getItem("relays")!);
   let params = useParams();
   let subFilter = [
@@ -14,10 +21,9 @@ function EditBounty() {
     },
   ];
 
-  let [content, setContent] = useState()
+  let [content, setContent] = useState();
 
   useEffect(() => {
-
     let relayPool = new RelayPool(relays);
 
     relayPool.onerror((err, relayUrl) => {
@@ -27,8 +33,11 @@ function EditBounty() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
-    relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
-    });
+    relayPool.subscribe(
+      subFilter,
+      relays,
+      (event, isAfterEose, relayURL) => {}
+    );
 
     setTimeout(() => {
       relayPool.close().then(() => {

@@ -9,6 +9,13 @@ import EmptyFields from "../components/errors/emptyFields";
 
 
 function CreateBounty() {
+  if (localStorage.getItem("relays") === null) {
+    localStorage.setItem(
+      "relays",
+      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
+    );
+  }
+
   let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   let navigate = useNavigate();
 
