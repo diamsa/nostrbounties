@@ -34,10 +34,13 @@ function App() {
 
     let subFilter = [
       {
-        "#t": ["bounty"],
+        
         kinds: [30023],
+        "#t": ['bounty'],
       },
     ];
+
+    let checkBountyExist = [];
 
     let relayPool = new RelayPool(relays);
 
@@ -56,7 +59,7 @@ function App() {
       let date = convertTimestamp(parseDate);
 
       let bountyTitle = event.tags[1][1];
-      let bountyReward = formatReward(event.tags[2][1]) ;
+      let bountyReward = formatReward(event.tags[2][1]);
       let bountyDatePosted = date;
 
       setIds((arr) => [...arr, event.id]);
@@ -64,6 +67,8 @@ function App() {
       setTitles((arr) => [...arr, bountyTitle]);
       setRewards((arr) => [...arr, bountyReward]);
       setPubkeys((arr) => [...arr, event.pubkey]);
+
+      checkBountyExist.push(event.id);
 
       //subscribe metadata
       relayPool.subscribe(
@@ -86,7 +91,7 @@ function App() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-      if (titles.length === 0) setBountyNotFound(true);
+      if (checkBountyExist.length === 0) setBountyNotFound(true);
     }, 40000);
   }, []);
 

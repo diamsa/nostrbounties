@@ -7,7 +7,6 @@ import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
 import EmptyFields from "../components/errors/emptyFields";
 
-
 function CreateBounty() {
   if (localStorage.getItem("relays") === null) {
     localStorage.setItem(
@@ -24,22 +23,52 @@ function CreateBounty() {
   let [reward, setReward] = useState<string>();
   let [extensionError, setExtensionError] = useState(false);
   let [emptyFields, setEmptyFields] = useState(false);
+  let [isDesign, setIsDesign] = useState(false);
+  let [isDevelopment, setIsDevelopment] = useState(false);
+  let [isDebugging, setIsDebugging] = useState(false);
+  let [isWriting, setIsWriting] = useState(false);
+  let [isCybersecurity, setIsCybersecurity] = useState(false);
+  let [isMarketing, setIsMarketing] = useState(false);
 
   async function postEvent() {
     let eventMessage = {
       id: null,
       pubkey: null,
+      content: content,
       created_at: Math.floor(Date.now() / 1000),
       kind: 30023,
       tags: [
         ["t", "bounty"],
         ["title", `${title}`],
         ["reward", `${reward}`],
-        ["published_at", Math.floor(Date.now() / 1000)],
+        ["published_at", `${Math.floor(Date.now() / 1000)}`],
+        ["d", ""],
       ],
-      content: content,
       sig: null,
     };
+
+    if (isDesign) {
+      eventMessage.tags.push(["t", "design"]);
+    }
+
+    if (isDevelopment) {
+      eventMessage.tags.push(["t", "development"]);
+    }
+
+    if (isDebugging) {
+      eventMessage.tags.push(["t", "debugging"]);
+    }
+
+    if (isWriting) {
+      eventMessage.tags.push(["t", "writing"]);
+    }
+    if (isCybersecurity) {
+      eventMessage.tags.push(["t", "cybersecurity"]);
+    }
+    if (isMarketing) {
+      eventMessage.tags.push(["t", "marketing"]);
+    }
+
     // @ts-ignore
     if (!window.nostr) {
       console.log("you need to install an extension");
@@ -66,7 +95,7 @@ function CreateBounty() {
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
         <div className="mt-4">
-          <label className="block text-xl font-medium text-gray-900 dark:text-gray-1">
+          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
             Bounty title
           </label>
           <input
@@ -79,7 +108,7 @@ function CreateBounty() {
           />
         </div>
         <div className="mt-4">
-          <label className="block text-xl font-medium my-1 text-gray-900 dark:text-gray-1">
+          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
             Bounty reward in Sats
           </label>
           <input
@@ -92,7 +121,7 @@ function CreateBounty() {
           />
         </div>
         <div className="mt-4">
-          <label className="block text-xl font-medium text-gray-900 dark:text-gray-1">
+          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
             Bounty description in markdown
           </label>
           <textarea
@@ -103,6 +132,96 @@ function CreateBounty() {
             rows={9}
             required
           ></textarea>
+        </div>
+        <div className="mt-4">
+          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
+            Which tags fit the best with your bounty? (optional)
+          </label>
+
+          <div className="flex items-center mb-4">
+            <input
+              id="default-checkbox-1"
+              type="checkbox"
+              onClick={() => setIsDesign(!isDesign)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-checkbox-1"
+              className="ml-2 text-sm font-normal text-gray-900 dark:text-gray-2"
+            >
+              Design and creative
+            </label>
+          </div>
+          <div className="flex items-center mb-4">
+            <input
+              id="default-checkbox-2"
+              type="checkbox"
+              onClick={() => setIsDevelopment(!isDevelopment)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-checkbox-2"
+              className="ml-2 text-sm font-normal text-gray-900 dark:text-gray-2"
+            >
+              Development
+            </label>
+          </div>
+          <div className="flex items-center mb-4">
+            <input
+              id="default-checkbox-3"
+              type="checkbox"
+              onClick={() => setIsDebugging(!isDebugging)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-checkbox-3"
+              className="ml-2 text-sm font-normal text-gray-900 dark:text-gray-2"
+            >
+              Debugging
+            </label>
+          </div>
+          <div className="flex items-center mb-4">
+            <input
+              id="default-checkbox-4"
+              type="checkbox"
+              onClick={() => setIsWriting(!isWriting)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-checkbox-4"
+              className="ml-2 text-sm font-normal text-gray-900 dark:text-gray-2"
+            >
+              Writing and translation
+            </label>
+          </div>
+          <div className="flex items-center mb-4">
+            <input
+              id="default-checkbox-5"
+              type="checkbox"
+              onClick={() => setIsCybersecurity(!isCybersecurity)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-checkbox-5"
+              className="ml-2 text-sm font-normal text-gray-900 dark:text-gray-2"
+            >
+              Cybersecurity
+            </label>
+          </div>
+          <div className="flex items-center mb-4">
+            <input
+              id="default-checkbox-6"
+              type="checkbox"
+              onClick={() => setIsMarketing(!isMarketing)}
+              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+            />
+            <label
+              htmlFor="default-checkbox-6"
+              className="ml-2 text-sm font-normal text-gray-900 dark:text-gray-2"
+            >
+              Marketing
+            </label>
+          </div>
         </div>
 
         <div className="my-4">

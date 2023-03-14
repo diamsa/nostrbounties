@@ -9,6 +9,26 @@ export function convertTimestamp(unixTimestamp: number): string {
   return createdAt;
 }
 
+
+
+export async function editBounty(event:any) {
+  if (event.content === "") {
+    console.log("add a value");
+  } else {
+    // @ts-ignore
+    if (!window.nostr) {
+      console.log("you need to install an extension");
+    }
+    // @ts-ignore
+    let EventMessageSigned = await window.nostr.signEvent(event);
+    console.log(EventMessageSigned.content);
+    let relays = defaultRelays;
+    let relayPool = new RelayPool(relays);
+    relayPool.publish(EventMessageSigned, relays);
+    console.log("posted");
+  }
+}
+
 export async function getPersonalRelays() {
   // @ts-ignore
   let personalRelays = await window.nostr.getRelays();

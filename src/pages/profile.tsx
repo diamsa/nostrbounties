@@ -43,6 +43,9 @@ function Profile() {
       "#t": ["bounty"],
     },
   ];
+
+  let checkBountyExist = [];
+
   useEffect(() => {
     let relayPool = new RelayPool(relays);
 
@@ -87,6 +90,8 @@ function Profile() {
         setTitles((arr) => [...arr, bountyTitle]);
         setRewards((arr) => [...arr, bountyReward]);
         setPubkeys((arr) => [...arr, event.pubkey]);
+
+        checkBountyExist.push(event.id);
       }
     );
 
@@ -94,7 +99,7 @@ function Profile() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-      setBountyNotFound(true);
+      if (checkBountyExist.length === 0) setBountyNotFound(true);
     }, 20000);
   }, []);
 

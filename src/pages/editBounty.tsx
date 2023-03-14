@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp } from "../utils";
 
 import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
+import BountyEditor from "../components/bounty/bountyEditor/bountyEditor";
 
 function EditBounty() {
   if (localStorage.getItem("relays") === null) {
@@ -18,10 +18,11 @@ function EditBounty() {
   let subFilter = [
     {
       ids: [`${params.id}`],
+      kinds: [30023],
     },
   ];
 
-  let [content, setContent] = useState();
+  let [oldEvent, setOldEvent] = useState<any>({});
 
   useEffect(() => {
     let relayPool = new RelayPool(relays);
@@ -33,11 +34,9 @@ function EditBounty() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
-    relayPool.subscribe(
-      subFilter,
-      relays,
-      (event, isAfterEose, relayURL) => {}
-    );
+    relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
+      setOldEvent(event);
+    });
 
     setTimeout(() => {
       relayPool.close().then(() => {
@@ -51,8 +50,8 @@ function EditBounty() {
       <div className="basis-3/12">
         <SideBarMenu />
       </div>
-      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
-        <textarea name="edit" cols={60} rows={9} value={content}></textarea>
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
+        <BountyEditor oldEvent={oldEvent} />
       </div>
     </div>
   );

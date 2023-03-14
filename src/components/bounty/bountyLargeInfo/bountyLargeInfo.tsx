@@ -64,9 +64,9 @@ function BountyLargeInfor({
                 onClick={() => sendReply(status, id, pubkey)}
                 className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
               >
-              {status === 'paid' ? 'Change status to: In progress':null}
-              {status === 'in progress' ? 'Change status to: Paid':null}
-              {status === null ? 'Change status to: In progress':null}
+                {status === "paid" ? "Change status to: In progress" : null}
+                {status === "in progress" ? "Change status to: Paid" : null}
+                {status === null ? "Change status to: In progress" : null}
               </button>
             </div>
           </div>
