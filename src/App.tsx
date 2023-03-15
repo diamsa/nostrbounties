@@ -1,7 +1,8 @@
 //components
 import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortInfo";
-import SideBarMenu from "./components/sidebarMenu/sidebarMenu";
+import SideBarMenu from "./components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "./components/errors/bountiesNotFound";
+import MobileMenu from "./components/menus/mobileMenu/mobileMenu";
 
 //functions
 import { useState, useEffect } from "react";
@@ -34,9 +35,8 @@ function App() {
 
     let subFilter = [
       {
-        
         kinds: [30023],
-        "#t": ['bounty'],
+        "#t": ["bounty"],
       },
     ];
 
@@ -97,8 +97,11 @@ function App() {
 
   return (
     <div className="flex justify-between sm:block">
-      <div className="basis-3/12">
+      <div className="basis-3/12 sm:hidden">
         <SideBarMenu />
+      </div>
+      <div className="basis-3/12 lg:hidden md:hidden">
+        <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
         {dataLoaded ? (

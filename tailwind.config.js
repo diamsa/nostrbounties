@@ -15,11 +15,11 @@ module.exports = {
       "status-in-progress-text": "#4f410d",
       "status-paid": "#0043ce",
       "status-paid-text": "#D0E2FF",
-      "background-dark-mode":"#0c0c0c",
-      "background-component-dm":"#001b52",
-      "sidebar-bg":"#131314",
-      "input-bg-dm":"#1d1d1f",
-      "sidebar-gray":"#F2F4F8"
+      "background-dark-mode": "#0c0c0c",
+      "background-component-dm": "#001b52",
+      "sidebar-bg": "#131314",
+      "input-bg-dm": "#1d1d1f",
+      "sidebar-gray": "#F2F4F8",
     },
     extend: {
       screens: {
@@ -27,7 +27,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-  ],
+  plugins: [require("@tailwindcss/typography")],
 };

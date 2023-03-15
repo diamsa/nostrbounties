@@ -3,10 +3,11 @@ import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp } from "../utils";
 
-import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
+import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../components/errors/bountiesNotFound";
 import ProfileCard from "../components/profileCard/profileCard";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
+import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function Profile() {
   if (localStorage.getItem("relays") === null) {
@@ -105,8 +106,11 @@ function Profile() {
 
   return (
     <div className="flex justify-between sm:block">
-      <div className="basis-3/12">
+     <div className="basis-3/12 sm:hidden">
         <SideBarMenu />
+      </div>
+      <div className="basis-3/12 lg:hidden md:hidden">
+        <MobileMenu />
       </div>
 
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 dark:bg-background-dark-mode">

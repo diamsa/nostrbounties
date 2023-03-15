@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 import { formatReward } from "../utils";
 
-import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
+import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
 import EmptyFields from "../components/errors/emptyFields";
+import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function CreateBounty() {
   if (localStorage.getItem("relays") === null) {
@@ -90,8 +91,11 @@ function CreateBounty() {
 
   return (
     <div className="flex justify-between sm:block">
-      <div className="basis-3/12">
+      <div className="basis-3/12 sm:hidden">
         <SideBarMenu />
+      </div>
+      <div className="basis-3/12 lg:hidden md:hidden">
+        <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
         <div className="mt-4">

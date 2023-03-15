@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 
-import SideBarMenu from "../components/sidebarMenu/sidebarMenu";
+import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountyEditor from "../components/bounty/bountyEditor/bountyEditor";
+import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function EditBounty() {
   if (localStorage.getItem("relays") === null) {
@@ -47,8 +48,11 @@ function EditBounty() {
 
   return (
     <div className="flex justify-between sm:block">
-      <div className="basis-3/12">
+      <div className="basis-3/12 sm:hidden">
         <SideBarMenu />
+      </div>
+      <div className="basis-3/12 lg:hidden md:hidden">
+        <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
         <BountyEditor oldEvent={oldEvent} />

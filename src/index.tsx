@@ -1,51 +1,46 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import Profile from "./pages/profile"
+import Profile from "./pages/profile";
 import CreateBounty from "./pages/createBounty";
 import BountyFullInfo from "./pages/bountyFullInfo";
 import EditBounty from "./pages/editBounty";
-
 
 const router = createBrowserRouter([
   {
     children: [
       {
-        path:"/",
-        element: <App />
+        path: "/",
+        element: <App />,
       },
       {
-        path:"profile/:id",
-        element: <Profile />
+        path: "profile/:id",
+        element: <Profile />,
       },
       {
-        path:"create",
-        element:<CreateBounty />
+        path: "create",
+        element: <CreateBounty />,
       },
       {
-        path:"/b/:id",
-        element: <BountyFullInfo />
+        path: "/b/:id",
+        element: <BountyFullInfo />,
       },
       {
-        path:"/edit/:id",
-        element: <EditBounty />
-      }
+        path: "/edit/:id",
+        element: <EditBounty />,
+      },
     ],
   },
 ]);
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
-root.render(
-  
-   <RouterProvider router={router} />
-  
-);
+root.render(<RouterProvider router={router} />);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
