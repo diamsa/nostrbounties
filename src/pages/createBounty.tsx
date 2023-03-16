@@ -126,7 +126,7 @@ function CreateBounty() {
           <textarea
             onChange={(e) => setContent(e.target.value)}
             className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
-            placeholder="give your bounty a title and a description. Add your contact details. In markdown"
+            placeholder="markdown elements supported: #, ##, *, 1, ---, (title)[https://nostr.com], >, **text**, *text*, "
             value={content}
             rows={9}
             required
