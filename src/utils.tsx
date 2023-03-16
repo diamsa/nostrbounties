@@ -1,7 +1,6 @@
 import { RelayPool } from "nostr-relaypool";
 import { nip19 } from "nostr-tools";
-
-let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
+import { defaultRelays, defaultRelaysToPublish } from "./const";
 
 export function convertTimestamp(unixTimestamp: number): string {
   var myDate = new Date(unixTimestamp * 1000);
@@ -9,9 +8,8 @@ export function convertTimestamp(unixTimestamp: number): string {
   return createdAt;
 }
 
-
-
-export async function editBounty(event:any) {
+export async function editBounty(event: any) {
+  let relays = defaultRelaysToPublish;
   if (event.content === "") {
     console.log("add a value");
   } else {
@@ -22,10 +20,10 @@ export async function editBounty(event:any) {
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(event);
     console.log(EventMessageSigned.content);
-    let relays = defaultRelays;
     let relayPool = new RelayPool(relays);
     relayPool.publish(EventMessageSigned, relays);
-    console.log("posted");
+    console.log("edited");
+    return EventMessageSigned
   }
 }
 
@@ -46,6 +44,8 @@ export async function sendReply(
   id: string,
   pubKey: string | undefined
 ) {
+  let relays = defaultRelays;
+
   if (status === null) {
     let eventMessage = {
       id: null,
@@ -66,7 +66,6 @@ export async function sendReply(
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
     if (EventMessageSigned.pubkey === pubKey) {
-      let relays = defaultRelays;
       let relayPool = new RelayPool(relays);
 
       relayPool.publish(EventMessageSigned, relays);
@@ -95,7 +94,6 @@ export async function sendReply(
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
     if (EventMessageSigned.pubkey === pubKey) {
-      let relays = defaultRelays;
       let relayPool = new RelayPool(relays);
 
       relayPool.publish(EventMessageSigned, relays);
@@ -124,7 +122,6 @@ export async function sendReply(
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
     if (EventMessageSigned.pubkey === pubKey) {
-      let relays = defaultRelays;
       let relayPool = new RelayPool(relays);
 
       relayPool.publish(EventMessageSigned, relays);
@@ -135,6 +132,8 @@ export async function sendReply(
 }
 
 export async function addReward(amount: string, id: string) {
+  let relays = defaultRelays;
+
   if (amount === "") {
     console.log("add a value");
   } else {
@@ -157,7 +156,7 @@ export async function addReward(amount: string, id: string) {
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
     console.log(EventMessageSigned.content);
-    let relays = defaultRelays;
+
     let relayPool = new RelayPool(relays);
 
     relayPool.publish(EventMessageSigned, relays);
@@ -198,3 +197,37 @@ export function isDarkTheme() {
   );
 }
 
+export async function deleteBounty(id: string) {
+  let relays = defaultRelaysToPublish;
+
+  let eventMessage = {
+    id: null,
+    pubkey: null,
+    content: "",
+    created_at: Math.floor(Date.now() / 1000),
+    kind: 5,
+    tags: [["e", `${id}`]],
+    sig: null,
+  };
+  // @ts-ignore
+  let EventMessageSigned = await window.nostr.signEvent(eventMessage);
+  let relayPool = new RelayPool(relays);
+  relayPool.publish(EventMessageSigned, relays);
+  return EventMessageSigned
+}
+
+
+export async function getRelayData(relay: string) {
+  let url = `https://${relay}`;
+  let data = await fetch(url, {
+    method: "get",
+    mode: "cors",
+    headers: {
+      Accept: "application/nostr+json",
+    },
+  });
+
+  data.json().then((data) => {
+    console.log(data);
+  });
+}

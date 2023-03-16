@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
-import { formatReward } from "../utils";
+import { defaultRelaysToPublish } from "../const";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
@@ -9,14 +9,6 @@ import EmptyFields from "../components/errors/emptyFields";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function CreateBounty() {
-  if (localStorage.getItem("relays") === null) {
-    localStorage.setItem(
-      "relays",
-      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
-    );
-  }
-
-  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   let navigate = useNavigate();
 
   let [title, setTitle] = useState<string>();
@@ -30,11 +22,12 @@ function CreateBounty() {
   let [isWriting, setIsWriting] = useState(false);
   let [isCybersecurity, setIsCybersecurity] = useState(false);
   let [isMarketing, setIsMarketing] = useState(false);
+  let [id, setId] = useState(null);
 
   async function postEvent() {
     let eventMessage = {
       id: null,
-      pubkey: null,
+      pubkey: "8425d0460136752a32f77e311456ae97a89604ed8cab59bade6f422415751eeb",
       content: content,
       created_at: Math.floor(Date.now() / 1000),
       kind: 30023,
@@ -43,7 +36,7 @@ function CreateBounty() {
         ["title", `${title}`],
         ["reward", `${reward}`],
         ["published_at", `${Math.floor(Date.now() / 1000)}`],
-        ["d", ""],
+        ["d", `${Math.floor(Date.now() / 1000)}`]
       ],
       sig: null,
     };
@@ -81,9 +74,11 @@ function CreateBounty() {
     } else {
       // @ts-ignore
       let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-      let relayPool = new RelayPool(defaultRelays);
+
+      let relays = defaultRelaysToPublish;
+      let relayPool = new RelayPool(relays);
       console.log(EventMessageSigned);
-      relayPool.publish(EventMessageSigned, defaultRelays);
+      relayPool.publish(EventMessageSigned, relays);
 
       navigate("/");
     }

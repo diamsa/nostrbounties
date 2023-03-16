@@ -7,7 +7,7 @@ function profileCard({ metaData }: any) {
         <img
           className="w-16 h-16 mt-7  rounded-full shadow-lg "
           src={
-            metaData.profilePic === '' || undefined
+            metaData.profilePic === "" || undefined
               ? AvatarImage
               : metaData.profilePic
           }
@@ -28,6 +28,7 @@ function profileCard({ metaData }: any) {
         <span className="text-sm text-gray-500 dark:text-gray-1 text-center px-6">
           {metaData.about === undefined ? "about not found" : metaData.about}
         </span>
+      
       </div>
     </div>
   );

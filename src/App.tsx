@@ -8,11 +8,13 @@ import MobileMenu from "./components/menus/mobileMenu/mobileMenu";
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "./utils";
 import { RelayPool } from "nostr-relaypool";
+import { defaultRelaysToPublish, defaultRelays } from "./const";
 
 function App() {
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
+  let [bountyTags, setBountyTags] = useState<string[]>();
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
   let [names, setNames] = useState<string[]>([]);
@@ -21,17 +23,9 @@ function App() {
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
 
-  if (localStorage.getItem("relays") === null) {
-    localStorage.setItem(
-      "relays",
-      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
-    );
-  }
-
-  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
-
   useEffect(() => {
-    let relays = defaultRelays;
+    let relays = defaultRelaysToPublish;
+    let userMetaDataRelays = defaultRelays;
 
     let subFilter = [
       {
@@ -62,11 +56,11 @@ function App() {
       let bountyReward = formatReward(event.tags[2][1]);
       let bountyDatePosted = date;
 
-      setIds((arr) => [...arr, event.id]);
-      setCreationDate((arr) => [...arr, bountyDatePosted]);
-      setTitles((arr) => [...arr, bountyTitle]);
-      setRewards((arr) => [...arr, bountyReward]);
-      setPubkeys((arr) => [...arr, event.pubkey]);
+      setIds((arr) => [event.id, ...arr]);
+      setCreationDate((arr) => [bountyDatePosted, ...arr]);
+      setTitles((arr) => [bountyTitle, ...arr]);
+      setRewards((arr) => [bountyReward, ...arr]);
+      setPubkeys((arr) => [event.pubkey, ...arr]);
 
       checkBountyExist.push(event.id);
 
@@ -78,7 +72,7 @@ function App() {
             kinds: [0],
           },
         ],
-        relays,
+        userMetaDataRelays,
         (event, isAfterEose, relayURL) => {
           let data = JSON.parse(event.content);
           setNames((arr) => [...arr, data.name]);

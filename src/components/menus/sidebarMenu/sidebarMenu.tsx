@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { getPubKey, isDarkTheme } from "../../../utils";
+import { getPubKey, isDarkTheme, getRelayData } from "../../../utils";
 
 import homeIcon from "../../../assets/home-icon-dm.svg";
 import addIcon from "../../../assets/add-icon-dm.svg";
@@ -9,46 +9,17 @@ import homeIconLg from "../../../assets/home-icon-lg.svg";
 import createIconLg from "../../../assets/create-icon-lg.svg";
 import profileIconLg from "../../../assets/profile-icon-lg.svg";
 import deleteIcon from "../../../assets/delete-icon.svg";
+import active from "../../../assets/status-active.svg";
 
 function SideBarMenu() {
   const navigate = useNavigate();
-  const defaultRelays = JSON.parse(localStorage.getItem("relays")!);
-  const [relays, setRelays] = useState(defaultRelays);
-  const [relay, setRelay] = useState<string>("");
+  const isLogged = sessionStorage.getItem("isLogged");
 
   function goToProfile() {
     getPubKey()
       .then((data) => navigate(`/profile/${data}`))
       .catch((error) => console.log(error));
   }
-
-  function deleteRelay(relayName: string) {
-    if (relays.length === 1) {
-      console.log("you cant delete this relay");
-    } else {
-      let newRelays = relays.filter((item: string) => {
-        return item !== relayName;
-      });
-
-      setRelays(newRelays);
-      let newRelaysLocalStg = JSON.stringify(newRelays);
-      localStorage.setItem("relays", newRelaysLocalStg);
-    }
-  }
-
-  function addRelay(relayName: string | undefined) {
-    if (relayName === "" || !relayName?.includes("wss://")) {
-      console.log("No valid relay");
-    } else {
-      setRelays([...relays, relayName]);
-      let newRelay = JSON.stringify([...relays, relayName]);
-      localStorage.setItem("relays", newRelay);
-    }
-  }
-
-  const handleNewRelay = (event: { target: { value: string } }) => {
-    setRelay(event.target.value);
-  };
 
   return (
     <div className="bg-sidebar-gray lg:h-screen md:h-screen p-8 text-center sm:p-4 h-1/2 dark:bg-sidebar-bg">
@@ -100,36 +71,104 @@ function SideBarMenu() {
             <p className="text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
               Relays
             </p>
-            {relays.map((item: string) => {
-              return (
-                <div className="mt-2 flex text-white text-sm">
-                  <p className=" dark:text-gray-1">{item}</p>
-                  <img
-                    className="w-6 h-4 rounded-full my-1 mx-1.5 cursor-pointer"
-                    onClick={() => deleteRelay(item)}
-                    src={deleteIcon}
-                    alt="delete icon"
-                  ></img>
-                </div>
-              );
-            })}
-            <div className="flex">
-              <input
-                onChange={handleNewRelay}
-                type="text"
-                className="peer min-h-[auto] mt-2 bg-gray-50 p-2 border-y border-x border-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full  dark:bg-input-bg-dm text-gray-1 border-0"
-                placeholder="wss://nostr.damus.io"
-                value={relay}
-              />
-              <button
-                className="text-xs font-light mt-2 ml-2 px-2 bg-green-500 text-white rounded-lg  dark:text-gray-1"
-                onClick={() => {
-                  addRelay(relay);
-                  setRelay("");
-                }}
-              >
-                add
-              </button>
+            <div>
+              <div className="flex">
+                <img
+                  className="w-8 h-6 cursor-pointer my-auto"
+                  src={active}
+                  alt="delete icon"
+                ></img>
+                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                  wss://nostr-pub.wellorder.net/
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="flex">
+                <img
+                  className="w-8 h-6 cursor-pointer my-auto"
+                  src={active}
+                  alt="delete icon"
+                ></img>
+                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                  wss://relay.nostr.wirednet.jp/
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="flex">
+                <img
+                  className="w-8 h-6 cursor-pointer my-auto"
+                  src={active}
+                  alt="delete icon"
+                ></img>
+                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                  wss://relay.nostr.scot
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="flex">
+                <img
+                  className="w-8 h-6 cursor-pointer my-auto"
+                  src={active}
+                  alt="delete icon"
+                ></img>
+                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                  wss://nos.lol
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="flex">
+                <img
+                  className="w-8 h-6 cursor-pointer my-auto"
+                  src={active}
+                  alt="delete icon"
+                ></img>
+                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                  wss://relay.damus.io
+                </p>
+              </div>
+            </div>
+            <div>
+              <div className="flex">
+                <img
+                  className="w-8 h-6 cursor-pointer my-auto"
+                  src={active}
+                  alt="delete icon"
+                ></img>
+                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                  wss://nostr.wine
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5">
+              {isLogged !== "true" ? (
+                <button
+                  onClick={() => {
+                    let pubkey = getPubKey();
+                    pubkey.then((data) => {
+                      sessionStorage.setItem("isLogged", "true");
+                      window.location.reload();
+                    });
+                  }}
+                  className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
+                >
+                  Log in wit extension
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    sessionStorage.clear();
+                    window.location.reload();
+                  }}
+                  className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
+                >
+                  Log out
+                </button>
+              )}
             </div>
           </div>
         </div>

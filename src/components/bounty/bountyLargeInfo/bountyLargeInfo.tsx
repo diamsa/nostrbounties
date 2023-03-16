@@ -1,5 +1,11 @@
-import { sendReply, getNpub, addReward, formatReward } from "../../../utils";
-import { Link } from "react-router-dom";
+import {
+  sendReply,
+  getNpub,
+  addReward,
+  formatReward,
+  deleteBounty,
+} from "../../../utils";
+import { Link, useNavigate } from "react-router-dom";
 
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import avatarImage from "../../../assets/nostr-icon-user.avif";
@@ -21,6 +27,7 @@ type props = {
   name: string;
   profilePic: string;
   totalReward: number;
+  rootId: string;
 };
 
 function BountyLargeInfor({
@@ -32,9 +39,13 @@ function BountyLargeInfor({
   name,
   profilePic,
   totalReward,
+  rootId,
 }: props) {
   let npub = getNpub(pubkey);
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
+  let isLogged = sessionStorage.getItem("isLogged");
+  let idToUse = rootId === "" ? id : rootId;
+  let navigate = useNavigate();
   return (
     <div className="my-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
       <div>
@@ -59,15 +70,16 @@ function BountyLargeInfor({
                   Status: Paid
                 </p>
               )}
-
-              <button
-                onClick={() => sendReply(status, id, pubkey)}
-                className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
-              >
-                {status === "paid" ? "Change status to: In progress" : null}
-                {status === "in progress" ? "Change status to: Paid" : null}
-                {status === null ? "Change status to: In progress" : null}
-              </button>
+              {isLogged ? (
+                <button
+                  onClick={() => sendReply(status, idToUse, pubkey)}
+                  className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
+                >
+                  {status === "paid" ? "Change status to: In progress" : null}
+                  {status === "in progress" ? "Change status to: Paid" : null}
+                  {status === null ? "Change status to: In progress" : null}
+                </button>
+              ) : null}
             </div>
           </div>
           <div className="basis-7/12 mt-3">
@@ -114,7 +126,7 @@ function BountyLargeInfor({
           />
           <button
             onClick={() => {
-              addReward(rewardToAdd, id);
+              addReward(rewardToAdd, idToUse);
               setRewardToAdd("");
             }}
             className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
@@ -138,6 +150,30 @@ function BountyLargeInfor({
             </Link>
           );
         })}
+      </div>
+
+      <div className="mt-5">
+        {isLogged === "true" ? (
+          <div className="flex space-x-2">
+            <Link
+              to={`/edit/${id}`}
+              className="cursor-pointer px-3 py-1.5 rounded-lg text-dark-text bg-status-paid-text font-sans text-sm font-normal dark:text-dark-text"
+            >
+              edit bounty
+            </Link>
+            <button
+              onClick={() => {
+                let event = deleteBounty(id);
+                event.then((data) => {
+                  navigate(`/`);
+                });
+              }}
+              className="cursor-pointer px-3 py-1.5 rounded-lg font-sans bg-alert-1 text-sm font-normal dark:text-gray-1 "
+            >
+              delete bounty
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );

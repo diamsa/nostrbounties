@@ -2,20 +2,14 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp, getMetaData } from "../utils";
+import { defaultRelaysToPublish, defaultRelays } from "../const";
 
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function BountyInfo() {
-  if (localStorage.getItem("relays") === null) {
-    localStorage.setItem(
-      "relays",
-      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
-    );
-  }
 
-  let defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   const params: any = useParams();
   const [content, setContent] = useState<any>({});
   const [pubKey, setPubkey] = useState<string>("");
@@ -24,9 +18,9 @@ function BountyInfo() {
   const [addedReward, setAddedReward] = useState<any>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [totalReward, setTotalReward] = useState(0);
+  const [rootId, setRootId] = useState<string>("");
 
   useEffect(() => {
-    let relays = defaultRelays;
     let subFilterContent: { ids: string }[] = [
       {
         // @ts-ignore
@@ -35,16 +29,9 @@ function BountyInfo() {
       },
     ];
 
-    let subFilterAddedReward = [
-      {
-        "#e": [params.id],
-        "#t": ["bounty-added-reward"],
-        kind: 1,
-      },
-    ];
     let arr_status: string[] = [];
 
-    let relayPool = new RelayPool(relays);
+    let relayPool = new RelayPool(defaultRelays);
 
     relayPool.onerror((err, relayUrl) => {
       console.log("RelayPool error", err, " from relay ", relayUrl);
@@ -57,11 +44,11 @@ function BountyInfo() {
     relayPool.subscribe(
       // @ts-ignore
       subFilterContent,
-      relays,
+      defaultRelaysToPublish,
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
-        console.log(event);
+        console.log(event.tags[5]);
 
         getMetaData(event.pubkey)
           .then((response) => response.json())
@@ -79,37 +66,45 @@ function BountyInfo() {
         });
 
         setPubkey(event.pubkey);
+        setRootId(event.tags[5] === undefined ? '' : event.tags[5][1]);
+
+        //subscribe for bounty-added-reward
+        relayPool.subscribe(
+          [
+            {
+              "#e": [event.tags[5] === undefined ? params.id : event.tags[5][1]],
+              "#t": ["bounty-added-reward"],
+              
+            },
+          ],
+          defaultRelays,
+          (event, isAfterEose, relayURL) => {
+            let data = {
+              posterPubkey: event.pubkey,
+              amount: event.content,
+            };
+            setTotalReward((item) => item + parseInt(event.content));
+            setAddedReward((arr: string[]) => [...arr, data]);
+            console.log(event)
+          }
+        );
 
         // suscrbibe for bounty status
         relayPool.subscribe(
           [
             {
               authors: [event.pubkey],
-              "#e": [params.id],
+              "#e": [event.tags[5] === undefined ? params.id : event.tags[5][1]],
               "#t": ["bounty-reply"],
             },
           ],
-          relays,
+          defaultRelays,
           (event, isAfterEose, relayURL) => {
             arr_status.push(event.content);
             setStatus(arr_status[0]);
             console.log(arr_status);
           }
         );
-      }
-    );
-
-    //subscribe for bounty-added-reward
-    relayPool.subscribe(
-      subFilterAddedReward,
-      relays,
-      (event, isAfterEose, relayURL) => {
-        let data = {
-          posterPubkey: event.pubkey,
-          amount: event.content,
-        };
-        setTotalReward((item) => item + parseInt(event.content));
-        setAddedReward((arr: string[]) => [...arr, data]);
       }
     );
 
@@ -138,6 +133,7 @@ function BountyInfo() {
           name={name}
           profilePic={profilePic}
           totalReward={totalReward}
+          rootId={rootId}
         />
       </div>
     </div>

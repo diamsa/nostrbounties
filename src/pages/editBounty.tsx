@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
+import { defaultRelaysToPublish } from "../const";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountyEditor from "../components/bounty/bountyEditor/bountyEditor";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
+import { truncate } from "fs";
 
 function EditBounty() {
-  if (localStorage.getItem("relays") === null) {
-    localStorage.setItem(
-      "relays",
-      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
-    );
-  }
-
-  let relays = JSON.parse(localStorage.getItem("relays")!);
+  let relays = defaultRelaysToPublish;
   let params = useParams();
   let subFilter = [
     {
@@ -24,7 +19,7 @@ function EditBounty() {
   ];
 
   let [oldEvent, setOldEvent] = useState<any>({});
-
+  let [loaded, setLoaded] = useState(false);
   useEffect(() => {
     let relayPool = new RelayPool(relays);
 
@@ -36,7 +31,20 @@ function EditBounty() {
     });
 
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
-      setOldEvent(event);
+      if (event.tags[5] === undefined) {
+        event.tags.push(["rootId", event.id]);
+      }
+      setOldEvent({
+        id: event.id,
+        pubkey: event.pubkey,
+        created_at: event.created_at,
+        kind: event.kind,
+        tags: event.tags,
+        content: event.content,
+        sig: event.sig,
+      });
+
+      setLoaded(true);
     });
 
     setTimeout(() => {
@@ -55,7 +63,7 @@ function EditBounty() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
-        <BountyEditor oldEvent={oldEvent} />
+        {loaded ? <BountyEditor oldEvent={oldEvent} /> : null}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp } from "../utils";
+import { defaultRelaysToPublish, defaultRelays } from "../const";
+import { nip19 } from "nostr-tools";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../components/errors/bountiesNotFound";
@@ -10,14 +12,8 @@ import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShort
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function Profile() {
-  if (localStorage.getItem("relays") === null) {
-    localStorage.setItem(
-      "relays",
-      '["wss://eden.nostr.land", "wss://nos.lol", "wss://relay.snort.social", "wss://brb.io"]'
-    );
-  }
-
-  let relays = JSON.parse(localStorage.getItem("relays")!);
+  let relays = defaultRelaysToPublish;
+  let userMetaDataRelays = defaultRelays;
   const params = useParams();
 
   let [metaData, setMetada] = useState({});
@@ -59,7 +55,7 @@ function Profile() {
 
     relayPool.subscribe(
       subFilterMetaData,
-      relays,
+      userMetaDataRelays,
       (event, isAfterEose, relayURL) => {
         let parsedContent = JSON.parse(event.content);
         let data = {
@@ -106,7 +102,7 @@ function Profile() {
 
   return (
     <div className="flex justify-between sm:block">
-     <div className="basis-3/12 sm:hidden">
+      <div className="basis-3/12 sm:hidden">
         <SideBarMenu />
       </div>
       <div className="basis-3/12 lg:hidden md:hidden">
