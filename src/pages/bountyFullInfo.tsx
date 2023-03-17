@@ -7,15 +7,21 @@ import { defaultRelaysToPublish, defaultRelays } from "../const";
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
+import { nip19 } from "nostr-tools";
+
+type addToReward = {
+  posterPubkey: string;
+  amount: string;
+};
 
 function BountyInfo() {
-
-  const params: any = useParams();
+  const params: any = useParams<{ id: string }>();
+  let naddrData = nip19.decode(params.id);
   const [content, setContent] = useState<any>({});
   const [pubKey, setPubkey] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [profilePic, setProfilePic] = useState<string>("");
-  const [addedReward, setAddedReward] = useState<any>([]);
+  const [addedReward, setAddedReward] = useState<addToReward[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [totalReward, setTotalReward] = useState(0);
   const [rootId, setRootId] = useState<string>("");
@@ -24,7 +30,7 @@ function BountyInfo() {
     let subFilterContent: { ids: string }[] = [
       {
         // @ts-ignore
-        ids: [params.id],
+        ids: [naddrData.data.identifier],
         kind: [30023],
       },
     ];
@@ -48,7 +54,7 @@ function BountyInfo() {
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
-        console.log(event.tags[5]);
+       
 
         getMetaData(event.pubkey)
           .then((response) => response.json())
@@ -66,15 +72,19 @@ function BountyInfo() {
         });
 
         setPubkey(event.pubkey);
-        setRootId(event.tags[5] === undefined ? '' : event.tags[5][1]);
+        setRootId(event.tags[5] === undefined ? "" : event.tags[5][1]);
 
         //subscribe for bounty-added-reward
         relayPool.subscribe(
           [
             {
-              "#e": [event.tags[5] === undefined ? params.id : event.tags[5][1]],
+              "#e": [
+                event.tags[5] === undefined
+                  ? // @ts-ignore
+                    naddrData.data.identifier
+                  : event.tags[5][1],
+              ],
               "#t": ["bounty-added-reward"],
-              
             },
           ],
           defaultRelays,
@@ -84,8 +94,8 @@ function BountyInfo() {
               amount: event.content,
             };
             setTotalReward((item) => item + parseInt(event.content));
-            setAddedReward((arr: string[]) => [...arr, data]);
-            console.log(event)
+
+            setAddedReward((arr: addToReward[]) => [...arr, data]);
           }
         );
 
@@ -94,7 +104,12 @@ function BountyInfo() {
           [
             {
               authors: [event.pubkey],
-              "#e": [event.tags[5] === undefined ? params.id : event.tags[5][1]],
+              "#e": [
+                event.tags[5] === undefined
+                  ? // @ts-ignore
+                    naddrData.data.identifier
+                  : event.tags[5][1],
+              ],
               "#t": ["bounty-reply"],
             },
           ],
@@ -102,7 +117,7 @@ function BountyInfo() {
           (event, isAfterEose, relayURL) => {
             arr_status.push(event.content);
             setStatus(arr_status[0]);
-            console.log(arr_status);
+
           }
         );
       }
@@ -128,7 +143,8 @@ function BountyInfo() {
           content={content}
           pubkey={pubKey}
           status={status}
-          id={params.id}
+          // @ts-ignore
+          id={naddrData.data.identifier}
           addedReward={addedReward}
           name={name}
           profilePic={profilePic}

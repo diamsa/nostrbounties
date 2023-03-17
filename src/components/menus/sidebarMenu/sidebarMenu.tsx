@@ -10,6 +10,7 @@ import createIconLg from "../../../assets/create-icon-lg.svg";
 import profileIconLg from "../../../assets/profile-icon-lg.svg";
 import deleteIcon from "../../../assets/delete-icon.svg";
 import active from "../../../assets/status-active.svg";
+import { nip19 } from "nostr-tools";
 
 function SideBarMenu() {
   const navigate = useNavigate();
@@ -17,7 +18,10 @@ function SideBarMenu() {
 
   function goToProfile() {
     getPubKey()
-      .then((data) => navigate(`/profile/${data}`))
+      .then((data) => {
+        let npub = nip19.npubEncode(data);
+        navigate(`/profile/${npub}`);
+      })
       .catch((error) => console.log(error));
   }
 
@@ -151,6 +155,7 @@ function SideBarMenu() {
                     let pubkey = getPubKey();
                     pubkey.then((data) => {
                       sessionStorage.setItem("isLogged", "true");
+                      sessionStorage.setItem("pubkey", `${data}`);
                       window.location.reload();
                     });
                   }}

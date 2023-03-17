@@ -6,6 +6,7 @@ import {
   deleteBounty,
 } from "../../../utils";
 import { Link, useNavigate } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import avatarImage from "../../../assets/nostr-icon-user.avif";
@@ -23,7 +24,10 @@ type props = {
   pubkey: string;
   status: string | null;
   id: string;
-  addedReward: any;
+  addedReward: {
+    posterPubkey: string;
+    amount: string;
+  }[];
   name: string;
   profilePic: string;
   totalReward: number;
@@ -41,11 +45,18 @@ function BountyLargeInfor({
   totalReward,
   rootId,
 }: props) {
-  let npub = getNpub(pubkey);
+  let npubShort = getNpub(pubkey);
+  let npub = nip19.npubEncode(pubkey);
+  let naddr = nip19.naddrEncode({
+    identifier: id,
+    pubkey: pubkey,
+    kind: 30023,
+  });
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
-  let isLogged = sessionStorage.getItem("isLogged");
+  let isLogged = sessionStorage.getItem("pubkey");
   let idToUse = rootId === "" ? id : rootId;
   let navigate = useNavigate();
+
   return (
     <div className="my-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
       <div>
@@ -70,7 +81,7 @@ function BountyLargeInfor({
                   Status: Paid
                 </p>
               )}
-              {isLogged ? (
+              {isLogged === pubkey ? (
                 <button
                   onClick={() => sendReply(status, idToUse, pubkey)}
                   className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
@@ -92,10 +103,10 @@ function BountyLargeInfor({
               </p>
               <div className="flex">
                 <Link
-                  to={`/profile/${pubkey}`}
+                  to={`/profile/${npub}`}
                   className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
                 >
-                  {name === "" || undefined ? npub : name}
+                  {name === "" || undefined ? npubShort : name}
                 </Link>
                 <img
                   className="w-6 h-6 rounded-full shadow-lg ml-2"
@@ -138,9 +149,10 @@ function BountyLargeInfor({
 
       <div className="flex flex-wrap">
         {addedReward.map((item: any) => {
+          let npubAddedReward = nip19.npubEncode(item.posterPubkey);
           return (
             <Link
-              to={`/profile/${item.posterPubkey}`}
+              to={`/profile/${npubAddedReward}`}
               className="font-sans text-sm font-light mr-3 mt-1 dark:text-gray-2"
             >
               {getNpub(item.posterPubkey)} added{" "}
@@ -153,10 +165,10 @@ function BountyLargeInfor({
       </div>
 
       <div className="mt-5">
-        {isLogged === "true" ? (
+        {isLogged === pubkey ? (
           <div className="flex space-x-2">
             <Link
-              to={`/edit/${id}`}
+              to={`/edit/${naddr}`}
               className="cursor-pointer px-3 py-1.5 rounded-lg text-dark-text bg-status-paid-text font-sans text-sm font-normal dark:text-dark-text"
             >
               edit bounty

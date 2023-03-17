@@ -1,6 +1,7 @@
 import { editBounty } from "../../../utils";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { nip19 } from "nostr-tools";
 
 type props = {
   oldEvent: {
@@ -44,7 +45,8 @@ console.log(oldEvent)
         onClick={() => {
           let event = editBounty(newEvent);
           event.then((data) => {
-            navigate(`/b/${data.id}`);
+            let naddrEvent = nip19.naddrEncode({identifier: data.id, pubkey: data.pubkey, kind:30023})
+            navigate(`/b/${naddrEvent}`);
           });
         }}
         className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"

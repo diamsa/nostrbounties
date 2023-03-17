@@ -12,9 +12,10 @@ import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShort
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 
 function Profile() {
+  const params = useParams();
   let relays = defaultRelaysToPublish;
   let userMetaDataRelays = defaultRelays;
-  const params = useParams();
+  let userPubkey = nip19.decode(params.id!).data;
 
   let [metaData, setMetada] = useState({});
   let [titles, setTitles] = useState<string[]>([]);
@@ -26,16 +27,17 @@ function Profile() {
   let [dataLoaded, setDataLoaded] = useState(false);
   let [pubkey, setPubkeys] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
+  let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let subFilterMetaData = [
     {
-      authors: [`${params.id}`],
+      authors: [`${userPubkey}`],
       kinds: [0],
     },
   ];
   let subFilterContent = [
     {
-      authors: [`${params.id}`],
+      authors: [`${userPubkey}`],
       kinds: [30023],
       "#t": ["bounty"],
     },
@@ -78,15 +80,25 @@ function Profile() {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
         setDataLoaded(true);
+
+        let tags_arr: string[] = [];
+
+        event.tags.map((item) => {
+          if (item[0] === "t") {
+            tags_arr.push(item[1]);
+          }
+        });
+
         let bountyTitle = event.tags[1][1];
         let bountyReward = event.tags[2][1];
         let bountyDatePosted = date;
 
-        setIds((arr) => [...arr, event.id]);
-        setCreationDate((arr) => [...arr, bountyDatePosted]);
-        setTitles((arr) => [...arr, bountyTitle]);
-        setRewards((arr) => [...arr, bountyReward]);
-        setPubkeys((arr) => [...arr, event.pubkey]);
+        setBountyTags((arr) => [tags_arr, ...arr]);
+        setIds((arr) => [event.id, ...arr]);
+        setCreationDate((arr) => [bountyDatePosted, ...arr]);
+        setTitles((arr) => [bountyTitle, ...arr]);
+        setRewards((arr) => [bountyReward, ...arr]);
+        setPubkeys((arr) => [event.pubkey, ...arr]);
 
         checkBountyExist.push(event.id);
       }
@@ -123,6 +135,7 @@ function Profile() {
                   pubkeys={pubkey[index]}
                   name={name}
                   picture={picture}
+                  tags={bountyTags[index]}
                 />
               </div>
             );

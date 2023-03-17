@@ -14,7 +14,7 @@ function App() {
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
-  let [bountyTags, setBountyTags] = useState<string[]>();
+  let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
   let [names, setNames] = useState<string[]>([]);
@@ -51,11 +51,19 @@ function App() {
 
       let parseDate = parseInt(event.tags[3][1]);
       let date = convertTimestamp(parseDate);
+      let tags_arr: string[] = [];
+
+      event.tags.map((item) => {
+        if (item[0] === "t") {
+          tags_arr.push(item[1]);
+        }
+      });
 
       let bountyTitle = event.tags[1][1];
       let bountyReward = formatReward(event.tags[2][1]);
       let bountyDatePosted = date;
 
+      setBountyTags((arr) => [tags_arr, ...arr]);
       setIds((arr) => [event.id, ...arr]);
       setCreationDate((arr) => [bountyDatePosted, ...arr]);
       setTitles((arr) => [bountyTitle, ...arr]);
@@ -75,8 +83,8 @@ function App() {
         userMetaDataRelays,
         (event, isAfterEose, relayURL) => {
           let data = JSON.parse(event.content);
-          setNames((arr) => [...arr, data.name]);
-          setPictures((arr) => [...arr, data.picture]);
+          setNames((arr) => [data.name, ...arr]);
+          setPictures((arr) => [data.picture, ...arr]);
         }
       );
     });
@@ -110,6 +118,7 @@ function App() {
                   pubkeys={pubkeys[index]}
                   name={names[index]}
                   picture={pictures[index]}
+                  tags={bountyTags[index]}
                 />
               </div>
             );

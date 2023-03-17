@@ -4,6 +4,7 @@ import { getNpub } from "../../../utils";
 
 import bitcoinIcon from "../../../assets/bitcoin-icon.png";
 import avatarImage from "../../../assets/nostr-icon-user.avif";
+import { nip19 } from "nostr-tools";
 
 type props = {
   title: string;
@@ -13,6 +14,7 @@ type props = {
   pubkeys: string;
   name: string;
   picture: string;
+  tags: string[];
 };
 
 function ShortBountyInfo({
@@ -23,12 +25,18 @@ function ShortBountyInfo({
   pubkeys,
   name,
   picture,
+  tags,
 }: props) {
   const navigate = useNavigate();
-
-  let bountyInfoPath = `/b/${id}`;
-  let bountyPosterPath = `/profile/${pubkeys}`;
   let npub = getNpub(pubkeys);
+  let naddr = nip19.naddrEncode({
+    identifier: id,
+    pubkey: pubkeys,
+    kind: 30023,
+  });
+  let bountyInfoPath = `/b/${naddr}`;
+  let bountyPosterPath = `/profile/${nip19.npubEncode(pubkeys)}`;
+
   return (
     <div>
       <div className="my-2 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm">
@@ -36,6 +44,17 @@ function ShortBountyInfo({
           onClick={() => navigate(bountyInfoPath)}
           className="basis-6/12 cursor-pointer sm:basis-10/12"
         >
+          <div className="flex-wrap flex">
+            {tags.map((item) => {
+              if (item !== "bounty") {
+                return (
+                  <p className="font-sans text-xs text-dark-text font-light mx-0.5 rounded-lg dark:text-gray-1">
+                    #{item}
+                  </p>
+                );
+              }
+            })}
+          </div>
           <p className="font-sans text-base font-medium dark:text-gray-1">
             {title}
           </p>
@@ -61,7 +80,7 @@ function ShortBountyInfo({
               </Link>
               <img
                 className="w-6 h-6 rounded-full shadow-lg ml-2"
-                src={picture === "" || undefined ? avatarImage : picture}
+                src={picture === "" || "undefined" ? avatarImage : picture}
                 alt="avatar image"
               />
             </div>

@@ -2,18 +2,20 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish } from "../const";
+import { nip19 } from "nostr-tools";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountyEditor from "../components/bounty/bountyEditor/bountyEditor";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
-import { truncate } from "fs";
 
 function EditBounty() {
   let relays = defaultRelaysToPublish;
   let params = useParams();
+  let naddrData = nip19.decode(params.id!);
   let subFilter = [
     {
-      ids: [`${params.id}`],
+      // @ts-ignore
+      ids: [`${naddrData.data.identifier}`],
       kinds: [30023],
     },
   ];
