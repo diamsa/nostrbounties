@@ -22,12 +22,11 @@ function CreateBounty() {
   let [isWriting, setIsWriting] = useState(false);
   let [isCybersecurity, setIsCybersecurity] = useState(false);
   let [isMarketing, setIsMarketing] = useState(false);
-  let [id, setId] = useState(null);
 
   async function postEvent() {
     let eventMessage = {
       id: null,
-      pubkey: "8425d0460136752a32f77e311456ae97a89604ed8cab59bade6f422415751eeb",
+      pubkey: null,
       content: content,
       created_at: Math.floor(Date.now() / 1000),
       kind: 30023,

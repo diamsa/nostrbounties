@@ -156,7 +156,7 @@ function SideBarMenu() {
                   }}
                   className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
                 >
-                  Log in wit extension
+                  Log in with extension
                 </button>
               ) : (
                 <button
