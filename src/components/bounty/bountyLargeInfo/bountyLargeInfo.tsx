@@ -130,7 +130,7 @@ function BountyLargeInfor({
           <input
             type="number"
             onChange={(e) => setRewardToAdd(e.target.value)}
-            className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm text-gray-1 border-0"
+            className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm dark:text-gray-1 border-0"
             placeholder="add sats to the initial reward"
             value={rewardToAdd}
             required
