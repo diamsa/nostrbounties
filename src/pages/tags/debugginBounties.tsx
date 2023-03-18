@@ -1,18 +1,18 @@
 //components
-import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortInfo";
-import SideBarMenu from "./components/menus/sidebarMenu/sidebarMenu";
-import BountiesNotFound from "./components/errors/bountiesNotFound";
-import MobileMenu from "./components/menus/mobileMenu/mobileMenu";
+import BountyCard from "../../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
+import SideBarMenu from "../../components/menus/sidebarMenu/sidebarMenu";
+import BountiesNotFound from "../../components/errors/bountiesNotFound";
+import MobileMenu from "../../components/menus/mobileMenu/mobileMenu";
 
 //functions
 import { useState, useEffect } from "react";
-import { convertTimestamp, formatReward } from "./utils";
+import { convertTimestamp, formatReward } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
 import { useNavigate } from "react-router-dom";
-import { defaultRelaysToPublish, defaultRelays } from "./const";
+import { defaultRelaysToPublish, defaultRelays } from "../../const";
 
-function App() {
-  let navigate = useNavigate();
+function DebuggingBounties() {
+  let navigate = useNavigate()
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
@@ -32,7 +32,7 @@ function App() {
     let subFilter = [
       {
         kinds: [30023],
-        "#t": ["bounty"],
+        "#t": ["debugging-bounty"],
       },
     ];
 
@@ -131,7 +131,7 @@ function App() {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text bg-gray-1 rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-status-paid-text dark:text-dark-text dark:border-gray-600"
+            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
           >
             All
           </button>
@@ -166,7 +166,7 @@ function App() {
           <button
             type="button"
             onClick={() => navigate("/tag/debugging")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
+            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text bg-gray-1 rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-status-paid-text dark:text-dark-text dark:border-gray-600"
           >
             Debugging
           </button>
@@ -208,4 +208,4 @@ function App() {
   );
 }
 
-export default App;
+export default DebuggingBounties;

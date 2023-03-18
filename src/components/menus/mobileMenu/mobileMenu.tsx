@@ -51,7 +51,7 @@ function MobileMenu() {
   };
   return (
     <div>
-      <nav className="bg-sidebar-gray px-2 sm:px-4 py-2.5 dark:bg-sidebar-bg sticky w-full z-20 bottom-0 inset-x-0 left-0 border-b border-gray-200 dark:border-gray-600">
+      <nav className="bg-sidebar-gray px-2 sm:px-4 py-2.5 dark:bg-sidebar-bg fixed w-full z-20 bottom-0 inset-x-0 left-0 border-b border-gray-200 dark:border-gray-600">
         {isActive ? (
           <div>
             <div className="p-3 rounded-md py-5">
@@ -135,7 +135,7 @@ function MobileMenu() {
                     alt="delete icon"
                   ></img>
                   <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://nostr.wine
+                    wss://brb.io
                   </p>
                 </div>
               </div>

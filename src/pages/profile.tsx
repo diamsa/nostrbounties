@@ -85,7 +85,26 @@ function Profile() {
 
         event.tags.map((item) => {
           if (item[0] === "t") {
-            tags_arr.push(item[1]);
+            switch (item[1]) {
+              case "design-bounty":
+                tags_arr.push("design");
+                break;
+              case "development-bounty":
+                tags_arr.push("development");
+                break;
+              case "debugging-bounty":
+                tags_arr.push("debugging");
+                break;
+              case "writing-bounty":
+                tags_arr.push("writing");
+                break;
+              case "cybersecurity-bounty":
+                tags_arr.push("cybersecurity");
+                break;
+              case "marketing-bounty":
+                tags_arr.push("marketing");
+                break;
+            }
           }
         });
 

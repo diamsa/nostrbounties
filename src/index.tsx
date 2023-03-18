@@ -16,6 +16,12 @@ import Fiat6 from "./pages/fiat/fiat6";
 import Fiat7 from "./pages/fiat/fiat7";
 import BountyFullInfo from "./pages/bountyFullInfo";
 import EditBounty from "./pages/editBounty";
+import DesignBounties from "./pages/tags/designBounties";
+import WritingBounties from "./pages/tags/writingBounties";
+import DebuggingBounties from "./pages/tags/debugginBounties";
+import DevelopmentBounties from "./pages/tags/developmentBounties";
+import MarketingBounties from "./pages/tags/marketingBounties";
+import CybersecurityBounties from "./pages/tags/cybersecurityBounties";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +73,30 @@ const router = createBrowserRouter([
       {
         path: "/fiat7",
         element: <Fiat7 />,
+      },
+      {
+        path: "/tag/design",
+        element: <DesignBounties />,
+      },
+      {
+        path: "/tag/writing",
+        element: <WritingBounties />,
+      },
+      {
+        path: "/tag/debugging",
+        element: <DebuggingBounties />,
+      },
+      {
+        path: "/tag/cybersecurity",
+        element: <CybersecurityBounties />,
+      },
+      {
+        path: "/tag/development",
+        element: <DevelopmentBounties />,
+      },
+      {
+        path: "/tag/marketing",
+        element: <MarketingBounties />,
       },
     ],
   },

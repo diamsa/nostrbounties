@@ -41,25 +41,25 @@ function CreateBounty() {
     };
 
     if (isDesign) {
-      eventMessage.tags.push(["t", "design"]);
+      eventMessage.tags.push(["t", "design-bounty"]);
     }
 
     if (isDevelopment) {
-      eventMessage.tags.push(["t", "development"]);
+      eventMessage.tags.push(["t", "development-bounty"]);
     }
 
     if (isDebugging) {
-      eventMessage.tags.push(["t", "debugging"]);
+      eventMessage.tags.push(["t", "debugging-bounty"]);
     }
 
     if (isWriting) {
-      eventMessage.tags.push(["t", "writing"]);
+      eventMessage.tags.push(["t", "writing-bounty"]);
     }
     if (isCybersecurity) {
-      eventMessage.tags.push(["t", "cybersecurity"]);
+      eventMessage.tags.push(["t", "cybersecurity-bounty"]);
     }
     if (isMarketing) {
-      eventMessage.tags.push(["t", "marketing"]);
+      eventMessage.tags.push(["t", "marketing-bounty"]);
     }
 
     // @ts-ignore
