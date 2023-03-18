@@ -7,6 +7,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Profile from "./pages/profile";
 import CreateBounty from "./pages/createBounty";
+import Fiat1 from "./pages/fiat/fiat1";
+import Fiat2 from "./pages/fiat/fiat2";
+import Fiat3 from "./pages/fiat/fiat3";
+import Fiat4 from "./pages/fiat/fiat4";
+import Fiat5 from "./pages/fiat/fiat5";
+import Fiat6 from "./pages/fiat/fiat6";
+import Fiat7 from "./pages/fiat/fiat7";
 import BountyFullInfo from "./pages/bountyFullInfo";
 import EditBounty from "./pages/editBounty";
 
@@ -32,6 +39,34 @@ const router = createBrowserRouter([
       {
         path: "/edit/:id",
         element: <EditBounty />,
+      },
+      {
+        path: "/fiat1",
+        element: <Fiat1 />,
+      },
+      {
+        path: "/fiat2",
+        element: <Fiat2 />,
+      },
+      {
+        path: "/fiat3",
+        element: <Fiat3 />,
+      },
+      {
+        path: "/fiat4",
+        element: <Fiat4 />,
+      },
+      {
+        path: "/fiat5",
+        element: <Fiat5 />,
+      },
+      {
+        path: "/fiat6",
+        element: <Fiat6 />,
+      },
+      {
+        path: "/fiat7",
+        element: <Fiat7 />,
       },
     ],
   },
