@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { getPubKey, isDarkTheme, getRelayData } from "../../../utils";
+import { defaultRelays } from "../../../const";
+import { getPubKey, isDarkTheme } from "../../../utils";
 
 import homeIcon from "../../../assets/home-icon-dm.svg";
 import addIcon from "../../../assets/add-icon-dm.svg";
@@ -75,78 +75,22 @@ function SideBarMenu() {
             <p className="text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
               Relays
             </p>
-            <div>
-              <div className="flex">
-                <img
-                  className="w-8 h-6 cursor-pointer my-auto"
-                  src={active}
-                  alt="delete icon"
-                ></img>
-                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                  wss://nostr-pub.wellorder.net/
-                </p>
-              </div>
-            </div>
-            <div>
-              <div className="flex">
-                <img
-                  className="w-8 h-6 cursor-pointer my-auto"
-                  src={active}
-                  alt="delete icon"
-                ></img>
-                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                  wss://relay.nostr.wirednet.jp/
-                </p>
-              </div>
-            </div>
-            <div>
-              <div className="flex">
-                <img
-                  className="w-8 h-6 cursor-pointer my-auto"
-                  src={active}
-                  alt="delete icon"
-                ></img>
-                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                  wss://relay.nostr.scot
-                </p>
-              </div>
-            </div>
-            <div>
-              <div className="flex">
-                <img
-                  className="w-8 h-6 cursor-pointer my-auto"
-                  src={active}
-                  alt="delete icon"
-                ></img>
-                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                  wss://nos.lol
-                </p>
-              </div>
-            </div>
-            <div>
-              <div className="flex">
-                <img
-                  className="w-8 h-6 cursor-pointer my-auto"
-                  src={active}
-                  alt="delete icon"
-                ></img>
-                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                  wss://relay.damus.io
-                </p>
-              </div>
-            </div>
-            <div>
-              <div className="flex">
-                <img
-                  className="w-8 h-6 cursor-pointer my-auto"
-                  src={active}
-                  alt="delete icon"
-                ></img>
-                <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                  wss://nostr.wine
-                </p>
-              </div>
-            </div>
+            {defaultRelays.map((item) => {
+              return (
+                <div>
+                  <div className="flex">
+                    <img
+                      className="w-8 h-6 cursor-pointer my-auto"
+                      src={active}
+                      alt="delete icon"
+                    ></img>
+                    <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                      {item}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
 
             <div className="mt-5">
               {isLogged !== "true" ? (
@@ -174,6 +118,14 @@ function SideBarMenu() {
                   Log out
                 </button>
               )}
+            </div>
+            <div>
+              <a
+                className="underline text-dark-text text-xs dark:text-gray-2"
+                href="https://github.com/diamsa/nostrbounties"
+              >
+                Made by Diego
+              </a>
             </div>
           </div>
         </div>
