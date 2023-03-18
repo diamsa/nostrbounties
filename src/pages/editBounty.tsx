@@ -33,7 +33,13 @@ function EditBounty() {
     });
 
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
-      if (event.tags[5] === undefined) {
+      let tags_arr: string[] = [];
+      event.tags.map((item) => {
+        if (item[0] === "rootId") {
+          tags_arr.push(item[1]);
+        }
+      });
+      if (tags_arr.length === 0) {
         event.tags.push(["rootId", event.id]);
       }
       setOldEvent({

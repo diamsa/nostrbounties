@@ -10,5 +10,5 @@ export let defaultRelays = [
   "wss://relay.nostr.scot",
   "wss://nos.lol",
   "wss://relay.damus.io",
-  "wss://nostr.wine"
+  "wss://brb.io"
 ];

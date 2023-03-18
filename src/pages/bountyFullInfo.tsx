@@ -54,7 +54,7 @@ function BountyInfo() {
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
-       
+        let tags_arr: string[] = [];
 
         getMetaData(event.pubkey)
           .then((response) => response.json())
@@ -71,18 +71,25 @@ function BountyInfo() {
           publishedAt: date,
         });
 
+        event.tags.map((item) => {
+          if (item[0] === "rootId") {
+            tags_arr.push(item[1]);
+          }
+        });
+
         setPubkey(event.pubkey);
-        setRootId(event.tags[5] === undefined ? "" : event.tags[5][1]);
+        setRootId(tags_arr.length === 0 ? "" : tags_arr[0]);
+        console.log(event.tags);
 
         //subscribe for bounty-added-reward
         relayPool.subscribe(
           [
             {
               "#e": [
-                event.tags[5] === undefined
+                tags_arr.length === 0
                   ? // @ts-ignore
                     naddrData.data.identifier
-                  : event.tags[5][1],
+                  : tags_arr[0],
               ],
               "#t": ["bounty-added-reward"],
             },
@@ -105,10 +112,10 @@ function BountyInfo() {
             {
               authors: [event.pubkey],
               "#e": [
-                event.tags[5] === undefined
+                tags_arr.length === 0
                   ? // @ts-ignore
                     naddrData.data.identifier
-                  : event.tags[5][1],
+                  : tags_arr[0],
               ],
               "#t": ["bounty-reply"],
             },
@@ -117,7 +124,6 @@ function BountyInfo() {
           (event, isAfterEose, relayURL) => {
             arr_status.push(event.content);
             setStatus(arr_status[0]);
-
           }
         );
       }
