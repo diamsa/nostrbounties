@@ -3,6 +3,7 @@ import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortI
 import SideBarMenu from "./components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "./components/errors/bountiesNotFound";
 import MobileMenu from "./components/menus/mobileMenu/mobileMenu";
+import CategoryList from "./components/categoriesList/categoryList";
 
 //functions
 import { useState, useEffect } from "react";
@@ -127,57 +128,7 @@ function App() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
-        <div className="overflow-x-scroll flex no-scrollbar ml-5 mt-4">
-          <button
-            type="button"
-            onClick={() => navigate("/")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text bg-gray-1 rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-status-paid-text dark:text-dark-text dark:border-gray-600"
-          >
-            All
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/tag/design")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
-          >
-            Design
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/tag/writing")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text whitespace-nowrap rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
-          >
-            Writing and translation
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/tag/development")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
-          >
-            Development
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/tag/marketing")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
-          >
-            Marketing
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/tag/debugging")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
-          >
-            Debugging
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate("/tag/cybersecurity")}
-            className="py-1.5 px-4 mr-2 mb-2 text-sm font-medium text-dark-text rounded-full border border-gray-200 hover:bg-gray-100 dark:focus:ring-gray-700 dark:bg-current-tab dark:text-dark-text dark:border-gray-600"
-          >
-            Cybersecurity
-          </button>
-        </div>
+        <CategoryList currentPage="root" />
 
         {dataLoaded ? (
           titles.map((item, index) => {

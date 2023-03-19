@@ -1,6 +1,7 @@
 import { isDarkTheme } from "../../../utils";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { defaultRelays } from "../../../const";
 
 import homeIcon from "../../../assets/home-icon-dm.svg";
 import addIcon from "../../../assets/add-icon-dm.svg";
@@ -18,7 +19,6 @@ import active from "../../../assets/status-active.svg";
 function MobileMenu() {
   let navigate = useNavigate();
   let [isActive, setIsActive] = useState(false);
-  const defaultRelays = JSON.parse(localStorage.getItem("relays")!);
   const [relays, setRelays] = useState(defaultRelays);
   const [relay, setRelay] = useState<string>("");
 
@@ -67,78 +67,22 @@ function MobileMenu() {
                 ></img>
               </div>
 
-              <div>
-                <div className="flex">
-                  <img
-                    className="w-8 h-6 cursor-pointer my-auto"
-                    src={active}
-                    alt="delete icon"
-                  ></img>
-                  <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://nostr-pub.wellorder.net/
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="flex">
-                  <img
-                    className="w-8 h-6 cursor-pointer my-auto"
-                    src={active}
-                    alt="delete icon"
-                  ></img>
-                  <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://relay.nostr.wirednet.jp/
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="flex">
-                  <img
-                    className="w-8 h-6 cursor-pointer my-auto"
-                    src={active}
-                    alt="delete icon"
-                  ></img>
-                  <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://relay.nostr.scot
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="flex">
-                  <img
-                    className="w-8 h-6 cursor-pointer my-auto"
-                    src={active}
-                    alt="delete icon"
-                  ></img>
-                  <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://nos.lol
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="flex">
-                  <img
-                    className="w-8 h-6 cursor-pointer my-auto"
-                    src={active}
-                    alt="delete icon"
-                  ></img>
-                  <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://relay.damus.io
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="flex">
-                  <img
-                    className="w-8 h-6 cursor-pointer my-auto"
-                    src={active}
-                    alt="delete icon"
-                  ></img>
-                  <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                    wss://brb.io
-                  </p>
-                </div>
-              </div>
+              {defaultRelays.map((item) => {
+                return (
+                  <div>
+                    <div className="flex">
+                      <img
+                        className="w-8 h-6 cursor-pointer my-auto"
+                        src={active}
+                        alt="delete icon"
+                      ></img>
+                      <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                        {item}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : null}

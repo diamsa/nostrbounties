@@ -80,7 +80,7 @@ function ShortBountyInfo({
               </Link>
               <img
                 className="w-6 h-6 rounded-full shadow-lg ml-2"
-                src={picture === "" || "undefined" ? avatarImage : picture}
+                src={picture === "" || undefined ? avatarImage : picture}
                 alt="avatar image"
               />
             </div>
