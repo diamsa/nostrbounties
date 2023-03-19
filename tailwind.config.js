@@ -15,6 +15,7 @@ module.exports = {
       "status-in-progress-text": "#4f410d",
       "status-paid": "#0043ce",
       "status-paid-text": "#D0E2FF",
+      "current-tab": "#9dacc4",
       "background-dark-mode": "#0c0c0c",
       "background-component-dm": "#001b52",
       "sidebar-bg": "#131314",
