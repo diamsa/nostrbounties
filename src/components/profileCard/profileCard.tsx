@@ -1,6 +1,7 @@
 import AvatarImage from "../../assets/nostr-icon-user.avif";
+import checkMark from "../../assets/check-mark.svg";
 
-function profileCard({ metaData }: any) {
+function profileCard({ metaData, userNip05 }: any) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg shadow-md sm: m-4 dark:bg-sidebar-bg">
       <div className="flex flex-col items-center pb-10">
@@ -16,9 +17,19 @@ function profileCard({ metaData }: any) {
         <h5 className="mb-1 text-xl font-medium text-dark-text dark:text-gray-1">
           {metaData.name}
         </h5>
-        <span className="text-sm text-gray-500 dark:text-gray-1">
-          {metaData.nip05 === undefined ? "nip05 not found" : metaData.nip05}
-        </span>
+        <div className="flex">
+          <span className="text-sm text-gray-500 dark:text-gray-1">
+            {metaData.nip05 === undefined ? "nip05 not found" : metaData.nip05}
+          </span>
+          {userNip05 ? (
+            <img
+              className="w-5 h-5  rounded-full shadow-lg "
+              src={checkMark}
+              alt="avatar image"
+            />
+          ) : null}
+        </div>
+
         <span className="text-sm text-gray-500 dark:text-gray-1">
           ⚡{" "}
           {metaData.LnAddress === undefined
@@ -28,7 +39,6 @@ function profileCard({ metaData }: any) {
         <span className="text-sm text-gray-500 dark:text-gray-1 text-center px-6">
           {metaData.about === undefined ? "about not found" : metaData.about}
         </span>
-      
       </div>
     </div>
   );

@@ -3,13 +3,14 @@ import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
-import { nip19 } from "nostr-tools";
+import { nip19, nip05 } from "nostr-tools";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../components/errors/bountiesNotFound";
 import ProfileCard from "../components/profileCard/profileCard";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
+
 
 function Profile() {
   const params = useParams();
@@ -28,6 +29,7 @@ function Profile() {
   let [pubkey, setPubkeys] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
+  let [userNip05, setUserNip05] = useState(false);
 
   let subFilterMetaData = [
     {
@@ -60,14 +62,23 @@ function Profile() {
       userMetaDataRelays,
       (event, isAfterEose, relayURL) => {
         let parsedContent = JSON.parse(event.content);
-        let data = {
+
+        let finalData = {
           name: parsedContent.display_name,
           profilePic: parsedContent.picture,
           LnAddress: parsedContent.lud16,
           about: parsedContent.about,
-          nip05: parsedContent.nip05,
+          nip05: parsedContent.nip05
         };
-        setMetada(data);
+
+        if (parsedContent.nip05 !== "" || undefined) {
+          let url = parsedContent.nip05.split("@");
+          nip05.queryProfile(url[1]).then((data) => {
+            let isSamePubkey = event.pubkey === data?.pubkey;
+            if (isSamePubkey) setUserNip05(true);
+          });
+        }
+        setMetada(finalData);
         setName(parsedContent.display_name);
         setPicture(parsedContent.picture);
       }
@@ -141,7 +152,7 @@ function Profile() {
       </div>
 
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 dark:bg-background-dark-mode">
-        <ProfileCard metaData={metaData} />
+        <ProfileCard metaData={metaData} userNip05={userNip05} />
         {dataLoaded ? (
           titles.map((item, index) => {
             return (
