@@ -10,5 +10,7 @@ export let defaultRelays = [
   "wss://relay.nostr.scot",
   "wss://nos.lol",
   "wss://relay.damus.io",
-  "wss://brb.io"
+  "wss://arnostr.permadao.io",
+  "wss://relay.snort.social",
+
 ];

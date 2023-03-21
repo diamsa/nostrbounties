@@ -29,7 +29,6 @@ function App() {
   useEffect(() => {
     let relays = defaultRelaysToPublish;
     let userMetaDataRelays = defaultRelays;
-
     let subFilter = [
       {
         kinds: [30023],
@@ -39,7 +38,7 @@ function App() {
 
     let checkBountyExist = [];
 
-    let relayPool = new RelayPool(relays);
+    let relayPool = new RelayPool(relays, { useEventCache: true });
 
     relayPool.onerror((err, relayUrl) => {
       console.log("RelayPool error", err, " from relay ", relayUrl);
@@ -51,7 +50,6 @@ function App() {
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
       // remember to parse the content
       setDataLoaded(true);
-
       let parseDate = parseInt(event.tags[3][1]);
       let date = convertTimestamp(parseDate);
       let tags_arr: string[] = [];
@@ -94,7 +92,6 @@ function App() {
 
       checkBountyExist.push(event.id);
 
-      //subscribe metadata
       relayPool.subscribe(
         [
           {
@@ -107,7 +104,10 @@ function App() {
           let data = JSON.parse(event.content);
           setNames((arr) => [data.name, ...arr]);
           setPictures((arr) => [data.picture, ...arr]);
-        }
+        },
+        undefined,
+        undefined,
+        { unsubscribeOnEose: true }
       );
     });
 
@@ -127,7 +127,7 @@ function App() {
       <div className="basis-3/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
-      <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 sm:mb-24 dark:bg-background-dark-mode">
         <CategoryList currentPage="root" />
 
         {dataLoaded ? (

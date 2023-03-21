@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { defaultRelaysToPublish, defaultRelays } from "../../const";
 
 function DevelopmentBounties() {
-  let navigate = useNavigate()
+  let navigate = useNavigate();
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
@@ -128,7 +128,7 @@ function DevelopmentBounties() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
-      <CategoryList currentPage="development" />
+        <CategoryList currentPage="development" />
 
         {dataLoaded ? (
           titles.map((item, index) => {

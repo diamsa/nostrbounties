@@ -1,5 +1,4 @@
 import { useNavigate, Link } from "react-router-dom";
-
 import { getNpub } from "../../../utils";
 
 import bitcoinIcon from "../../../assets/bitcoin-icon.png";
@@ -36,6 +35,8 @@ function ShortBountyInfo({
   });
   let bountyInfoPath = `/b/${naddr}`;
   let bountyPosterPath = `/profile/${nip19.npubEncode(pubkeys)}`;
+
+
 
   return (
     <div>

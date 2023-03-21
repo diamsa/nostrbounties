@@ -70,7 +70,7 @@ function EditBounty() {
       <div className="basis-3/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
-      <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 sm:mb-24 dark:bg-background-dark-mode">
         {loaded ? <BountyEditor oldEvent={oldEvent} /> : null}
       </div>
     </div>

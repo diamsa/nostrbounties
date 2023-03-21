@@ -3,20 +3,24 @@ import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
-import { nip19, nip05 } from "nostr-tools";
+import { nip19 } from "nostr-tools";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../components/errors/bountiesNotFound";
 import ProfileCard from "../components/profileCard/profileCard";
+import ProfileActivity from "../components/profileCard/profileStats/profileActivity";
+import BountiesPaid from "../components/profileCard/profileStats/profileBountiesPaid";
+import Nip05Verified from "../components/profileCard/profileStats/profileBountiesNip05";
+import BountiesProgress from "../components/profileCard/profileStats/profileBountiesProgress";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
-
 
 function Profile() {
   const params = useParams();
   let relays = defaultRelaysToPublish;
   let userMetaDataRelays = defaultRelays;
   let userPubkey = nip19.decode(params.id!).data;
+  let last30DaysTimestamp = Math.floor(Date.now() / 1000) - 24 * 60 * 60 * 1000;
 
   let [metaData, setMetada] = useState({});
   let [titles, setTitles] = useState<string[]>([]);
@@ -30,6 +34,8 @@ function Profile() {
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
   let [userNip05, setUserNip05] = useState(false);
+  let [statuses, setStatuses] = useState<string[]>([]);
+  let [Last30Days, setLast30Days] = useState(0);
 
   let subFilterMetaData = [
     {
@@ -37,6 +43,15 @@ function Profile() {
       kinds: [0],
     },
   ];
+  let subFilterOlderPost = [
+    {
+      authors: [`${userPubkey}`],
+      kinds: [1],
+      since: last30DaysTimestamp,
+      limit: 30,
+    },
+  ];
+ 
   let subFilterContent = [
     {
       authors: [`${userPubkey}`],
@@ -65,22 +80,35 @@ function Profile() {
 
         let finalData = {
           name: parsedContent.display_name,
+          display_name: parsedContent.display_name,
           profilePic: parsedContent.picture,
           LnAddress: parsedContent.lud16,
           about: parsedContent.about,
-          nip05: parsedContent.nip05
+          nip05: parsedContent.nip05,
         };
 
-        if (parsedContent.nip05 !== "" || undefined) {
-          let url = parsedContent.nip05.split("@");
-          nip05.queryProfile(url[1]).then((data) => {
-            let isSamePubkey = event.pubkey === data?.pubkey;
-            if (isSamePubkey) setUserNip05(true);
-          });
-        }
         setMetada(finalData);
         setName(parsedContent.display_name);
         setPicture(parsedContent.picture);
+
+        if (parsedContent.nip05 !== "" || undefined) {
+          let url = parsedContent.nip05.split("@");
+          fetch(`https://${url[1]}/.well-known/nostr.json?name=${url[0]}`)
+            .then((response) => response.json())
+            .then((data) => {
+              let userNamePubKey = data.names[`${url[0]}`];
+              let isSamePubkey = event.pubkey === userNamePubKey;
+              if (isSamePubkey) setUserNip05(true);
+            });
+        }
+      }
+    );
+
+    relayPool.subscribe(
+      subFilterOlderPost,
+      userMetaDataRelays,
+      (event, isAfterEose, relayURL) => {
+        setLast30Days((item) => item + 1);
       }
     );
 
@@ -118,6 +146,14 @@ function Profile() {
             }
           }
         });
+        // subscribe for statuses
+        relayPool.subscribe(
+          [{ "#e": [`${event.id}`], "#t": ["bounty-reply"], limit: 1 }],
+          userMetaDataRelays,
+          (event, isAfterEose, relayURL) => {
+            setStatuses((arr) => [...arr, event.content]);
+          }
+        );
 
         let bountyTitle = event.tags[1][1];
         let bountyReward = event.tags[2][1];
@@ -151,8 +187,15 @@ function Profile() {
         <MobileMenu />
       </div>
 
-      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 sm:mb-24 dark:bg-background-dark-mode">
         <ProfileCard metaData={metaData} userNip05={userNip05} />
+
+        <div className="flex justify-between p-3 flex-wrap sm:block">
+          <BountiesPaid bountiesPaid={statuses} />
+          <BountiesProgress bountiesProgress={statuses} />
+          <Nip05Verified isVerified={userNip05} />
+          <ProfileActivity activity={Last30Days} />
+        </div>
         {dataLoaded ? (
           titles.map((item, index) => {
             return (

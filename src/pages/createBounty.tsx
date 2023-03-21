@@ -91,7 +91,7 @@ function CreateBounty() {
       <div className="basis-3/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
-      <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 space-y-9 lg:px-10 sm:h-screen px-3 sm:mb-24 dark:bg-background-dark-mode">
         <div className="mt-4">
           <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
             Bounty title
