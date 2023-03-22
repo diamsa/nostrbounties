@@ -11,8 +11,6 @@ type props = {
   id: string;
   dates: string;
   pubkeys: string;
-  name: string;
-  picture: string;
   tags: string[];
 };
 
@@ -22,8 +20,6 @@ function ShortBountyInfo({
   id,
   dates,
   pubkeys,
-  name,
-  picture,
   tags,
 }: props) {
   const navigate = useNavigate();

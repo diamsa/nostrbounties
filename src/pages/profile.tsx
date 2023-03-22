@@ -25,8 +25,6 @@ function Profile() {
   let [metaData, setMetada] = useState({});
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
-  let [name, setName] = useState<string>("");
-  let [picture, setPicture] = useState<string>("");
   let [ids, setIds] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
@@ -52,7 +50,7 @@ function Profile() {
       limit: 30,
     },
   ];
-  let subFilterAja = [
+  let subFilterAddedReward = [
     {
       authors: [`${userPubkey}`],
       "#t": ["bounty-added-reward"],
@@ -95,8 +93,6 @@ function Profile() {
         };
 
         setMetada(finalData);
-        setName(parsedContent.display_name);
-        setPicture(parsedContent.picture);
 
         if (parsedContent.nip05 !== "" || undefined) {
           let url = parsedContent.nip05.split("@");
@@ -119,7 +115,7 @@ function Profile() {
       }
     );
     relayPool.subscribe(
-      subFilterAja,
+      subFilterAddedReward,
       userMetaDataRelays,
       (event, isAfterEose, relayURL) => {
         let amount = parseInt(event.content);
@@ -221,8 +217,6 @@ function Profile() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkey[index]}
-                  name={name}
-                  picture={picture}
                   tags={bountyTags[index]}
                 />
               </div>

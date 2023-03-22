@@ -9,26 +9,21 @@ import CategoryList from "./components/categoriesList/categoryList";
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "./utils";
 import { RelayPool } from "nostr-relaypool";
-import { useNavigate } from "react-router-dom";
 import { defaultRelaysToPublish, defaultRelays } from "./const";
 
 function App() {
-  let navigate = useNavigate();
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
-  let [names, setNames] = useState<string[]>([]);
-  let [pictures, setPictures] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
-    let userMetaDataRelays = defaultRelays;
     let subFilter = [
       {
         kinds: [30023],
@@ -92,38 +87,6 @@ function App() {
 
       checkBountyExist.push(event.id);
 
-      relayPool.subscribe(
-        [
-          {
-            authors: [event.pubkey],
-            kinds: [0],
-          },
-        ],
-        userMetaDataRelays,
-        (event, isAfterEose, relayURL) => {
-          let data = JSON.parse(event.content);
-          setNames((arr) => [data.name, ...arr]);
-          setPictures((arr) => [data.picture, ...arr]);
-        },
-        undefined,
-        undefined,
-        { unsubscribeOnEose: true }
-      );
-
-      relayPool.subscribe(
-        [
-          {
-            "#e": [event.id],
-            "#t": ["bounty-reply"],
-            limit: 1,
-          },
-        ],
-        userMetaDataRelays,
-        (event, isAfterEose, relayURL) => {},
-        undefined,
-        undefined,
-        { unsubscribeOnEose: true }
-      );
     });
 
     setTimeout(() => {
@@ -155,8 +118,6 @@ function App() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
-                  name={names[index]}
-                  picture={pictures[index]}
                   tags={bountyTags[index]}
                 />
               </div>

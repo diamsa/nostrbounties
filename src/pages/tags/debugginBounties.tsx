@@ -9,26 +9,21 @@ import CategoryList from "../../components/categoriesList/categoryList";
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
-import { useNavigate } from "react-router-dom";
-import { defaultRelaysToPublish, defaultRelays } from "../../const";
+import { defaultRelaysToPublish } from "../../const";
 
 function DebuggingBounties() {
-  let navigate = useNavigate();
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
-  let [names, setNames] = useState<string[]>([]);
-  let [pictures, setPictures] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
-    let userMetaDataRelays = defaultRelays;
 
     let subFilter = [
       {
@@ -93,22 +88,6 @@ function DebuggingBounties() {
       setPubkeys((arr) => [event.pubkey, ...arr]);
 
       checkBountyExist.push(event.id);
-
-      //subscribe metadata
-      relayPool.subscribe(
-        [
-          {
-            authors: [event.pubkey],
-            kinds: [0],
-          },
-        ],
-        userMetaDataRelays,
-        (event, isAfterEose, relayURL) => {
-          let data = JSON.parse(event.content);
-          setNames((arr) => [data.name, ...arr]);
-          setPictures((arr) => [data.picture, ...arr]);
-        }
-      );
     });
 
     setTimeout(() => {
@@ -140,8 +119,6 @@ function DebuggingBounties() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
-                  name={names[index]}
-                  picture={pictures[index]}
                   tags={bountyTags[index]}
                 />
               </div>

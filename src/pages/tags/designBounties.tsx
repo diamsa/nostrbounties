@@ -9,19 +9,16 @@ import CategoryList from "../../components/categoriesList/categoryList";
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
-import { useNavigate } from "react-router-dom";
+
 import { defaultRelaysToPublish, defaultRelays } from "../../const";
 
 function DesignBounties() {
-  let navigate = useNavigate();
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [ids, setIds] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
-  let [names, setNames] = useState<string[]>([]);
-  let [pictures, setPictures] = useState<string[]>([]);
   let [creationDate, setCreationDate] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
@@ -93,22 +90,6 @@ function DesignBounties() {
       setPubkeys((arr) => [event.pubkey, ...arr]);
 
       checkBountyExist.push(event.id);
-
-      //subscribe metadata
-      relayPool.subscribe(
-        [
-          {
-            authors: [event.pubkey],
-            kinds: [0],
-          },
-        ],
-        userMetaDataRelays,
-        (event, isAfterEose, relayURL) => {
-          let data = JSON.parse(event.content);
-          setNames((arr) => [data.name, ...arr]);
-          setPictures((arr) => [data.picture, ...arr]);
-        }
-      );
     });
 
     setTimeout(() => {
@@ -128,7 +109,7 @@ function DesignBounties() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
-      <CategoryList currentPage="design" />
+        <CategoryList currentPage="design" />
 
         {dataLoaded ? (
           titles.map((item, index) => {
@@ -140,8 +121,6 @@ function DesignBounties() {
                   id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
-                  name={names[index]}
-                  picture={pictures[index]}
                   tags={bountyTags[index]}
                 />
               </div>
