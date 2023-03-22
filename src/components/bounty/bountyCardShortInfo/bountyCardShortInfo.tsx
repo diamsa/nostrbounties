@@ -36,8 +36,6 @@ function ShortBountyInfo({
   let bountyInfoPath = `/b/${naddr}`;
   let bountyPosterPath = `/profile/${nip19.npubEncode(pubkeys)}`;
 
-
-
   return (
     <div>
       <div className="my-2 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm">
@@ -49,9 +47,9 @@ function ShortBountyInfo({
             {tags.map((item) => {
               if (item !== "bounty") {
                 return (
-                  <p className="font-sans text-xs text-dark-text font-light mx-0.5 rounded-lg dark:text-gray-1">
+                  <button className="font-sans text-xs text-dark-text font-light mx-0.5 rounded-lg dark:text-gray-1">
                     #{item}
-                  </p>
+                  </button>
                 );
               }
             })}
@@ -75,7 +73,7 @@ function ShortBountyInfo({
             <div className="flex mr-2 my-2">
               <Link
                 to={bountyPosterPath}
-                className="font-sans text-sm font-light underline dark:text-gray-1"
+                className="font-sans text-xs mt-1 font-light underline dark:text-gray-1"
               >
                 by {name === "" || undefined ? npub : name}
               </Link>
@@ -87,7 +85,7 @@ function ShortBountyInfo({
             </div>
           </div>
           <div className="mt-2">
-            <span className="font-sans text-sm font-light  dark:text-gray-1">
+            <span className="font-sans text-xs font-light  dark:text-gray-1">
               {dates}
             </span>
           </div>

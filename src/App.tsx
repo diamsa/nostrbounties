@@ -109,6 +109,21 @@ function App() {
         undefined,
         { unsubscribeOnEose: true }
       );
+
+      relayPool.subscribe(
+        [
+          {
+            "#e": [event.id],
+            "#t": ["bounty-reply"],
+            limit: 1,
+          },
+        ],
+        userMetaDataRelays,
+        (event, isAfterEose, relayURL) => {},
+        undefined,
+        undefined,
+        { unsubscribeOnEose: true }
+      );
     });
 
     setTimeout(() => {
