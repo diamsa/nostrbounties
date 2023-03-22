@@ -1,7 +1,7 @@
 import { isDarkTheme } from "../../../utils";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { defaultRelays } from "../../../const";
+import { defaultRelays, defaultRelaysToPublish } from "../../../const";
 
 import homeIcon from "../../../assets/home-icon-dm.svg";
 import addIcon from "../../../assets/add-icon-dm.svg";
@@ -68,6 +68,22 @@ function MobileMenu() {
               </div>
 
               {defaultRelays.map((item) => {
+                return (
+                  <div>
+                    <div className="flex">
+                      <img
+                        className="w-8 h-6 cursor-pointer my-auto"
+                        src={active}
+                        alt="delete icon"
+                      ></img>
+                      <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
+                        {item}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+              {defaultRelaysToPublish.map((item) => {
                 return (
                   <div>
                     <div className="flex">

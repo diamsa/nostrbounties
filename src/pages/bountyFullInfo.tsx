@@ -25,6 +25,7 @@ function BountyInfo() {
   const [status, setStatus] = useState<string | null>(null);
   const [totalReward, setTotalReward] = useState(0);
   const [rootId, setRootId] = useState<string>("");
+  const [dTag, setDTag] = useState<string>('')
 
   useEffect(() => {
     let subFilterContent: { ids: string }[] = [
@@ -75,9 +76,13 @@ function BountyInfo() {
           if (item[0] === "rootId") {
             tags_arr.push(item[1]);
           }
+          if(item[0] === "d"){
+            setDTag(item[1])
+          }
         });
 
         setPubkey(event.pubkey);
+        
         setRootId(tags_arr.length === 0 ? "" : tags_arr[0]);
         console.log(event.tags);
 
@@ -144,7 +149,7 @@ function BountyInfo() {
       <div className="basis-3/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
-      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-1 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen sm:mb-24 px-1 dark:bg-background-dark-mode">
         <BountyLargeInfor
           content={content}
           pubkey={pubKey}
@@ -156,6 +161,7 @@ function BountyInfo() {
           profilePic={profilePic}
           totalReward={totalReward}
           rootId={rootId}
+          dTag = {dTag}
         />
       </div>
     </div>

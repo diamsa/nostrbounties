@@ -16,6 +16,7 @@ import DevelopmentBounties from "./pages/tags/developmentBounties";
 import MarketingBounties from "./pages/tags/marketingBounties";
 import CybersecurityBounties from "./pages/tags/cybersecurityBounties";
 import Error404 from "./pages/error";
+import Relays from "./pages/relays";
 
 const router = createBrowserRouter([
   { errorElement: <Error404 />,
@@ -64,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: "/tag/marketing",
         element: <MarketingBounties />,
+      },
+      {
+        path: "/relays",
+        element: <Relays />,
       },
     ],
   },

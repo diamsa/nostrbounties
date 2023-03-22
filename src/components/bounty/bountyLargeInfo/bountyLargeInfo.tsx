@@ -32,6 +32,7 @@ type props = {
   profilePic: string;
   totalReward: number;
   rootId: string;
+  dTag: string;
 };
 
 function BountyLargeInfor({
@@ -44,6 +45,7 @@ function BountyLargeInfor({
   profilePic,
   totalReward,
   rootId,
+  dTag,
 }: props) {
   let npubShort = getNpub(pubkey);
   let npub = nip19.npubEncode(pubkey);
@@ -137,7 +139,7 @@ function BountyLargeInfor({
           />
           <button
             onClick={() => {
-              addReward(rewardToAdd, idToUse);
+              addReward(rewardToAdd, idToUse, pubkey, dTag);
               setRewardToAdd("");
             }}
             className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"

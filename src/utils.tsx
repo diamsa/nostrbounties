@@ -23,7 +23,7 @@ export async function editBounty(event: any) {
     let relayPool = new RelayPool(relays);
     relayPool.publish(EventMessageSigned, relays);
     console.log("edited");
-    return EventMessageSigned
+    return EventMessageSigned;
   }
 }
 
@@ -131,7 +131,12 @@ export async function sendReply(
   }
 }
 
-export async function addReward(amount: string, id: string) {
+export async function addReward(
+  amount: string,
+  id: string,
+  pubkey: string,
+  dTag: string
+) {
   let relays = defaultRelays;
 
   if (amount === "") {
@@ -145,6 +150,7 @@ export async function addReward(amount: string, id: string) {
       tags: [
         ["t", "bounty-added-reward"],
         ["e", `${id}`],
+        ["a", `30023:${pubkey}:${dTag}`],
       ],
       content: amount,
       sig: null,
@@ -174,10 +180,15 @@ export function getNpub(pubkey: string) {
   return npubShortened + "...";
 }
 
-export function formatReward(event: string) {
-  const rewardUnformatted = parseInt(event);
-  const rewardFormatted = Intl.NumberFormat().format(rewardUnformatted);
-  return rewardFormatted;
+export function formatReward(event: string | number) {
+  if (typeof event === "string") {
+    const rewardUnformatted = parseInt(event);
+    const rewardFormatted = Intl.NumberFormat().format(rewardUnformatted);
+    return rewardFormatted;
+  } else {
+    const rewardFormatted = Intl.NumberFormat().format(event);
+    return rewardFormatted;
+  }
 }
 
 export function getMetaData(pubkey: string) {
@@ -213,9 +224,8 @@ export async function deleteBounty(id: string) {
   let EventMessageSigned = await window.nostr.signEvent(eventMessage);
   let relayPool = new RelayPool(relays);
   relayPool.publish(EventMessageSigned, relays);
-  return EventMessageSigned
+  return EventMessageSigned;
 }
-
 
 export async function getRelayData(relay: string) {
   let url = `https://${relay}`;
@@ -227,7 +237,5 @@ export async function getRelayData(relay: string) {
     },
   });
 
-  data.json().then((data) => {
-    console.log(data);
-  });
+  return data.json();
 }

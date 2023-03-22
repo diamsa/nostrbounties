@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp } from "../utils";
+import { convertTimestamp, formatReward } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
 import { nip19 } from "nostr-tools";
 
@@ -10,10 +10,10 @@ import BountiesNotFound from "../components/errors/bountiesNotFound";
 import ProfileCard from "../components/profileCard/profileCard";
 import ProfileActivity from "../components/profileCard/profileStats/profileActivity";
 import BountiesPaid from "../components/profileCard/profileStats/profileBountiesPaid";
-import Nip05Verified from "../components/profileCard/profileStats/profileBountiesNip05";
 import BountiesProgress from "../components/profileCard/profileStats/profileBountiesProgress";
 import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
+import SatsAdded from "../components/profileCard/profileStats/profileBountiesAddedReward";
 
 function Profile() {
   const params = useParams();
@@ -36,6 +36,7 @@ function Profile() {
   let [userNip05, setUserNip05] = useState(false);
   let [statuses, setStatuses] = useState<string[]>([]);
   let [Last30Days, setLast30Days] = useState(0);
+  let [addedReward, setAddedReward] = useState<number>(0);
 
   let subFilterMetaData = [
     {
@@ -51,7 +52,13 @@ function Profile() {
       limit: 30,
     },
   ];
- 
+  let subFilterAja = [
+    {
+      authors: [`${userPubkey}`],
+      "#t": ["bounty-added-reward"],
+    },
+  ];
+
   let subFilterContent = [
     {
       authors: [`${userPubkey}`],
@@ -109,6 +116,14 @@ function Profile() {
       userMetaDataRelays,
       (event, isAfterEose, relayURL) => {
         setLast30Days((item) => item + 1);
+      }
+    );
+    relayPool.subscribe(
+      subFilterAja,
+      userMetaDataRelays,
+      (event, isAfterEose, relayURL) => {
+        let amount = parseInt(event.content);
+        setAddedReward((item) => item + amount);
       }
     );
 
@@ -190,10 +205,10 @@ function Profile() {
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 sm:mb-24 dark:bg-background-dark-mode">
         <ProfileCard metaData={metaData} userNip05={userNip05} />
 
-        <div className="flex justify-between p-3 flex-wrap sm:block">
+        <div className="flex p-3 lg:ml-3 sm:block md:flex-wrap">
           <BountiesPaid bountiesPaid={statuses} />
           <BountiesProgress bountiesProgress={statuses} />
-          <Nip05Verified isVerified={userNip05} />
+          <SatsAdded amount={formatReward(addedReward)} />
           <ProfileActivity activity={Last30Days} />
         </div>
         {dataLoaded ? (
