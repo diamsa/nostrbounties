@@ -14,7 +14,7 @@ import { defaultRelaysToPublish, defaultRelays } from "../../const";
 function WritingBounties() {
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
-  let [ids, setIds] = useState<string[]>([]);
+  let [DTags, setDTags] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
@@ -24,7 +24,6 @@ function WritingBounties() {
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
-    let userMetaDataRelays = defaultRelays;
 
     let subFilter = [
       {
@@ -75,6 +74,10 @@ function WritingBounties() {
               break;
           }
         }
+
+        if (item[0] === "d") {
+          setDTags((arr) => [item[1], ...arr]);
+        }
       });
 
       let bountyTitle = event.tags[1][1];
@@ -82,15 +85,12 @@ function WritingBounties() {
       let bountyDatePosted = date;
 
       setBountyTags((arr) => [tags_arr, ...arr]);
-      setIds((arr) => [event.id, ...arr]);
       setCreationDate((arr) => [bountyDatePosted, ...arr]);
       setTitles((arr) => [bountyTitle, ...arr]);
       setRewards((arr) => [bountyReward, ...arr]);
       setPubkeys((arr) => [event.pubkey, ...arr]);
 
       checkBountyExist.push(event.id);
-
-
     });
 
     setTimeout(() => {
@@ -110,7 +110,7 @@ function WritingBounties() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
-      <CategoryList currentPage="writing" />
+        <CategoryList currentPage="writing" />
 
         {dataLoaded ? (
           titles.map((item, index) => {
@@ -119,10 +119,10 @@ function WritingBounties() {
                 <BountyCard
                   title={titles[index]}
                   reward={rewards[index]}
-                  id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
                   tags={bountyTags[index]}
+                  DTag={DTags[index]}
                 />
               </div>
             );

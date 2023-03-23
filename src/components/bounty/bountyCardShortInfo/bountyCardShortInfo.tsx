@@ -8,24 +8,24 @@ import { nip19 } from "nostr-tools";
 type props = {
   title: string;
   reward: string;
-  id: string;
   dates: string;
   pubkeys: string;
   tags: string[];
+  DTag: string
 };
 
 function ShortBountyInfo({
   title,
   reward,
-  id,
   dates,
   pubkeys,
   tags,
+  DTag
 }: props) {
   const navigate = useNavigate();
   let npub = getNpub(pubkeys);
   let naddr = nip19.naddrEncode({
-    identifier: id,
+    identifier: DTag,
     pubkey: pubkeys,
     kind: 30023,
   });

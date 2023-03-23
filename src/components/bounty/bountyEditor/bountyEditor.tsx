@@ -17,7 +17,7 @@ type props = {
 
 function BountyEditor({ oldEvent }: props) {
   let [newContent, setNewContent] = useState<string>("");
-console.log(oldEvent)
+
   let navigate = useNavigate();
   let newEvent = {
     id: null,
@@ -45,7 +45,7 @@ console.log(oldEvent)
         onClick={() => {
           let event = editBounty(newEvent);
           event.then((data) => {
-            let naddrEvent = nip19.naddrEncode({identifier: data.id, pubkey: data.pubkey, kind:30023})
+            let naddrEvent = nip19.naddrEncode({identifier: data.tags[4][1], pubkey: data.pubkey, kind:30023})
             navigate(`/b/${naddrEvent}`);
           });
         }}

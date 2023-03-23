@@ -42,7 +42,8 @@ export async function getPubKey() {
 export async function sendReply(
   status: string | null,
   id: string,
-  pubKey: string | undefined
+  pubKey: string,
+  dTag: string
 ) {
   let relays = defaultRelays;
 
@@ -55,6 +56,7 @@ export async function sendReply(
       tags: [
         ["e", `${id}`],
         ["t", `bounty-reply`],
+        ["a", `30023:${pubKey}:${dTag}`],
       ],
       content: "in progress",
       sig: null,
@@ -83,6 +85,7 @@ export async function sendReply(
       tags: [
         ["e", `${id}`],
         ["t", "bounty-reply"],
+        ["a", `30023:${pubKey}:${dTag}`],
       ],
       content: "paid",
       sig: null,
@@ -111,6 +114,7 @@ export async function sendReply(
       tags: [
         ["e", `${id}`],
         ["t", "bounty-reply"],
+        ["a", `30023:${pubKey}:${dTag}`],
       ],
       content: "in progress",
       sig: null,

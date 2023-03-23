@@ -15,7 +15,7 @@ function EditBounty() {
   let subFilter = [
     {
       // @ts-ignore
-      ids: [`${naddrData.data.identifier}`],
+      "#d": [`${naddrData.data.identifier}`],
       kinds: [30023],
     },
   ];

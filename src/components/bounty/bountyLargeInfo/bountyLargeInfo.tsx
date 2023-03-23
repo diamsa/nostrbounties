@@ -50,7 +50,7 @@ function BountyLargeInfor({
   let npubShort = getNpub(pubkey);
   let npub = nip19.npubEncode(pubkey);
   let naddr = nip19.naddrEncode({
-    identifier: id,
+    identifier: dTag,
     pubkey: pubkey,
     kind: 30023,
   });
@@ -85,7 +85,7 @@ function BountyLargeInfor({
               )}
               {isLogged === pubkey ? (
                 <button
-                  onClick={() => sendReply(status, idToUse, pubkey)}
+                  onClick={() => sendReply(status, idToUse, pubkey, dTag)}
                   className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
                 >
                   {status === "paid" ? "Change status to: In progress" : null}

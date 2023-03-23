@@ -15,7 +15,7 @@ function MarketingBounties() {
 
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
-  let [ids, setIds] = useState<string[]>([]);
+  let [DTags, setDTags] = useState<string[]>([]);
   let [bountyTags, setBountyTags] = useState<string[][]>([]);
 
   let [pubkeys, setPubkeys] = useState<string[]>([]);
@@ -25,7 +25,6 @@ function MarketingBounties() {
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
-    let userMetaDataRelays = defaultRelays;
 
     let subFilter = [
       {
@@ -76,6 +75,10 @@ function MarketingBounties() {
               break;
           }
         }
+
+        if(item[0] === "d"){
+          setDTags((arr)=> [item[1],...arr])
+        }
       });
 
       let bountyTitle = event.tags[1][1];
@@ -83,7 +86,6 @@ function MarketingBounties() {
       let bountyDatePosted = date;
 
       setBountyTags((arr) => [tags_arr, ...arr]);
-      setIds((arr) => [event.id, ...arr]);
       setCreationDate((arr) => [bountyDatePosted, ...arr]);
       setTitles((arr) => [bountyTitle, ...arr]);
       setRewards((arr) => [bountyReward, ...arr]);
@@ -119,10 +121,10 @@ function MarketingBounties() {
                 <BountyCard
                   title={titles[index]}
                   reward={rewards[index]}
-                  id={ids[index]}
                   dates={creationDate[index]}
                   pubkeys={pubkeys[index]}
                   tags={bountyTags[index]}
+                  DTag={DTags[index]}
                 />
               </div>
             );

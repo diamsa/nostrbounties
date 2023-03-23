@@ -20,19 +20,22 @@ function BountyInfo() {
   const [content, setContent] = useState<any>({});
   const [pubKey, setPubkey] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [eventId, setEventId] = useState<string>("");
   const [profilePic, setProfilePic] = useState<string>("");
   const [addedReward, setAddedReward] = useState<addToReward[]>([]);
   const [status, setStatus] = useState<string | null>(null);
   const [totalReward, setTotalReward] = useState(0);
   const [rootId, setRootId] = useState<string>("");
-  const [dTag, setDTag] = useState<string>('')
+  const [dTag, setDTag] = useState<string>("");
 
   useEffect(() => {
-    let subFilterContent: { ids: string }[] = [
+    let subFilterContent = [
       {
         // @ts-ignore
-        ids: [naddrData.data.identifier],
+        "#d": [naddrData.data.identifier],
         kind: [30023],
+        // @ts-ignore
+        authors: [naddrData.data.pubkey],
       },
     ];
 
@@ -76,15 +79,14 @@ function BountyInfo() {
           if (item[0] === "rootId") {
             tags_arr.push(item[1]);
           }
-          if(item[0] === "d"){
-            setDTag(item[1])
+          if (item[0] === "d") {
+            setDTag(item[1]);
           }
         });
 
         setPubkey(event.pubkey);
-        
+        setEventId(event.id);
         setRootId(tags_arr.length === 0 ? "" : tags_arr[0]);
-        console.log(event.tags);
 
         //subscribe for bounty-added-reward
         relayPool.subscribe(
@@ -93,7 +95,7 @@ function BountyInfo() {
               "#e": [
                 tags_arr.length === 0
                   ? // @ts-ignore
-                    naddrData.data.identifier
+                    event.id
                   : tags_arr[0],
               ],
               "#t": ["bounty-added-reward"],
@@ -119,7 +121,7 @@ function BountyInfo() {
               "#e": [
                 tags_arr.length === 0
                   ? // @ts-ignore
-                    naddrData.data.identifier
+                    event.id
                   : tags_arr[0],
               ],
               "#t": ["bounty-reply"],
@@ -155,13 +157,13 @@ function BountyInfo() {
           pubkey={pubKey}
           status={status}
           // @ts-ignore
-          id={naddrData.data.identifier}
+          id={eventId}
           addedReward={addedReward}
           name={name}
           profilePic={profilePic}
           totalReward={totalReward}
           rootId={rootId}
-          dTag = {dTag}
+          dTag={dTag}
         />
       </div>
     </div>
