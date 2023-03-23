@@ -22,6 +22,8 @@ function EditBounty() {
 
   let [oldEvent, setOldEvent] = useState<any>({});
   let [loaded, setLoaded] = useState(false);
+
+  
   useEffect(() => {
     let relayPool = new RelayPool(relays);
 
