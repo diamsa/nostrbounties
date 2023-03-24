@@ -26,6 +26,7 @@ function Profile() {
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [DTags, setDTags] = useState<string[]>([]);
+  let [ATag, setATag] = useState<string[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
   let [pubkey, setPubkeys] = useState<string[]>([]);
@@ -122,7 +123,6 @@ function Profile() {
         setAddedReward((item) => item + amount);
       }
     );
-
     relayPool.subscribe(
       subFilterContent,
       relays,
@@ -132,6 +132,8 @@ function Profile() {
         setDataLoaded(true);
 
         let tags_arr: string[] = [];
+        let bountyDTag
+        
 
         event.tags.map((item) => {
           if (item[0] === "t") {
@@ -158,16 +160,17 @@ function Profile() {
           }
 
           if (item[0] === "d") {
-            setDTags((arr) => [item[1], ...arr]);
+            setDTags((arr) => [item[1], ...arr])
+            bountyDTag = item[1];
           }
-        });
+
+        });console.log(event)
         // subscribe for statuses
         relayPool.subscribe(
-          [{ "#e": [`${event.id}`], "#t": ["bounty-reply"], limit: 1 }],
+          [{ "#d": [`${bountyDTag}`], "#t": ["bounty-reply"], limit: 1 }],
           userMetaDataRelays,
           (event, isAfterEose, relayURL) => {
             setStatuses((arr) => [...arr, event.content]);
-            console.log(event)
           }
         );
 

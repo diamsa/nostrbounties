@@ -92,12 +92,8 @@ function BountyInfo() {
         relayPool.subscribe(
           [
             {
-              "#e": [
-                tags_arr.length === 0
-                  ? // @ts-ignore
-                    event.id
-                  : tags_arr[0],
-              ],
+              // @ts-ignore
+              "#a": [`30023:${naddrData.data.pubkey}:${naddrData.data.identifier}`],
               "#t": ["bounty-added-reward"],
             },
           ],
@@ -107,6 +103,7 @@ function BountyInfo() {
               posterPubkey: event.pubkey,
               amount: event.content,
             };
+            console.log(event)
             setTotalReward((item) => item + parseInt(event.content));
 
             setAddedReward((arr: addToReward[]) => [...arr, data]);
@@ -118,12 +115,8 @@ function BountyInfo() {
           [
             {
               authors: [event.pubkey],
-              "#e": [
-                tags_arr.length === 0
-                  ? // @ts-ignore
-                    event.id
-                  : tags_arr[0],
-              ],
+              // @ts-ignore
+              "#a": [`30023:${naddrData.data.pubkey}:${naddrData.data.identifier}`],
               "#t": ["bounty-reply"],
             },
           ],

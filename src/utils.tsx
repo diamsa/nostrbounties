@@ -54,7 +54,7 @@ export async function sendReply(
       created_at: Math.floor(Date.now() / 1000),
       kind: 1,
       tags: [
-        ["e", `${id}`],
+        ["d", `${dTag}`],
         ["t", `bounty-reply`],
         ["a", `30023:${pubKey}:${dTag}`],
       ],
@@ -83,7 +83,7 @@ export async function sendReply(
       created_at: Math.floor(Date.now() / 1000),
       kind: 1,
       tags: [
-        ["e", `${id}`],
+        ["d", `${dTag}`],
         ["t", "bounty-reply"],
         ["a", `30023:${pubKey}:${dTag}`],
       ],
@@ -112,7 +112,7 @@ export async function sendReply(
       created_at: Math.floor(Date.now() / 1000),
       kind: 1,
       tags: [
-        ["e", `${id}`],
+        ["d", `${dTag}`],
         ["t", "bounty-reply"],
         ["a", `30023:${pubKey}:${dTag}`],
       ],

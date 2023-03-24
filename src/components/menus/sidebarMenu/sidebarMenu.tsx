@@ -10,6 +10,7 @@ import createIconLg from "../../../assets/create-icon-lg.svg";
 import profileIconLg from "../../../assets/profile-icon-lg.svg";
 import relayIconLg from "../../../assets/server-icon-lg.svg";
 import relayIconDm from "../../../assets/server-icon-dm.svg";
+import logo from "../../../assets/Asset14.png";
 import deleteIcon from "../../../assets/delete-icon.svg";
 import active from "../../../assets/status-active.svg";
 import { nip19 } from "nostr-tools";
