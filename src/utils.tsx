@@ -10,21 +10,18 @@ export function convertTimestamp(unixTimestamp: number): string {
 
 export async function editBounty(event: any) {
   let relays = defaultRelaysToPublish;
-  if (event.content === "") {
-    console.log("add a value");
-  } else {
-    // @ts-ignore
-    if (!window.nostr) {
-      console.log("you need to install an extension");
-    }
-    // @ts-ignore
-    let EventMessageSigned = await window.nostr.signEvent(event);
-    console.log(EventMessageSigned.content);
-    let relayPool = new RelayPool(relays);
-    relayPool.publish(EventMessageSigned, relays);
-    console.log("edited");
-    return EventMessageSigned;
+
+  // @ts-ignore
+  if (!window.nostr) {
+    console.log("you need to install an extension");
   }
+  // @ts-ignore
+  let EventMessageSigned = await window.nostr.signEvent(event);
+  console.log(EventMessageSigned.content);
+  let relayPool = new RelayPool(relays);
+  relayPool.publish(EventMessageSigned, relays);
+  console.log("edited");
+  return EventMessageSigned;
 }
 
 export async function getPersonalRelays() {
