@@ -12,7 +12,6 @@ import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish, defaultRelays } from "../../const";
 
 function MarketingBounties() {
-
   let [titles, setTitles] = useState<string[]>([]);
   let [rewards, setRewards] = useState<string[]>([]);
   let [DTags, setDTags] = useState<string[]>([]);
@@ -76,8 +75,8 @@ function MarketingBounties() {
           }
         }
 
-        if(item[0] === "d"){
-          setDTags((arr)=> [item[1],...arr])
+        if (item[0] === "d") {
+          setDTags((arr) => [item[1], ...arr]);
         }
       });
 
@@ -92,7 +91,6 @@ function MarketingBounties() {
       setPubkeys((arr) => [event.pubkey, ...arr]);
 
       checkBountyExist.push(event.id);
-
     });
 
     setTimeout(() => {
@@ -112,7 +110,7 @@ function MarketingBounties() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
-      <CategoryList currentPage="marketing" />
+        <CategoryList currentPage="marketing" />
 
         {dataLoaded ? (
           titles.map((item, index) => {

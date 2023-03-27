@@ -73,8 +73,8 @@ function App() {
           }
         }
 
-        if(item[0] === "d"){
-          setDTags((arr)=> [item[1],...arr])
+        if (item[0] === "d") {
+          setDTags((arr) => [item[1], ...arr]);
         }
       });
 
@@ -89,7 +89,6 @@ function App() {
       setPubkeys((arr) => [event.pubkey, ...arr]);
 
       checkBountyExist.push(event.id);
-
     });
 
     setTimeout(() => {

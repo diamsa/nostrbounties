@@ -18,7 +18,7 @@ type props = {
 function BountyEditor({ oldEvent }: props) {
   let [newContent, setNewContent] = useState<string>("");
   let [newTitle, setNewTitle] = useState<string>(oldEvent.tags[1][1]);
-  oldEvent.tags[1].splice(1, 1, newTitle)
+  oldEvent.tags[1].splice(1, 1, newTitle);
 
   let navigate = useNavigate();
   let newEvent = {

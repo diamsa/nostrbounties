@@ -11,17 +11,10 @@ type props = {
   dates: string;
   pubkeys: string;
   tags: string[];
-  DTag: string
+  DTag: string;
 };
 
-function ShortBountyInfo({
-  title,
-  reward,
-  dates,
-  pubkeys,
-  tags,
-  DTag
-}: props) {
+function ShortBountyInfo({ title, reward, dates, pubkeys, tags, DTag }: props) {
   const navigate = useNavigate();
   let npub = getNpub(pubkeys);
   let naddr = nip19.naddrEncode({
@@ -57,7 +50,7 @@ function ShortBountyInfo({
             <img
               className="w-4 h-4 rounded-full my-1 mx-0.5"
               src={bitcoinIcon}
-              alt="bitcoin image"
+              alt="bitcoin"
             ></img>
             <p className="font-sans text-sm text-dark-text font-normal mr-1 mt-0.5 dark:text-gray-1">
               {reward} sats

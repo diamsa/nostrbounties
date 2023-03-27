@@ -9,8 +9,7 @@ import CategoryList from "../../components/categoriesList/categoryList";
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
-import { useNavigate } from "react-router-dom";
-import { defaultRelaysToPublish, defaultRelays } from "../../const";
+import { defaultRelaysToPublish } from "../../const";
 
 function CybersecurityBounties() {
   let [titles, setTitles] = useState<string[]>([]);

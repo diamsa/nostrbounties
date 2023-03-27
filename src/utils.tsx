@@ -137,6 +137,7 @@ export async function sendReply(
 
 export async function addReward(
   amount: string,
+  note: string,
   id: string,
   pubkey: string,
   dTag: string
@@ -153,10 +154,11 @@ export async function addReward(
       kind: 1,
       tags: [
         ["t", "bounty-added-reward"],
+        ["reward", `${amount}`],
         ["e", `${id}`],
         ["a", `30023:${pubkey}:${dTag}`],
       ],
-      content: amount,
+      content: note,
       sig: null,
     };
     // @ts-ignore
@@ -232,7 +234,17 @@ export async function deleteBounty(id: string) {
 }
 
 export async function getRelayData(relay: string) {
-  let url = `https://${relay}`;
+  let relayNoProtocol: string;
+  let url: string;
+
+  if (relay.startsWith("wss://")) {
+    relayNoProtocol = relay.replace(/^.{6}/, "");
+    url = `https://${relayNoProtocol}`;
+  } else {
+    relayNoProtocol = relay.replace(/^.{5}/, "");
+    url = `http://${relayNoProtocol}`;
+  }
+
   let data = await fetch(url, {
     method: "get",
     mode: "cors",

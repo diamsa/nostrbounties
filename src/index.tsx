@@ -19,7 +19,8 @@ import Error404 from "./pages/error";
 import Relays from "./pages/relays";
 
 const router = createBrowserRouter([
-  { errorElement: <Error404 />,
+  {
+    errorElement: <Error404 />,
     children: [
       {
         path: "/",

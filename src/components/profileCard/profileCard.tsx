@@ -12,20 +12,22 @@ function profileCard({ metaData, userNip05 }: any) {
               ? AvatarImage
               : metaData.profilePic
           }
-          alt="avatar image"
+          alt="avatar"
         />
         <h5 className="mb-1 text-xl font-medium text-dark-text dark:text-gray-1">
           {metaData.name === undefined ? metaData.display_name : metaData.name}
         </h5>
         <div className="flex">
           <span className="text-sm text-gray-500 dark:text-gray-1">
-            {metaData.nip05 === undefined || null ? "nip05 not found" : metaData.nip05}
+            {metaData.nip05 === undefined || null
+              ? "nip05 not found"
+              : metaData.nip05}
           </span>
           {userNip05 ? (
             <img
               className="w-5 h-5  rounded-full shadow-lg "
               src={checkMark}
-              alt="avatar image"
+              alt="avatar"
             />
           ) : null}
         </div>
