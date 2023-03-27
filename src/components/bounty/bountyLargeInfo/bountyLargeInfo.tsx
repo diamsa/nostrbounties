@@ -159,24 +159,26 @@ function BountyLargeInfor({
         </div>
       )}
 
-      <div className="flex flex-col gap-1 py-4">
+      <div className="flex flex-col gap-2 py-4">
         {addedReward.map((item: any) => {
           let npubAddedReward = nip19.npubEncode(item.posterPubkey);
           return (
             <div
               key={item.identifier}
-              className="posterAdded bg-stone-800 p-2 rounded-lg"
+              className="posterAdded bg-stone-800 p-2 rounded-lg flex flex-col gap-1"
             >
               <Link
                 to={`/profile/${npubAddedReward}`}
-                className="font-sans text-sm font-light mr-3 mt-1 dark:text-gray-2"
+                className="font-sans text-sm font-light dark:text-gray-2"
               >
                 {getNpub(item.posterPubkey)} added{" "}
                 <span className="font-sans text-base underline font-medium dark:text-gray-2">
                   {formatReward(item.amount)} sats
                 </span>{" "}
               </Link>
-              <div className="dark:text-gray-2 text-sm mt-2">{item.note}</div>
+              {item.note.length > 0 && (
+                <div className="dark:text-gray-2 text-sm">{item.note}</div>
+              )}
             </div>
           );
         })}
