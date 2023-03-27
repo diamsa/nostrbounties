@@ -165,7 +165,7 @@ function BountyLargeInfor({
           return (
             <div
               key={item.identifier}
-              className="posterAdded bg-stone-800 p-2 rounded-lg flex flex-col gap-1"
+              className="posterAdded bg-stone-100 dark:bg-stone-800 shadow-sm p-2 rounded-lg flex flex-col gap-1"
             >
               <Link
                 to={`/profile/${npubAddedReward}`}
