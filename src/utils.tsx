@@ -147,6 +147,13 @@ export async function addReward(
   if (amount === "") {
     console.log("add a value");
   } else {
+    let eventNote: string;
+    if (note.length > 0) {
+      eventNote = `I just added ${amount} sats to this bounty! ${note}`;
+    } else {
+      eventNote = `I just added ${amount} sats to this bounty!`;
+    }
+
     let eventMessage = {
       id: null,
       pubkey: null,
@@ -155,10 +162,10 @@ export async function addReward(
       tags: [
         ["t", "bounty-added-reward"],
         ["reward", `${amount}`],
-        ["e", `${id}`],
+        ["e", `${id}`, `${defaultRelaysToPublish[0]}`, "root"],
         ["a", `30023:${pubkey}:${dTag}`],
       ],
-      content: note,
+      content: eventNote,
       sig: null,
     };
     // @ts-ignore
