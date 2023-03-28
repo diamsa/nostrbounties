@@ -78,8 +78,6 @@ function Profile() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
-    console.log("STATUS: ", statuses);
-
     relayPool.subscribe(
       subFilterMetaData,
       userMetaDataRelays,

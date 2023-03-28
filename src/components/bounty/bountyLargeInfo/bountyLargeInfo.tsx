@@ -101,17 +101,11 @@ function BountyLargeInfor({
             <p className="font-sans text-2xl font-semibold dark:text-gray-2">
               {content.title}
             </p>
-            <div className="flex">
+            <div className="flex h-6 flex-row items-center">
               <p className="font-sans text-sm font-normal dark:text-gray-1">
-                posted: {content.publishedAt} by
+                Posted: {content.publishedAt} by
               </p>
-              <div className="flex">
-                <Link
-                  to={`/profile/${npub}`}
-                  className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
-                >
-                  {name === "" || undefined ? npubShort : name}
-                </Link>
+              <div className="flex flex-row items-center">
                 <img
                   className="w-6 h-6 rounded-full shadow-lg ml-2"
                   src={
@@ -119,6 +113,12 @@ function BountyLargeInfor({
                   }
                   alt="avatar"
                 />
+                <Link
+                  to={`/profile/${npub}`}
+                  className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
+                >
+                  {name === "" || undefined ? npubShort : name}
+                </Link>
               </div>
             </div>
           </div>
@@ -152,7 +152,7 @@ function BountyLargeInfor({
               setRewardToAdd("");
               setRewardNoteToAdd("");
             }}
-            className="px-5 rounded-lg px-4 py-2 text-sm text-white dark:text-white font-bold bg-blue-1 hover:bg-blue-800"
+            className="rounded-lg px-4 py-2 text-sm text-white dark:text-white font-bold bg-blue-1 hover:bg-blue-800"
           >
             Add sats
           </button>
@@ -160,18 +160,18 @@ function BountyLargeInfor({
       )}
 
       <div className="flex flex-col gap-2 py-4">
-        {addedReward.map((item: any) => {
+        {addedReward.map((item: any, index) => {
           let npubAddedReward = nip19.npubEncode(item.posterPubkey);
           return (
             <div
-              key={item.identifier}
+              key={item.identifier + index.toString()}
               className="posterAdded bg-stone-100 dark:bg-input-bg-dm shadow-sm py-2 px-4 rounded-lg font-light dark:text-gray-2"
             >
               <Link
                 to={`/profile/${npubAddedReward}`}
                 className="underline font-medium"
               >
-                {name}
+                {item.name || getNpub(item.posterPubkey)}
               </Link>{" "}
               added{" "}
               <span className="font-medium">

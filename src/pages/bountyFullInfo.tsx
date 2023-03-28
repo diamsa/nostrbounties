@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { RelayPool } from "nostr-relaypool";
+import { RelayPool, Author } from "nostr-relaypool";
 import { convertTimestamp, getMetaData } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
 
@@ -13,6 +13,8 @@ type addToReward = {
   posterPubkey: string;
   amount: string;
   note: string;
+  name: string | undefined;
+  picture: string | undefined;
 };
 
 function BountyInfo() {
@@ -118,12 +120,30 @@ function BountyInfo() {
               compatNote = "";
               compatAmount = event.content;
             }
+            const relayPoolAuthor = new RelayPool();
+            const author = new Author(
+              relayPoolAuthor,
+              defaultRelays,
+              event.pubkey
+            );
 
             let data = {
               posterPubkey: event.pubkey,
               amount: compatAmount,
               note: compatNote,
+              name: undefined,
+              picture: undefined,
             };
+
+            author.metaData((e) => {
+              let authorJSON = JSON.parse(e.content);
+              if (authorJSON.displayName) {
+                data.name = authorJSON.displayName;
+              }
+              if (authorJSON.picture) {
+                data.picture = authorJSON.picture;
+              }
+            }, 100);
 
             setTotalReward((total) => total + parseInt(compatAmount));
 
