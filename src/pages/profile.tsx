@@ -84,6 +84,8 @@ function Profile() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
+    console.log("STATUS: ", statuses);
+
     relayPool.subscribe(
       subFilterMetaData,
       userMetaDataRelays,
@@ -125,7 +127,20 @@ function Profile() {
       subFilterAddedReward,
       userMetaDataRelays,
       (event, isAfterEose, relayURL) => {
-        let amount = parseInt(event.content);
+        let compatAmount: string;
+        // Get the reward tag from the list of tags
+        // @ts-ignore
+        let rewardTag: Array | undefined = event.tags.find(
+          (elem) => elem[0] === "reward"
+        );
+
+        // Conditionally handle older events with amount in the content field
+        if (event.content === "" || isNaN(Number(event.content))) {
+          compatAmount = rewardTag ? rewardTag[1] : "0";
+        } else {
+          compatAmount = event.content;
+        }
+        let amount = parseInt(compatAmount);
         setAddedReward((item) => item + amount);
       }
     );
@@ -249,7 +264,7 @@ function Profile() {
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 sm:mb-24 dark:bg-background-dark-mode">
         <ProfileCard metaData={metaData} userNip05={userNip05} />
 
-        <div className="flex p-3 lg:ml-3 sm:block md:flex-wrap">
+        <div className="flex flex-col md:flex-row items-center justify-between my-6 sm:block">
           <BountiesPaid bountiesPaid={statuses} />
           <BountiesProgress bountiesProgress={statuses} />
           <SatsAdded amount={formatReward(addedReward)} />

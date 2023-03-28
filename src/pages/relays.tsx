@@ -9,10 +9,6 @@ function Relays() {
   let [relaysDefaultInfo, setRelaysDefaultInfo] = useState<string[]>([]);
   let [relaysDefaultPublish, setRelaysDefaultPublish] = useState<string[]>([]);
 
-  function removeFirstSixChars(str: string) {
-    return str.replace(/^.{6}/, "");
-  }
-
   function relayId(id: string) {
     if (id === "strfry default") {
       return "wss://nos.lol";
@@ -30,15 +26,13 @@ function Relays() {
 
   useEffect(() => {
     defaultRelays.map((item) => {
-      let relay = removeFirstSixChars(item);
-      getRelayData(relay).then((item) => {
+      getRelayData(item).then((item) => {
         setRelaysDefaultInfo((arr) => [item, ...arr]);
       });
     });
 
     defaultRelaysToPublish.map((item) => {
-      let relay = removeFirstSixChars(item);
-      getRelayData(relay).then((item) => {
+      getRelayData(item).then((item) => {
         setRelaysDefaultPublish((arr) => [item, ...arr]);
       });
     });
@@ -61,7 +55,10 @@ function Relays() {
         <div className="grid-rows-2 grid-cols-2 grid sm:block">
           {relaysDefaultInfo.map((item: any) => {
             return (
-              <div className="my-2 justify-between items-center shadow-md border border-gray-200 rounded-md hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm">
+              <div
+                key={item.id}
+                className="my-2 justify-between items-center shadow-md border border-gray-200 rounded-md hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm"
+              >
                 <div className="flex justify-center mx-auto">
                   <img
                     className="w-7 h-5 cursor-pointer my-auto"
@@ -81,7 +78,10 @@ function Relays() {
           })}
           {relaysDefaultPublish.map((item: any) => {
             return (
-              <div className="my-2 justify-between items-center shadow-md border border-gray-200 rounded-md hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm">
+              <div
+                key={item.id}
+                className="my-2 justify-between items-center shadow-md border border-gray-200 rounded-md hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm"
+              >
                 <div className="flex justify-center mx-auto">
                   <img
                     className="w-7 h-5 cursor-pointer my-auto"

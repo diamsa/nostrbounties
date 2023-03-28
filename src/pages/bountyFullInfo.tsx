@@ -97,6 +97,22 @@ function BountyInfo() {
           subFilterAddedReward,
           defaultRelays,
           (event, isAfterEose, relayURL) => {
+            let compatAmount: string;
+            let compatNote: string;
+            // Get the reward tag from the list of tags
+            // @ts-ignore
+            let rewardTag: Array | undefined = event.tags.find(
+              (elem) => elem[0] === "reward"
+            );
+
+            // Conditionally handle older events with amount in the content field
+            if (event.content === "" || isNaN(Number(event.content))) {
+              compatNote = event.content;
+              compatAmount = rewardTag ? rewardTag[1] : "0";
+            } else {
+              compatNote = "";
+              compatAmount = event.content;
+            }
             getMetaData(event.pubkey)
               .then((response) => {
                 if (response.status === 404) {
@@ -104,7 +120,8 @@ function BountyInfo() {
                     {
                       name: "",
                       profilePic: "",
-                      amount: event.content,
+                      amount: compatAmount,
+                      note: compatNote,
                       pubkey: event.pubkey,
                     },
                     ...ev.pledged,
@@ -118,7 +135,8 @@ function BountyInfo() {
                   {
                     name: parseContent.name,
                     profilePic: parseContent.picture,
-                    amount: event.content,
+                    amount: compatAmount,
+                    note: compatNote,
                     pubkey: event.pubkey,
                   },
                   ...ev.pledged,

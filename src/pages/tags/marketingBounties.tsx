@@ -38,6 +38,7 @@ function MarketingBounties() {
     ];
 
     let checkBountyExist = [];
+    let eventLength = [];
 
     let relayPool = new RelayPool(relays, { useEventCache: true });
 
@@ -130,18 +131,28 @@ function MarketingBounties() {
 
       setEventData((arr) => [ev, ...arr]);
       checkBountyExist.push(event.id);
+      eventLength.push(ev);
     });
 
     setTimeout(() => {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-      if (checkBountyExist.length === 0) setBountyNotFound(true);
+      if (checkBountyExist.length === 0) {
+        setBountyNotFound(true);
+        clearInterval(closeMyInterval);
+      }
     }, 40000);
 
-    setTimeout(() => {
-      setDataLoaded(true);
-    }, 2300);
+    let closeMyInterval = setInterval(() => {
+      if (
+        eventLength.length === checkBountyExist.length &&
+        eventLength.length > 1
+      ) {
+        setDataLoaded(true);
+        clearInterval(closeMyInterval);
+      }
+    }, 1500);
   }, []);
 
   return (
@@ -178,4 +189,3 @@ function MarketingBounties() {
 }
 
 export default MarketingBounties;
-

@@ -38,6 +38,7 @@ function DebuggingBounties() {
     ];
 
     let checkBountyExist = [];
+    let eventLength = [];
 
     let relayPool = new RelayPool(relays, { useEventCache: true });
 
@@ -129,6 +130,7 @@ function DebuggingBounties() {
       );
 
       setEventData((arr) => [ev, ...arr]);
+      eventLength.push(ev);
       checkBountyExist.push(event.id);
     });
 
@@ -136,12 +138,21 @@ function DebuggingBounties() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-      if (checkBountyExist.length === 0) setBountyNotFound(true);
+      if (checkBountyExist.length === 0) {
+        setBountyNotFound(true);
+        clearInterval(closeMyInterval);
+      }
     }, 40000);
 
-    setTimeout(() => {
-      setDataLoaded(true);
-    }, 2300);
+    let closeMyInterval = setInterval(() => {
+      if (
+        eventLength.length === checkBountyExist.length &&
+        eventLength.length > 1
+      ) {
+        setDataLoaded(true);
+        clearInterval(closeMyInterval);
+      }
+    }, 1500);
   }, []);
 
   return (
