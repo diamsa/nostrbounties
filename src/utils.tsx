@@ -38,13 +38,12 @@ export async function getPubKey() {
 
 export async function sendReply(
   status: string | null,
-  id: string,
   pubKey: string,
   dTag: string
 ) {
   let relays = defaultRelays;
 
-  if (status === null) {
+  if (status === "") {
     let eventMessage = {
       id: null,
       pubkey: null,
@@ -134,7 +133,6 @@ export async function sendReply(
 
 export async function addReward(
   amount: string,
-  id: string,
   pubkey: string,
   dTag: string
 ) {
@@ -150,7 +148,6 @@ export async function addReward(
       kind: 1,
       tags: [
         ["t", "bounty-added-reward"],
-        ["e", `${id}`],
         ["a", `30023:${pubkey}:${dTag}`],
       ],
       content: amount,
@@ -170,11 +167,47 @@ export async function addReward(
     console.log("posted");
   }
 }
+export async function sendComment(
+  message: string,
+  pubkey: string,
+  dTag: string
+) {
+  let relays = defaultRelays;
+
+  if (message === "") {
+    console.log("add a comment");
+  } else {
+    let eventMessage = {
+      id: null,
+      pubkey: null,
+      created_at: Math.floor(Date.now() / 1000),
+      kind: 1,
+      tags: [
+        ["d", dTag],
+        ["t", "bounty-comment"]
+      ],
+      content: message,
+      sig: null,
+    };
+    // @ts-ignore
+    if (!window.nostr) {
+      console.log("you need to install an extension");
+    }
+    // @ts-ignore
+    let EventMessageSigned = await window.nostr.signEvent(eventMessage);
+    console.log(EventMessageSigned.content);
+
+    let relayPool = new RelayPool(relays);
+
+    relayPool.publish(EventMessageSigned, defaultRelays);
+    console.log("posted");
+  }
+}
 
 export function getNpub(pubkey: string) {
   let npub = nip19.npubEncode(pubkey);
   let arr_shortnpub = [];
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 12; i++) {
     arr_shortnpub.push(npub[i]);
   }
   let npubShortened = arr_shortnpub.join("");

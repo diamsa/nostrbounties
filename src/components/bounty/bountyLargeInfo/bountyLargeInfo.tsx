@@ -3,6 +3,7 @@ import {
   getNpub,
   addReward,
   formatReward,
+  sendComment,
   deleteBounty,
 } from "../../../utils";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,184 +11,239 @@ import { nip19 } from "nostr-tools";
 
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import avatarImage from "../../../assets/nostr-icon-user.avif";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-type content = {
-  title: string;
-  content: string;
-  reward: string;
-  publishedAt: string;
+import CommentBox from "../bountyCommentBox/bountyCommentBox";
+
+type event = {
+  ev: {
+    Dtag: string;
+    content: string;
+    id: string;
+    name: string;
+    pledged: any[];
+    profilePic: string;
+    pubkey: string;
+    publishedAt: string;
+    reward: number;
+    status: string;
+    title: string;
+    comments: any[];
+  };
 };
 
-type props = {
-  content: content;
-  pubkey: string;
-  status: string | null;
-  id: string;
-  addedReward: {
-    posterPubkey: string;
-    amount: string;
-  }[];
-  name: string;
-  profilePic: string;
-  totalReward: number;
-  rootId: string;
-  dTag: string;
-};
+function BountyLargeInfor({ ev }: event) {
+  function getFinalReward() {
+    let totalReward = ev.reward;
+    ev.pledged.map((item) => {
+      let value = parseInt(item.amount);
+      totalReward += value;
+    });
 
-function BountyLargeInfor({
-  content,
-  pubkey,
-  status,
-  id,
-  addedReward,
-  name,
-  profilePic,
-  totalReward,
-  rootId,
-  dTag,
-}: props) {
-  let npubShort = getNpub(pubkey);
-  let npub = nip19.npubEncode(pubkey);
+    return totalReward;
+  }
+
   let naddr = nip19.naddrEncode({
-    identifier: dTag,
-    pubkey: pubkey,
+    identifier: ev.Dtag,
+    pubkey: ev.pubkey,
     kind: 30023,
   });
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
+  let [message, setMessage] = useState<string>("");
+  let [loaded, setLoaded] = useState(false);
+  let totalReward = getFinalReward();
   let isLogged = sessionStorage.getItem("pubkey");
-  let idToUse = rootId === "" ? id : rootId;
   let navigate = useNavigate();
 
+  useEffect(() => {
+    setTimeout(() => {
+      setLoaded(true);
+    }, 2000);
+  }, []);
+
   return (
-    <div className="my-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
-      <div>
+    <div>
+      <div className="mt-4 items-center border border-gray-200 rounded-lg shadow-md max-w-7xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg">
         <div>
-          <div className="flex flex-wrap">
-            <div>
-              <p className="font-sans text-base py-1 px-2 mr-1 mt-2 rounded-lg bg-status-paid-text text-status-paid font-medium sm:text-sm dark:text-status-paid">
-                {formatReward(totalReward + content.reward)} sats
-              </p>
+          <div>
+            <div className="flex flex-wrap">
+              <div>
+                <p className="font-sans text-base py-1 px-2 mr-1 mt-2 rounded-lg bg-status-paid-text text-status-paid font-medium sm:text-sm dark:text-status-paid">
+                  {formatReward(totalReward)} sats
+                </p>
+              </div>
+              <div className="flex">
+                {ev.status === "" ? (
+                  <p className="bg-status-open text-status-open-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
+                    Status: Open
+                  </p>
+                ) : ev.status === "in progress" ? (
+                  <p className="bg-status-in-progress text-status-in-progress-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
+                    Status: In progress
+                  </p>
+                ) : (
+                  <p className="bg-status-paid text-status-paid-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
+                    Status: Paid
+                  </p>
+                )}
+                {isLogged === ev.pubkey ? (
+                  <button
+                    onClick={() => sendReply(ev.status, ev.pubkey, ev.Dtag)}
+                    className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
+                  >
+                    {ev.status === "paid"
+                      ? "Change status to: In progress"
+                      : null}
+                    {ev.status === "in progress"
+                      ? "Change status to: Paid"
+                      : null}
+                    {ev.status === "" ? "Change status to: In progress" : null}
+                  </button>
+                ) : null}
+              </div>
             </div>
-            <div className="flex">
-              {status === null ? (
-                <p className="bg-status-open text-status-open-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
-                  Status: Open
-                </p>
-              ) : status === "in progress" ? (
-                <p className="bg-status-in-progress text-status-in-progress-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
-                  Status: In progress
-                </p>
-              ) : (
-                <p className="bg-status-paid text-status-paid-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
-                  Status: Paid
-                </p>
-              )}
-              {isLogged === pubkey ? (
-                <button
-                  onClick={() => sendReply(status, idToUse, pubkey, dTag)}
-                  className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
-                >
-                  {status === "paid" ? "Change status to: In progress" : null}
-                  {status === "in progress" ? "Change status to: Paid" : null}
-                  {status === null ? "Change status to: In progress" : null}
-                </button>
-              ) : null}
-            </div>
-          </div>
-          <div className="basis-7/12 mt-3">
-            <p className="font-sans text-2xl font-semibold dark:text-gray-2">
-              {content.title}
-            </p>
-            <div className="flex">
-              <p className="font-sans text-sm font-normal dark:text-gray-1">
-                posted: {content.publishedAt} by
+            <div className="basis-7/12 mt-3">
+              <p className="font-sans text-2xl font-semibold dark:text-gray-2">
+                {ev.title}
               </p>
               <div className="flex">
-                <Link
-                  to={`/profile/${npub}`}
-                  className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
-                >
-                  {name === "" || undefined ? npubShort : name}
-                </Link>
-                <img
-                  className="w-6 h-6 rounded-full shadow-lg ml-2"
-                  src={
-                    profilePic === "" || undefined ? avatarImage : profilePic
-                  }
-                  alt="avatar image"
-                />
+                <p className="font-sans text-sm font-normal dark:text-gray-1">
+                  posted: {ev.publishedAt} by
+                </p>
+                <div className="flex">
+                  <Link
+                    to={`/profile/aa`}
+                    className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
+                  >
+                    {ev.name === "" || undefined ? "hey chnaged me" : ev.name}
+                  </Link>
+                  <img
+                    className="w-6 h-6 rounded-full shadow-lg ml-2"
+                    src={
+                      ev.profilePic === "" || undefined
+                        ? avatarImage
+                        : ev.profilePic
+                    }
+                    alt="avatar image"
+                  />
+                </div>
               </div>
             </div>
           </div>
+          <div className="my-5">
+            <ReactMarkdown className="markdown prose-a:underline">
+              {ev.content}
+            </ReactMarkdown>
+          </div>
         </div>
-        <div className="my-5">
-          <ReactMarkdown className="markdown prose-a:underline">
-            {content.content}
-          </ReactMarkdown>
-        </div>
-      </div>
-      {status === "paid" ? null : (
-        <div className="flex">
-          <input
-            type="number"
-            onChange={(e) => setRewardToAdd(e.target.value)}
-            className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm dark:text-gray-1 border-0"
-            placeholder="add sats to the initial reward"
-            value={rewardToAdd}
-            required
-          />
-          <button
-            onClick={() => {
-              addReward(rewardToAdd, idToUse, pubkey, dTag);
-              setRewardToAdd("");
-            }}
-            className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
-          >
-            add sats
-          </button>
-        </div>
-      )}
-
-      <div className="flex flex-wrap">
-        {addedReward.map((item: any) => {
-          let npubAddedReward = nip19.npubEncode(item.posterPubkey);
-          return (
-            <Link
-              to={`/profile/${npubAddedReward}`}
-              className="font-sans text-sm font-light mr-3 mt-1 dark:text-gray-2"
-            >
-              {getNpub(item.posterPubkey)} added{" "}
-              <span className="font-sans text-base underline font-medium  dark:text-gray-2">
-                {formatReward(item.amount)} sats
-              </span>{" "}
-            </Link>
-          );
-        })}
-      </div>
-
-      <div className="mt-5">
-        {isLogged === pubkey ? (
-          <div className="flex space-x-2">
-            <Link
-              to={`/edit/${naddr}`}
-              className="cursor-pointer px-3 py-1.5 rounded-lg text-dark-text bg-status-paid-text font-sans text-sm font-normal dark:text-dark-text"
-            >
-              edit bounty
-            </Link>
+        {ev.status === "paid" ? null : (
+          <div className="flex">
+            <input
+              type="number"
+              onChange={(e) => setRewardToAdd(e.target.value)}
+              className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm dark:text-gray-1 border-0"
+              placeholder="add sats to the initial reward"
+              value={rewardToAdd}
+              required
+            />
             <button
               onClick={() => {
-                let event = deleteBounty(id);
-                event.then((data) => {
-                  navigate(`/`);
-                });
+                addReward(rewardToAdd, ev.pubkey, ev.Dtag);
+                setRewardToAdd("");
               }}
-              className="cursor-pointer px-3 py-1.5 rounded-lg font-sans bg-alert-1 text-sm font-normal dark:text-gray-1 "
+              className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
             >
-              delete bounty
+              add sats
             </button>
           </div>
+        )}
+
+        <div className="block space-x-2">
+          {ev.pledged.map((item: any) => {
+            let npubAddedReward = nip19.npubEncode(item.pubkey);
+            return (
+              <div className="flex space-x-1">
+                <div>
+                  <img
+                    className="w-6 h-6 rounded-full shadow-lg mt-2 sm:ml-0"
+                    src={item.profilePic === "" ? avatarImage : item.profilePic}
+                    alt="avatar image"
+                  />
+                </div>
+                <Link
+                  to={`/profile/${npubAddedReward}`}
+                  className="font-sans text-sm font-light mr-3 mt-1 dark:text-gray-2"
+                >
+                  {item.name === "" ? "not found" : item.name} added{" "}
+                  <span className="font-sans text-base underline font-medium  dark:text-gray-2">
+                    {formatReward(item.amount)} sats
+                  </span>{" "}
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-5">
+          {isLogged === ev.pubkey ? (
+            <div className="flex space-x-2">
+              <Link
+                to={`/edit/${naddr}`}
+                className="cursor-pointer px-3 py-1.5 rounded-lg text-dark-text bg-status-paid-text font-sans text-sm font-normal dark:text-dark-text"
+              >
+                edit bounty
+              </Link>
+              <button
+                onClick={() => {
+                  let event = deleteBounty(ev.id);
+                  event.then((data) => {
+                    navigate(`/`);
+                  });
+                }}
+                className="cursor-pointer px-3 py-1.5 rounded-lg font-sans bg-alert-1 text-sm font-normal dark:text-gray-1 "
+              >
+                delete bounty
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+      <div>
+        {loaded ? (
+          <div>
+            {ev.comments.map((item) => {
+              return (
+                <div>
+                  <CommentBox
+                    npub={item.npub}
+                    content={item.comment}
+                    name={item.name}
+                    profilePic={item.profilePic}
+                  />
+                </div>
+              );
+            })}
+          </div>
         ) : null}
+      </div>
+      <div className="block p-4">
+        <input
+          type="text"
+          onChange={(e) => setMessage(e.target.value)}
+          className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm dark:text-gray-1 border-0"
+          placeholder="your comment"
+          value={message}
+          required
+        />
+        <button
+          onClick={() => {
+            sendComment(message, ev.pubkey, ev.Dtag);
+            setMessage("");
+          }}
+          className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
+        >
+          send a comment
+        </button>
       </div>
     </div>
   );

@@ -14,19 +14,26 @@ type addToReward = {
   amount: string;
 };
 
+type event = {
+  Dtag: string;
+  content: string;
+  id: string;
+  name: string;
+  pledged: any[];
+  profilePic: string;
+  pubkey: string;
+  publishedAt: string;
+  reward: number;
+  status: string;
+  title: string;
+  comments: any[];
+};
+
 function BountyInfo() {
   const params: any = useParams<{ id: string }>();
   let naddrData = nip19.decode(params.id);
-  const [content, setContent] = useState<any>({});
-  const [pubKey, setPubkey] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [eventId, setEventId] = useState<string>("");
-  const [profilePic, setProfilePic] = useState<string>("");
-  const [addedReward, setAddedReward] = useState<addToReward[]>([]);
-  const [status, setStatus] = useState<string | null>(null);
-  const [totalReward, setTotalReward] = useState(0);
-  const [rootId, setRootId] = useState<string>("");
-  const [dTag, setDTag] = useState<string>("");
+  let [eventData, setEventData] = useState<event>();
+  let [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     let subFilterContent = [
@@ -39,8 +46,6 @@ function BountyInfo() {
       },
     ];
 
-    let arr_status: string[] = [];
-
     let relayPool = new RelayPool(defaultRelays);
 
     relayPool.onerror((err, relayUrl) => {
@@ -52,10 +57,11 @@ function BountyInfo() {
 
     //subscribe for content
     relayPool.subscribe(
-      // @ts-ignore
       subFilterContent,
       defaultRelaysToPublish,
       (event, isAfterEose, relayURL) => {
+        //@ts-ignore
+        let ev: event = {};
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
         let tags_arr: string[] = [];
@@ -64,68 +70,138 @@ function BountyInfo() {
           .then((response) => response.json())
           .then((data) => {
             let parseContent = JSON.parse(data.content);
-            setName(parseContent.name);
-            setProfilePic(parseContent.picture);
+            ev.name = parseContent.name;
+            ev.profilePic = parseContent.picture;
           });
-
-        setContent({
-          title: event.tags[1][1],
-          content: event.content,
-          reward: parseInt(event.tags[2][1]),
-          publishedAt: date,
-        });
 
         event.tags.map((item) => {
           if (item[0] === "rootId") {
             tags_arr.push(item[1]);
           }
           if (item[0] === "d") {
-            setDTag(item[1]);
+            ev.Dtag = item[1];
           }
         });
 
-        setPubkey(event.pubkey);
-        setEventId(event.id);
-        setRootId(tags_arr.length === 0 ? "" : tags_arr[0]);
-
+        let subFilterAddedReward = [
+          {
+            "#a": [
+              // @ts-ignore
+              `30023:${naddrData.data.pubkey}:${naddrData.data.identifier}`,
+            ],
+            "#t": ["bounty-added-reward"],
+          },
+        ];
         //subscribe for bounty-added-reward
         relayPool.subscribe(
-          [
-            {
-              // @ts-ignore
-              "#a": [`30023:${naddrData.data.pubkey}:${naddrData.data.identifier}`],
-              "#t": ["bounty-added-reward"],
-            },
-          ],
+          subFilterAddedReward,
           defaultRelays,
           (event, isAfterEose, relayURL) => {
-            let data = {
-              posterPubkey: event.pubkey,
-              amount: event.content,
-            };
-            console.log(event)
-            setTotalReward((item) => item + parseInt(event.content));
-
-            setAddedReward((arr: addToReward[]) => [...arr, data]);
+            getMetaData(event.pubkey)
+              .then((response) => {
+                if (response.status === 404) {
+                  ev.pledged = [
+                    {
+                      name: "",
+                      profilePic: "",
+                      amount: event.content,
+                      pubkey: event.pubkey,
+                    },
+                    ...ev.pledged,
+                  ];
+                }
+                return response.json();
+              })
+              .then((data) => {
+                let parseContent = JSON.parse(data.content);
+                ev.pledged = [
+                  {
+                    name: parseContent.name,
+                    profilePic: parseContent.picture,
+                    amount: event.content,
+                    pubkey: event.pubkey,
+                  },
+                  ...ev.pledged,
+                ];
+              });
           }
         );
 
+        let subFilterStatus = [
+          {
+            // @ts-ignore
+            "#d": [naddrData.data.identifier],
+            "#t": ["bounty-reply"],
+            limit: 1,
+          },
+        ];
         // suscrbibe for bounty status
         relayPool.subscribe(
-          [
-            {
-              authors: [event.pubkey],
-              // @ts-ignore
-              "#a": [`30023:${naddrData.data.pubkey}:${naddrData.data.identifier}`],
-              "#t": ["bounty-reply"],
-            },
-          ],
+          subFilterStatus,
           defaultRelays,
           (event, isAfterEose, relayURL) => {
-            arr_status.push(event.content);
-            setStatus(arr_status[0]);
+            ev.status = event.content;
           }
         );
+        let subFilterComments = [
+          {
+            // @ts-ignore
+            "#d": [naddrData.data.identifier],
+            "#t": ["bounty-comment"],
+            kind: [1],
+          },
+        ];
+        // suscrbibe for bounty comments
+        relayPool.subscribe(
+          subFilterComments,
+          defaultRelays,
+          (event, isAfterEose, relayURL) => {
+            console.log(event);
+            getMetaData(event.pubkey)
+              .then((response) => {
+                if (response.status === 404) {
+                  ev.comments = [
+                    {
+                      name: "",
+                      profilePic: "",
+                      comment: event.content,
+                      npub: nip19.npubEncode(event.pubkey),
+                      id: event.id,
+                    },
+                    ...ev.comments,
+                  ];
+                }
+                return response.json();
+              })
+              .then((data) => {
+                let parseContent = JSON.parse(data.content);
+                ev.comments = [
+                  {
+                    name: parseContent.name,
+                    profilePic: parseContent.picture,
+                    comment: event.content,
+                    npub: nip19.npubEncode(event.pubkey),
+                    id: event.id,
+                  },
+                  ...ev.comments,
+                ];
+              });
+          }
+        );
+
+        if (!ev.hasOwnProperty("status")) {
+          ev.status = "";
+        }
+
+        ev.pledged = [];
+        ev.comments = [];
+        ev.title = event.tags[1][1];
+        ev.content = event.content;
+        ev.reward = parseInt(event.tags[2][1]);
+        ev.publishedAt = date;
+        ev.pubkey = event.pubkey;
+        ev.id = event.id;
+        setEventData(ev);
       }
     );
 
@@ -133,7 +209,11 @@ function BountyInfo() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-    }, 20000);
+    }, 40000);
+
+    setTimeout(() => {
+      setDataLoaded(true);
+    }, 2000);
   }, []);
 
   return (
@@ -141,23 +221,17 @@ function BountyInfo() {
       <div className="basis-3/12 sm:hidden">
         <SideBarMenu />
       </div>
-      <div className="basis-3/12 lg:hidden md:hidden">
+      <div className="basis-12/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen sm:mb-24 px-1 dark:bg-background-dark-mode">
-        <BountyLargeInfor
-          content={content}
-          pubkey={pubKey}
-          status={status}
-          // @ts-ignore
-          id={eventId}
-          addedReward={addedReward}
-          name={name}
-          profilePic={profilePic}
-          totalReward={totalReward}
-          rootId={rootId}
-          dTag={dTag}
-        />
+        {dataLoaded ? (
+          <BountyLargeInfor ev={eventData!} />
+        ) : (
+          <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
+            Loading...
+          </div>
+        )}
       </div>
     </div>
   );

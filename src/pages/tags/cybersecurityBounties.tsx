@@ -1,31 +1,35 @@
 //components
-import BountyCard from "../../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 import SideBarMenu from "../../components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../../components/errors/bountiesNotFound";
 import MobileMenu from "../../components/menus/mobileMenu/mobileMenu";
 import CategoryList from "../../components/categoriesList/categoryList";
+import BountyCard from "../../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 
 //functions
 import { useState, useEffect } from "react";
-import { convertTimestamp, formatReward } from "../../utils";
+import { convertTimestamp, formatReward, getMetaData } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
-import { useNavigate } from "react-router-dom";
 import { defaultRelaysToPublish, defaultRelays } from "../../const";
 
-function CybersecurityBounties() {
-  let [titles, setTitles] = useState<string[]>([]);
-  let [rewards, setRewards] = useState<string[]>([]);
-  let [DTags, setDTags] = useState<string[]>([]);
-  let [bountyTags, setBountyTags] = useState<string[][]>([]);
+type event = {
+  Dtag: string;
+  createdAt: string;
+  name: string;
+  profilePic: string;
+  pubkey: string;
+  reward: string;
+  status: string;
+  tags: string[];
+  title: string;
+};
 
-  let [pubkeys, setPubkeys] = useState<string[]>([]);
-  let [creationDate, setCreationDate] = useState<string[]>([]);
+function CyberSecurityBounties() {
+  let [eventData, setEventData] = useState<event[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
-
     let subFilter = [
       {
         kinds: [30023],
@@ -35,7 +39,7 @@ function CybersecurityBounties() {
 
     let checkBountyExist = [];
 
-    let relayPool = new RelayPool(relays);
+    let relayPool = new RelayPool(relays, { useEventCache: true });
 
     relayPool.onerror((err, relayUrl) => {
       console.log("RelayPool error", err, " from relay ", relayUrl);
@@ -45,12 +49,15 @@ function CybersecurityBounties() {
     });
 
     relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
-      // remember to parse the content
-      setDataLoaded(true);
-
       let parseDate = parseInt(event.tags[3][1]);
       let date = convertTimestamp(parseDate);
       let tags_arr: string[] = [];
+      // @ts-ignore
+      let ev: event = {};
+
+      let bountyTitle = event.tags[1][1];
+      let bountyReward = formatReward(event.tags[2][1]);
+      let bountyDatePosted = date;
 
       event.tags.map((item) => {
         if (item[0] === "t") {
@@ -77,20 +84,51 @@ function CybersecurityBounties() {
         }
 
         if (item[0] === "d") {
-          setDTags((arr) => [item[1], ...arr]);
+          ev.Dtag = item[1];
         }
+
+        ev.tags = tags_arr;
       });
 
-      let bountyTitle = event.tags[1][1];
-      let bountyReward = formatReward(event.tags[2][1]);
-      let bountyDatePosted = date;
+      getMetaData(event.pubkey)
+        .then((response) => {
+          if (response.status === 404) ev.name = "";
+          ev.profilePic = "";
+          return response.json();
+        })
+        .then((data) => {
+          let parseContent = JSON.parse(data.content);
+          ev.name = parseContent.name;
+          ev.profilePic = parseContent.picture;
+        });
 
-      setBountyTags((arr) => [tags_arr, ...arr]);
-      setCreationDate((arr) => [bountyDatePosted, ...arr]);
-      setTitles((arr) => [bountyTitle, ...arr]);
-      setRewards((arr) => [bountyReward, ...arr]);
-      setPubkeys((arr) => [event.pubkey, ...arr]);
+      ev.title = bountyTitle;
+      ev.reward = bountyReward;
+      ev.createdAt = bountyDatePosted;
+      ev.pubkey = event.pubkey;
 
+      let subFilterStatus = [
+        {
+          "#t": ["bounty-reply"],
+          limit: 1,
+          "#d": [ev.Dtag],
+          kinds: [1],
+        },
+      ];
+
+      relayPool.subscribe(
+        subFilterStatus,
+        defaultRelays,
+        (event, isAfterEose, relayUrl) => {
+          if (event.kind !== 1) {
+            ev.status = "open";
+          } else {
+            ev.status = event.content;
+          }
+        }
+      );
+
+      setEventData((arr) => [ev, ...arr]);
       checkBountyExist.push(event.id);
     });
 
@@ -100,6 +138,10 @@ function CybersecurityBounties() {
       });
       if (checkBountyExist.length === 0) setBountyNotFound(true);
     }, 40000);
+
+    setTimeout(() => {
+      setDataLoaded(true);
+    }, 2300);
   }, []);
 
   return (
@@ -110,34 +152,29 @@ function CybersecurityBounties() {
       <div className="basis-3/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
-      <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 dark:bg-background-dark-mode">
+      <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 sm:mb-24 dark:bg-background-dark-mode">
         <CategoryList currentPage="cybersecurity" />
-
-        {dataLoaded ? (
-          titles.map((item, index) => {
-            return (
-              <div>
-                <BountyCard
-                  title={titles[index]}
-                  reward={rewards[index]}
-                  dates={creationDate[index]}
-                  pubkeys={pubkeys[index]}
-                  tags={bountyTags[index]}
-                  DTag={DTags[index]}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
-            Loading...
-          </div>
-        )}
-
+        <div>
+          {dataLoaded ? (
+            <div>
+              {eventData.map((item, index) => {
+                return (
+                  <div>
+                    <BountyCard ev={eventData[index]} />
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
+              Loading...
+            </div>
+          )}
+        </div>
         {bountyNotFound ? <BountiesNotFound /> : null}
       </div>
     </div>
   );
 }
 
-export default CybersecurityBounties;
+export default CyberSecurityBounties;

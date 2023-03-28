@@ -1,36 +1,35 @@
 import { useNavigate, Link } from "react-router-dom";
 import { getNpub } from "../../../utils";
-
-import bitcoinIcon from "../../../assets/bitcoin-icon.png";
-import avatarImage from "../../../assets/nostr-icon-user.avif";
 import { nip19 } from "nostr-tools";
 
+import bitcoinIcon from "../../../assets/bitcoin-icon.png";
+import defaultAvatar from "../../../assets/nostr-icon-user.avif";
+
 type props = {
-  title: string;
-  reward: string;
-  dates: string;
-  pubkeys: string;
-  tags: string[];
-  DTag: string
+  ev: {
+    Dtag: string;
+    createdAt: string;
+    name: string;
+    profilePic: string;
+    pubkey: string;
+    reward: string;
+    status: string;
+    tags: string[];
+    title: string;
+  };
 };
 
-function ShortBountyInfo({
-  title,
-  reward,
-  dates,
-  pubkeys,
-  tags,
-  DTag
-}: props) {
+function ShortBountyInfo({ ev }: props) {
   const navigate = useNavigate();
-  let npub = getNpub(pubkeys);
+  let npub = getNpub(ev.pubkey);
   let naddr = nip19.naddrEncode({
-    identifier: DTag,
-    pubkey: pubkeys,
+    identifier: ev.Dtag,
+    pubkey: ev.pubkey,
     kind: 30023,
   });
+
   let bountyInfoPath = `/b/${naddr}`;
-  let bountyPosterPath = `/profile/${nip19.npubEncode(pubkeys)}`;
+  let bountyPosterPath = `/profile/${nip19.npubEncode(ev.pubkey)}`;
 
   return (
     <div>
@@ -39,19 +38,8 @@ function ShortBountyInfo({
           onClick={() => navigate(bountyInfoPath)}
           className="basis-6/12 cursor-pointer sm:basis-10/12"
         >
-          <div className="flex-wrap flex">
-            {tags.map((item) => {
-              if (item !== "bounty") {
-                return (
-                  <button className="font-sans text-xs text-dark-text font-light mx-0.5 rounded-lg dark:text-gray-1">
-                    #{item}
-                  </button>
-                );
-              }
-            })}
-          </div>
           <p className="font-sans text-base font-medium dark:text-gray-1">
-            {title}
+            {ev.title}
           </p>
           <div className="flex flex-wrap">
             <img
@@ -60,26 +48,46 @@ function ShortBountyInfo({
               alt="bitcoin image"
             ></img>
             <p className="font-sans text-sm text-dark-text font-normal mr-1 mt-0.5 dark:text-gray-1">
-              {reward} sats
+              {ev.reward} sats
             </p>
           </div>
         </div>
         <div className="flex flex-wrap justify-between ">
           <div className="flex flex-wrap">
-            <div className="flex mr-2 my-2">
+            <div className="flex mt-3 mr-2">
+              <div>
+                <img
+                  className="w-5 h-5 rounded-full shadow-lg ml-2 sm:ml-0"
+                  src={ev.profilePic === "" ? defaultAvatar : ev.profilePic}
+                  alt="avatar image"
+                />
+              </div>
               <Link
                 to={bountyPosterPath}
-                className="font-sans text-xs mt-1 font-light underline dark:text-gray-1"
+                className="font-sans text-xs font-normal ml-1 underline dark:text-gray-1"
               >
-                Poster
+                {ev.name === "" ? npub : ev.name}
               </Link>
             </div>
           </div>
           <div className="mt-2">
-            <span className="font-sans text-xs font-light  dark:text-gray-1">
-              {dates}
+            <span className="font-sans text-xs font-normal  dark:text-gray-1">
+              {ev.createdAt}
             </span>
           </div>
+          {ev.status === "open" || !ev.hasOwnProperty("status") ? (
+            <p className="bg-status-open text-xs text-status-open-text py-1 px-2 mt-2 mb-2 mx-2 rounded-lg sm:text-xs">
+              Open
+            </p>
+          ) : ev.status === "in progress" ? (
+            <p className="bg-status-in-progress text-xs text-status-in-progress-text py-1 px-2 mt-2 mb-2 mx-2 rounded-lg sm:text-xs">
+              In progress
+            </p>
+          ) : (
+            <p className="bg-status-paid text-xs text-status-paid-text py-1 px-2 mt-2 mb-2 mx-2 rounded-lg sm:text-xs">
+              Paid
+            </p>
+          )}
         </div>
       </div>
     </div>

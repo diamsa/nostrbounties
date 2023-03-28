@@ -9,10 +9,10 @@
     @apply font-normal font-sans text-base mb-2 mr-2 text-dark-text dark:text-gray-2;
   }
   .markdown > ul {
-    @apply font-light font-sans text-sm ml-5 my-2 text-dark-text list-disc dark:text-gray-2;
+    @apply font-normal font-sans text-sm ml-5 my-2 text-dark-text list-disc dark:text-gray-2;
   }
   .markdown > ol {
-    @apply font-light font-sans text-sm ml-5 my-2 text-dark-text list-decimal dark:text-gray-2;
+    @apply font-normal font-sans text-sm ml-5 my-2 text-dark-text list-decimal dark:text-gray-2;
   }
 
   .markdown > p {

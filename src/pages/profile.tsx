@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp, formatReward } from "../utils";
+import { convertTimestamp, formatReward, getMetaData } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
 import { nip19 } from "nostr-tools";
 
@@ -15,6 +15,18 @@ import BountyCard from "../components/bounty/bountyCardShortInfo/bountyCardShort
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 import SatsAdded from "../components/profileCard/profileStats/profileBountiesAddedReward";
 
+type event = {
+  Dtag: string;
+  createdAt: string;
+  name: string;
+  profilePic: string;
+  pubkey: string;
+  reward: string;
+  status: string;
+  tags: string[];
+  title: string;
+};
+
 function Profile() {
   const params = useParams();
   let relays = defaultRelaysToPublish;
@@ -23,15 +35,9 @@ function Profile() {
   let last30DaysTimestamp = Math.floor(Date.now() / 1000) - 24 * 60 * 60 * 1000;
 
   let [metaData, setMetada] = useState({});
-  let [titles, setTitles] = useState<string[]>([]);
-  let [rewards, setRewards] = useState<string[]>([]);
-  let [DTags, setDTags] = useState<string[]>([]);
-  let [ATag, setATag] = useState<string[]>([]);
+  let [eventData, setEventData] = useState<event[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
-  let [pubkey, setPubkeys] = useState<string[]>([]);
-  let [creationDate, setCreationDate] = useState<string[]>([]);
-  let [bountyTags, setBountyTags] = useState<string[][]>([]);
   let [userNip05, setUserNip05] = useState(false);
   let [statuses, setStatuses] = useState<string[]>([]);
   let [Last30Days, setLast30Days] = useState(0);
@@ -129,11 +135,13 @@ function Profile() {
       (event, isAfterEose, relayURL) => {
         let parseDate = parseInt(event.tags[3][1]);
         let date = convertTimestamp(parseDate);
-        setDataLoaded(true);
-
         let tags_arr: string[] = [];
-        let bountyDTag
-        
+        // @ts-ignore
+        let ev: event = {};
+
+        let bountyTitle = event.tags[1][1];
+        let bountyReward = formatReward(event.tags[2][1]);
+        let bountyDatePosted = date;
 
         event.tags.map((item) => {
           if (item[0] === "t") {
@@ -160,30 +168,59 @@ function Profile() {
           }
 
           if (item[0] === "d") {
-            setDTags((arr) => [item[1], ...arr])
-            bountyDTag = item[1];
+            ev.Dtag = item[1];
           }
 
-        });console.log(event)
-        // subscribe for statuses
+          ev.tags = tags_arr;
+        });
+
+        getMetaData(event.pubkey)
+          .then((response) => {
+            if (response.status === 404) ev.name = "";
+            ev.profilePic = "";
+            return response.json();
+          })
+          .then((data) => {
+            let parseContent = JSON.parse(data.content);
+            ev.name = parseContent.name;
+            ev.profilePic = parseContent.picture;
+          });
+
+        ev.title = bountyTitle;
+        ev.reward = bountyReward;
+        ev.createdAt = bountyDatePosted;
+        ev.pubkey = event.pubkey;
+
+        let subFilterStatus = [
+          {
+            "#t": ["bounty-reply"],
+            limit: 1,
+            "#d": [ev.Dtag],
+            kinds: [1],
+          },
+        ];
+
         relayPool.subscribe(
-          [{ "#d": [`${bountyDTag}`], "#t": ["bounty-reply"], limit: 1 }],
+          subFilterStatus,
+          defaultRelays,
+          (event, isAfterEose, relayUrl) => {
+            if (event.kind !== 1) {
+              ev.status = "open";
+            } else {
+              ev.status = event.content;
+            }
+          }
+        );
+
+        relayPool.subscribe(
+          [{ "#d": [`${ev.Dtag}`], "#t": ["bounty-reply"], limit: 1 }],
           userMetaDataRelays,
           (event, isAfterEose, relayURL) => {
             setStatuses((arr) => [...arr, event.content]);
           }
         );
 
-        let bountyTitle = event.tags[1][1];
-        let bountyReward = event.tags[2][1];
-        let bountyDatePosted = date;
-
-        setBountyTags((arr) => [tags_arr, ...arr]);
-        setCreationDate((arr) => [bountyDatePosted, ...arr]);
-        setTitles((arr) => [bountyTitle, ...arr]);
-        setRewards((arr) => [bountyReward, ...arr]);
-        setPubkeys((arr) => [event.pubkey, ...arr]);
-
+        setEventData((arr) => [ev, ...arr]);
         checkBountyExist.push(event.id);
       }
     );
@@ -194,6 +231,10 @@ function Profile() {
       });
       if (checkBountyExist.length === 0) setBountyNotFound(true);
     }, 20000);
+
+    setTimeout(() => {
+      setDataLoaded(true);
+    }, 2300);
   }, []);
 
   return (
@@ -214,26 +255,23 @@ function Profile() {
           <SatsAdded amount={formatReward(addedReward)} />
           <ProfileActivity activity={Last30Days} />
         </div>
-        {dataLoaded ? (
-          titles.map((item, index) => {
-            return (
-              <div>
-                <BountyCard
-                  title={titles[index]}
-                  reward={rewards[index]}
-                  dates={creationDate[index]}
-                  pubkeys={pubkey[index]}
-                  tags={bountyTags[index]}
-                  DTag={DTags[index]}
-                />
-              </div>
-            );
-          })
-        ) : (
-          <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
-            Loading...
-          </div>
-        )}
+        <div>
+          {dataLoaded ? (
+            <div>
+              {eventData.map((item, index) => {
+                return (
+                  <div>
+                    <BountyCard ev={eventData[index]} />
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
+              Loading...
+            </div>
+          )}
+        </div>
         {bountyNotFound ? <BountiesNotFound /> : null}
       </div>
     </div>
