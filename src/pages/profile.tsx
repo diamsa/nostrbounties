@@ -130,7 +130,7 @@ function Profile() {
 
         // Conditionally handle older events with amount in the content field
         if (event.content === "" || isNaN(Number(event.content))) {
-          compatAmount = rewardTag ? rewardTag[1] : "";
+          compatAmount = rewardTag ? rewardTag[1] : "0";
         } else {
           compatAmount = event.content;
         }
