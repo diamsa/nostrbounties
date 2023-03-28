@@ -111,7 +111,7 @@ function SideBarMenu() {
                       window.location.reload();
                     });
                   }}
-                  className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
+                  className="w-full  px-4 py-2 text-sm font-medium text-center text-white bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-white"
                 >
                   Log in with extension
                 </button>
@@ -121,7 +121,7 @@ function SideBarMenu() {
                     sessionStorage.clear();
                     window.location.reload();
                   }}
-                  className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-gray-1"
+                  className="w-full px-4 py-2 text-sm font-medium text-center text-white bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-white"
                 >
                   Log out
                 </button>
@@ -129,7 +129,7 @@ function SideBarMenu() {
             </div>
             <div>
               <a
-                className="underline text-dark-text text-xs dark:text-gray-2"
+                className="underline text-dark-text text-xs dark:text-gray-2 mt-6 block"
                 href="https://github.com/diamsa/nostrbounties"
               >
                 Made by Diego

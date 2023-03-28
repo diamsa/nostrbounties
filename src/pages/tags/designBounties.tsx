@@ -76,8 +76,8 @@ function DesignBounties() {
           }
         }
 
-        if(item[0] === "d"){
-          setDTags((arr)=> [item[1],...arr])
+        if (item[0] === "d") {
+          setDTags((arr) => [item[1], ...arr]);
         }
       });
 

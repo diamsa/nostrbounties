@@ -133,7 +133,10 @@ function Header() {
                     className="peer min-h-[auto] mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-1"
                     placeholder="wss://nostr.damus.io"
                   />
-                  <button className="text-xs font-light mt-2 ml-2 px-2 bg-green-500 text-white rounded-lg" onClick={() => addRelay(relay)}>
+                  <button
+                    className="text-xs font-light mt-2 ml-2 px-2 bg-green-500 text-white rounded-lg"
+                    onClick={() => addRelay(relay)}
+                  >
                     add
                   </button>
                 </div>

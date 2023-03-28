@@ -20,7 +20,7 @@
   }
 
   .markdown > blockquote {
-    @apply  border-l-8 bg-sidebar-gray py-3 pl-2 border-blue-1 text-dark-text font-normal text-base italic dark:text-dark-text;
+    @apply border-l-8 bg-sidebar-gray py-3 pl-2 border-blue-1 text-dark-text font-normal text-base italic dark:text-dark-text;
   }
   .markdown > hr {
     @apply border-l-2 border-dark-text dark:text-gray-2 dark:border-gray-2;
@@ -30,13 +30,25 @@
   @variants responsive {
     /* Hide scrollbar for Chrome, Safari and Opera */
     .no-scrollbar::-webkit-scrollbar {
-        display: none;
+      display: none;
     }
 
     /* Hide scrollbar for IE, Edge and Firefox */
     .no-scrollbar {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
     }
   }
+}
+
+.Profile-Stat-Card {
+  @apply flex flex-col basis-1/5 items-center bg-white border border-blue-1 rounded-lg p-3 m-2 shadow-md dark:bg-sidebar-bg;
+}
+
+.Profile-Stat-Subtext {
+  @apply text-xs text-center text-gray-500 dark:text-gray-1;
+}
+
+.Profile-Stat-Stat {
+  @apply mb-1 text-2xl font-medium text-dark-text dark:text-gray-1;
 }

@@ -37,12 +37,15 @@ function MobileMenu() {
   }
 
   function addRelay(relayName: string | undefined) {
-    if (relayName === "" || !relayName?.includes("wss://")) {
-      console.log("No valid relay");
-    } else {
+    if (
+      relayName?.includes("ws://localhost") ||
+      relayName?.includes("wss://")
+    ) {
       setRelays([...relays, relayName]);
       let newRelay = JSON.stringify([...relays, relayName]);
       localStorage.setItem("relays", newRelay);
+    } else {
+      console.log("No valid relays!");
     }
   }
 

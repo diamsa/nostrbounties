@@ -134,6 +134,7 @@ export async function sendReply(
 
 export async function addReward(
   amount: string,
+  note: string,
   id: string,
   pubkey: string,
   dTag: string
@@ -143,6 +144,13 @@ export async function addReward(
   if (amount === "") {
     console.log("add a value");
   } else {
+    let eventNote: string;
+    if (note.length > 0) {
+      eventNote = `I just added ${amount} sats to this bounty! ${note}`;
+    } else {
+      eventNote = `I just added ${amount} sats to this bounty!`;
+    }
+
     let eventMessage = {
       id: null,
       pubkey: null,
@@ -150,10 +158,11 @@ export async function addReward(
       kind: 1,
       tags: [
         ["t", "bounty-added-reward"],
-        ["e", `${id}`],
+        ["reward", `${amount}`],
+        ["e", `${id}`, `${defaultRelaysToPublish[0]}`, "root"],
         ["a", `30023:${pubkey}:${dTag}`],
       ],
-      content: amount,
+      content: eventNote,
       sig: null,
     };
     // @ts-ignore
@@ -229,7 +238,17 @@ export async function deleteBounty(id: string) {
 }
 
 export async function getRelayData(relay: string) {
-  let url = `https://${relay}`;
+  let relayNoProtocol: string;
+  let url: string;
+
+  if (relay.startsWith("wss://")) {
+    relayNoProtocol = relay.replace(/^.{6}/, "");
+    url = `https://${relayNoProtocol}`;
+  } else {
+    relayNoProtocol = relay.replace(/^.{5}/, "");
+    url = `http://${relayNoProtocol}`;
+  }
+
   let data = await fetch(url, {
     method: "get",
     mode: "cors",

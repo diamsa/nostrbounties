@@ -27,6 +27,7 @@ type props = {
   addedReward: {
     posterPubkey: string;
     amount: string;
+    note: string;
   }[];
   name: string;
   profilePic: string;
@@ -55,6 +56,7 @@ function BountyLargeInfor({
     kind: 30023,
   });
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
+  let [rewardNoteToAdd, setRewardNoteToAdd] = useState<string>("");
   let isLogged = sessionStorage.getItem("pubkey");
   let idToUse = rootId === "" ? id : rootId;
   let navigate = useNavigate();
@@ -86,7 +88,7 @@ function BountyLargeInfor({
               {isLogged === pubkey ? (
                 <button
                   onClick={() => sendReply(status, idToUse, pubkey, dTag)}
-                  className="font-sans text-sm font-normal underline ml-2 mt-1  dark:text-gray-1"
+                  className="font-sans text-sm font-normal underline ml-2 mt-1 dark:text-gray-1"
                 >
                   {status === "paid" ? "Change status to: In progress" : null}
                   {status === "in progress" ? "Change status to: Paid" : null}
@@ -115,7 +117,7 @@ function BountyLargeInfor({
                   src={
                     profilePic === "" || undefined ? avatarImage : profilePic
                   }
-                  alt="avatar image"
+                  alt="avatar"
                 />
               </div>
             </div>
@@ -128,52 +130,71 @@ function BountyLargeInfor({
         </div>
       </div>
       {status === "paid" ? null : (
-        <div className="flex">
+        <div className="flex flex-col gap-2 pt-8 pb-2">
+          <input
+            type="text"
+            onChange={(e) => setRewardNoteToAdd(e.target.value)}
+            className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm dark:text-gray-1 border-0"
+            placeholder="Add a note about why you're adding to this reward (optional)"
+            value={rewardNoteToAdd}
+          />
           <input
             type="number"
             onChange={(e) => setRewardToAdd(e.target.value)}
             className="peer min-h-[auto] basis-6/12 bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-input-bg-dm dark:text-gray-1 border-0"
-            placeholder="add sats to the initial reward"
+            placeholder="Add sats to the initial reward"
             value={rewardToAdd}
             required
           />
           <button
             onClick={() => {
-              addReward(rewardToAdd, idToUse, pubkey, dTag);
+              addReward(rewardToAdd, rewardNoteToAdd, idToUse, pubkey, dTag);
               setRewardToAdd("");
+              setRewardNoteToAdd("");
             }}
-            className="px-5 rounded-lg text-sm ml-1 text-gray-2 dark:text-gray-2 bg-blue-1"
+            className="px-5 rounded-lg px-4 py-2 text-sm text-white dark:text-white font-bold bg-blue-1 hover:bg-blue-800"
           >
-            add sats
+            Add sats
           </button>
         </div>
       )}
 
-      <div className="flex flex-wrap">
+      <div className="flex flex-col gap-2 py-4">
         {addedReward.map((item: any) => {
           let npubAddedReward = nip19.npubEncode(item.posterPubkey);
           return (
-            <Link
-              to={`/profile/${npubAddedReward}`}
-              className="font-sans text-sm font-light mr-3 mt-1 dark:text-gray-2"
+            <div
+              key={item.identifier}
+              className="posterAdded bg-stone-100 dark:bg-input-bg-dm shadow-sm py-2 px-4 rounded-lg font-light dark:text-gray-2"
             >
-              {getNpub(item.posterPubkey)} added{" "}
-              <span className="font-sans text-base underline font-medium  dark:text-gray-2">
+              <Link
+                to={`/profile/${npubAddedReward}`}
+                className="underline font-medium"
+              >
+                {name}
+              </Link>{" "}
+              added{" "}
+              <span className="font-medium">
                 {formatReward(item.amount)} sats
               </span>{" "}
-            </Link>
+              {item.note.length > 0 && (
+                <span>
+                  with the note:{" "}
+                  <span className="italic block">{item.note}</span>
+                </span>
+              )}
+            </div>
           );
         })}
       </div>
-
       <div className="mt-5">
         {isLogged === pubkey ? (
           <div className="flex space-x-2">
             <Link
               to={`/edit/${naddr}`}
-              className="cursor-pointer px-3 py-1.5 rounded-lg text-dark-text bg-status-paid-text font-sans text-sm font-normal dark:text-dark-text"
+              className="cursor-pointer px-3 py-1.5 rounded-lg text-white dark:text-white bg-blue-1 hover:bg-blue-800 font-sans text-sm font-normal "
             >
-              edit bounty
+              Edit Bounty
             </Link>
             <button
               onClick={() => {
@@ -182,9 +203,9 @@ function BountyLargeInfor({
                   navigate(`/`);
                 });
               }}
-              className="cursor-pointer px-3 py-1.5 rounded-lg font-sans bg-alert-1 text-sm font-normal dark:text-gray-1 "
+              className="cursor-pointer px-3 py-1.5 rounded-lg font-sans bg-alert-1 hover:bg-red-800 text-sm font-normal dark:text-white "
             >
-              delete bounty
+              Delete Bounty
             </button>
           </div>
         ) : null}

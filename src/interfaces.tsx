@@ -1,11 +1,12 @@
 export type bountyContent = {
-    title:string,
-    description:string,
-    reward:string,
-    
-}
+  title: string;
+  description: string;
+  reward: string;
+};
 
-export type bountyMetaData = [{
-    profilePic:string,
-    name:string
-}]
+export type bountyMetaData = [
+  {
+    profilePic: string;
+    name: string;
+  }
+];

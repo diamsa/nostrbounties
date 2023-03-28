@@ -1,12 +1,13 @@
-
 interface currentBountyStatus {
-    status: string
+  status: string;
 }
 
 function bountyStatus(bountyStatus: currentBountyStatus) {
-    return ( <div>
-             <p>{bountyStatus.status}</p>
-             </div> );
+  return (
+    <div>
+      <p>{bountyStatus.status}</p>
+    </div>
+  );
 }
 
 export default bountyStatus;
