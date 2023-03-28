@@ -165,19 +165,23 @@ function BountyLargeInfor({
           return (
             <div
               key={item.identifier}
-              className="posterAdded bg-stone-100 dark:bg-stone-800 shadow-sm p-2 rounded-lg flex flex-col gap-1"
+              className="posterAdded bg-stone-100 dark:bg-stone-800 shadow-sm py-2 px-4 rounded-lg font-light dark:text-gray-2"
             >
               <Link
                 to={`/profile/${npubAddedReward}`}
-                className="font-sans text-sm font-light dark:text-gray-2"
+                className="underline font-medium"
               >
-                {getNpub(item.posterPubkey)} added{" "}
-                <span className="font-sans text-base underline font-medium dark:text-gray-2">
-                  {formatReward(item.amount)} sats
-                </span>{" "}
-              </Link>
+                {name}
+              </Link>{" "}
+              added{" "}
+              <span className="font-medium">
+                {formatReward(item.amount)} sats
+              </span>{" "}
               {item.note.length > 0 && (
-                <div className="dark:text-gray-2 text-sm">{item.note}</div>
+                <span>
+                  with the note:{" "}
+                  <span className="italic block">{item.note}</span>
+                </span>
               )}
             </div>
           );

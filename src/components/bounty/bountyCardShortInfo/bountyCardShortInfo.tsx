@@ -27,7 +27,7 @@ function ShortBountyInfo({ title, reward, dates, pubkeys, tags, DTag }: props) {
 
   return (
     <div>
-      <div className="my-2 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl hover:bg-sidebar-gray lg:mx-5 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm">
+      <div className="my-2 justify-between items-center flex shadow-md border border-gray-200 rounded-md max-w-7xl hover:bg-sidebar-gray px-15  sm:flex-wrap px-5 py-3 mx-2 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm">
         <div
           onClick={() => navigate(bountyInfoPath)}
           className="basis-6/12 cursor-pointer sm:basis-10/12"
@@ -36,7 +36,10 @@ function ShortBountyInfo({ title, reward, dates, pubkeys, tags, DTag }: props) {
             {tags.map((item) => {
               if (item !== "bounty") {
                 return (
-                  <button className="font-sans text-xs text-dark-text font-light mx-0.5 rounded-lg dark:text-gray-1">
+                  <button
+                    key={item}
+                    className="font-sans text-xs text-dark-text font-light mx-0.5 rounded-lg dark:text-gray-1"
+                  >
                     #{item}
                   </button>
                 );

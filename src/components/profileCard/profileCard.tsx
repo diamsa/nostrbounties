@@ -3,7 +3,7 @@ import checkMark from "../../assets/check-mark.svg";
 
 function profileCard({ metaData, userNip05 }: any) {
   return (
-    <div className="bg-white border basis-6/12 border-gray-200 rounded-lg shadow-md sm: m-4 dark:bg-sidebar-bg">
+    <div className="bg-white border basis-6/12 border-gray-200 rounded-lg shadow-md m-2 dark:bg-sidebar-bg">
       <div className="flex flex-col items-center pb-10">
         <img
           className="w-16 h-16 mt-7  rounded-full shadow-lg "

@@ -40,3 +40,15 @@
     }
   }
 }
+
+.Profile-Stat-Card {
+  @apply flex flex-col basis-1/5 items-center bg-white border border-blue-1 rounded-lg p-3 m-2 shadow-md dark:bg-sidebar-bg;
+}
+
+.Profile-Stat-Subtext {
+  @apply text-xs text-center text-gray-500 dark:text-gray-1;
+}
+
+.Profile-Stat-Stat {
+  @apply mb-1 text-2xl font-medium text-dark-text dark:text-gray-1;
+}
