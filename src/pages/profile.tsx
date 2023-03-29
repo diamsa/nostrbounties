@@ -73,6 +73,7 @@ function Profile() {
   ];
 
   let checkBountyExist = [];
+  let eventLength = [];
 
   useEffect(() => {
     let relayPool = new RelayPool(relays);
@@ -189,18 +190,6 @@ function Profile() {
           ev.tags = tags_arr;
         });
 
-        getMetaData(event.pubkey)
-          .then((response) => {
-            if (response.status === 404) ev.name = "";
-            ev.profilePic = "";
-            return response.json();
-          })
-          .then((data) => {
-            let parseContent = JSON.parse(data.content);
-            ev.name = parseContent.name;
-            ev.profilePic = parseContent.picture;
-          });
-
         ev.title = bountyTitle;
         ev.reward = bountyReward;
         ev.createdAt = bountyDatePosted;
@@ -237,6 +226,7 @@ function Profile() {
 
         setEventData((arr) => [ev, ...arr]);
         checkBountyExist.push(event.id);
+        eventLength.push(ev);
       }
     );
 
@@ -244,12 +234,21 @@ function Profile() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-      if (checkBountyExist.length === 0) setBountyNotFound(true);
+      if (checkBountyExist.length === 0) {
+        setBountyNotFound(true);
+        clearInterval(closeMyInterval);
+      }
     }, 20000);
 
-    setTimeout(() => {
-      setDataLoaded(true);
-    }, 2300);
+    let closeMyInterval = setInterval(() => {
+      if (
+        eventLength.length === checkBountyExist.length &&
+        eventLength.length >= 1
+      ) {
+        setDataLoaded(true);
+        clearInterval(closeMyInterval);
+      }
+    }, 1000);
   }, []);
 
   return (

@@ -91,18 +91,6 @@ function App() {
         ev.tags = tags_arr;
       });
 
-      getMetaData(event.pubkey)
-        .then((response) => {
-          if (response.status === 404) ev.name = "";
-          ev.profilePic = "";
-          return response.json();
-        })
-        .then((data) => {
-          let parseContent = JSON.parse(data.content);
-          ev.name = parseContent.name;
-          ev.profilePic = parseContent.picture;
-        });
-
       ev.title = bountyTitle;
       ev.reward = bountyReward;
       ev.createdAt = bountyDatePosted;
@@ -147,12 +135,12 @@ function App() {
     let closeMyInterval = setInterval(() => {
       if (
         eventLength.length === checkBountyExist.length &&
-        eventLength.length > 1
+        eventLength.length >= 1
       ) {
         setDataLoaded(true);
         clearInterval(closeMyInterval);
       }
-    }, 1500);
+    }, 1000);
   }, []);
 
   return (

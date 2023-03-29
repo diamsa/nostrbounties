@@ -237,7 +237,7 @@ function CreateBounty() {
           <div className="flex flex-wrap">
             {defaultRelaysToPublish.map((item) => {
               return (
-                <div className="my-2 flex justify-between items-center shadow-md border border-gray-200 rounded-md hover:bg-sidebar-gray lg:mr-2 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm dark:border border-blue-1">
+                <div className="my-2 flex justify-between items-center shadow-md border  rounded-md hover:bg-sidebar-gray lg:mr-2 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm dark:border border-blue-1">
                   <img
                     className="w-5 h-3 cursor-pointer my-auto"
                     src={active}
@@ -251,7 +251,7 @@ function CreateBounty() {
             })}
             {customRelays.map((item) => {
               return (
-                <div className="my-2 flex justify-between items-center shadow-md border border-gray-200 rounded-md hover:bg-sidebar-gray lg:mr-2 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm dark:border border-blue-1">
+                <div className="my-2 flex justify-between items-center shadow-md border  rounded-md hover:bg-sidebar-gray lg:mr-2 px-15  sm:flex-wrap px-5 py-3 mx-4 dark:bg-sidebar-bg dark:hover:bg-input-bg-dm dark:border border-blue-1">
                   <img
                     className="w-5 h-3 cursor-pointer my-auto"
                     src={active}
