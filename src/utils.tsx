@@ -180,8 +180,6 @@ export async function addReward(
 export async function shareBounty(url: string) {
   try {
     await navigator.share({
-      title: "Look at this bounty",
-      text: "someone published a bounty in nostr",
       url: url,
     });
   } catch (error) {
