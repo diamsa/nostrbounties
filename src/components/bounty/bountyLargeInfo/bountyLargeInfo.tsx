@@ -176,7 +176,14 @@ function BountyLargeInfor({ ev }: event) {
             />
             <button
               onClick={() => {
-                addReward(rewardToAdd, rewardNoteToAdd, ev.pubkey, ev.Dtag);
+                addReward(
+                  rewardToAdd,
+                  rewardNoteToAdd,
+                  ev.pubkey,
+                  ev.Dtag,
+                  ev.id,
+                  naddr
+                );
                 setRewardToAdd("");
               }}
               className="rounded-lg px-4 py-2 text-sm text-white dark:text-white font-bold bg-blue-1 hover:bg-blue-800"
