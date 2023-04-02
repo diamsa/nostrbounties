@@ -204,9 +204,13 @@ function CyberSecurityBounties() {
               >
                 {loadingMessage ? "Loading" : "load more bounties"}
               </button>
-            ) : (
-              <p className="text-gray-2">We didn't find more bounties</p>
-            )}
+            ) : null}
+
+            {currentBountyCount !== correctBountyCount ? (
+              <p className="mt-3 text-dark-text dark:text-gray-2">
+                We didn't find more bounties
+              </p>
+            ) : null}
           </div>
         </div>
         {bountyNotFound ? <BountiesNotFound /> : null}

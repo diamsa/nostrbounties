@@ -96,7 +96,7 @@ function Notifications() {
             "#t": ["bounty-application"],
           },
         ];
-
+        // eslint-disable-next-line
         relayPool.subscribe(
           subFilterApplications,
           defaultRelays,
