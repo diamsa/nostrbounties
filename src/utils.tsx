@@ -69,7 +69,7 @@ export async function sendReply(
   bountyHunterNpub: string,
   dTag: string,
   posterPubkey: string,
-  id: string,
+  eventId: string,
   naddr: string
 ) {
   let relays = defaultRelays;
@@ -85,7 +85,7 @@ export async function sendReply(
         ["d", dTag],
         ["status", "in progress"],
         ["t", "bounty-status"],
-        ["e", `${id}`, "", "root"],
+        ["e", `${eventId}`, "", "root"],
       ],
       content: `nostr:${bountyHunterNpub} was assigned to work on this bounty: ${rootBountyUrl} from nostrbounties.com`,
       sig: null,
@@ -115,7 +115,7 @@ export async function sendReply(
         ["d", dTag],
         ["status", "paid"],
         ["t", "bounty-status"],
-        ["e", `${id}`, "", "root"],
+        ["e", `${eventId}`, "", "root"],
       ],
       content: `nostr:${bountyHunterNpub} got paid for completing this bounty: ${rootBountyUrl} from nostrbounties.com`,
       sig: null,
@@ -145,7 +145,7 @@ export async function sendReply(
         ["d", dTag],
         ["status", "in progress"],
         ["t", "bounty-status"],
-        ["e", `${id}`, "", "root"],
+        ["e", `${eventId}`, "", "root"],
       ],
       content: `nostr:${bountyHunterNpub} was assigned to work on this bounty: ${rootBountyUrl} from nostrbounties.com`,
       sig: null,
