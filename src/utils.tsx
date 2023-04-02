@@ -163,8 +163,10 @@ export async function sendReply(
 export async function addReward(
   amount: string,
   note: string,
+  id:string,
   pubkey: string,
-  dTag: string
+  dTag: string,
+  naddr: string
 ) {
   let relays = defaultRelays;
 
@@ -172,10 +174,11 @@ export async function addReward(
     console.log("add a value");
   } else {
     let eventNote: string;
+    let rootBountyUrl = `https://nostrbounties.com/b/${naddr}`;
     if (note.length > 0) {
-      eventNote = `I just added ${amount} sats to this bounty! ${note}`;
+      eventNote = `I just added ${amount} sats to ${rootBountyUrl}! ${note}`;
     } else {
-      eventNote = `I just added ${amount} sats to this bounty!`;
+      eventNote = `I just added ${amount} sats to ${rootBountyUrl}!`;
     }
 
     let eventMessage = {
@@ -187,6 +190,7 @@ export async function addReward(
         ["t", "bounty-added-reward"],
         ["reward", `${amount}`],
         ["a", `30023:${pubkey}:${dTag}`],
+        ["e", `${id}`, "", "root"],
       ],
       content: eventNote,
       sig: null,

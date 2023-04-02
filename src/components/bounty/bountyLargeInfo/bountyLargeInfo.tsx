@@ -139,7 +139,10 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                                 bountyHunterNpub,
                                 ev.Dtag,
                                 ev.pubkey
-                              ).then(()=> {updateValues(true); dataLoaded(false)})
+                              ).then(() => {
+                                updateValues(true);
+                                dataLoaded(false);
+                              })
                             }
                             className="font-sans text-sm font-normal underline ml-2 mt-2  dark:text-gray-1"
                           >
@@ -320,7 +323,14 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
             />
             <button
               onClick={() => {
-                addReward(rewardToAdd, rewardNoteToAdd, ev.pubkey, ev.Dtag);
+                addReward(
+                  rewardToAdd,
+                  rewardNoteToAdd,
+                  ev.pubkey,
+                  ev.Dtag,
+                  ev.id,
+                  naddr
+                );
                 setRewardToAdd("");
               }}
               className="rounded-lg px-4 py-2 text-sm text-white dark:text-white font-bold bg-blue-1 hover:bg-blue-800"

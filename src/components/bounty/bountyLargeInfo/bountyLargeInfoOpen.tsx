@@ -62,7 +62,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
 
   function getFinalReward() {
     let totalReward = ev.reward;
-    ev.pledged.map((item:any) => {
+    ev.pledged.map((item: any) => {
       let value = parseInt(item.amount);
       totalReward += value;
     });
@@ -283,7 +283,14 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
             />
             <button
               onClick={() => {
-                addReward(rewardToAdd, rewardNoteToAdd, ev.pubkey, ev.Dtag);
+                addReward(
+                  rewardToAdd,
+                  rewardNoteToAdd,
+                  ev.pubkey,
+                  ev.Dtag,
+                  ev.id,
+                  naddr
+                );
                 setRewardToAdd("");
               }}
               className="rounded-lg px-4 py-2 text-sm text-white dark:text-white font-bold bg-blue-1 hover:bg-blue-800"
@@ -294,7 +301,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
         )}
       </div>
       <div>
-        {ev.applications.map((applications:any) => {
+        {ev.applications.map((applications: any) => {
           return (
             <div>
               <CommentBox
