@@ -1,35 +1,25 @@
 import { useNavigate } from "react-router-dom";
-import { defaultRelays } from "../../../const";
 import { getPubKey, isDarkTheme } from "../../../utils";
+import { nip19 } from "nostr-tools";
+import { useState } from "react";
 
+import IsNotLogged from "../../errors/isNotLogged";
 import homeIcon from "../../../assets/home-icon-dm.svg";
-import addIcon from "../../../assets/add-icon-dm.svg";
+import createIconDm from "../../../assets/create-icon-dm.svg";
 import profileIcon from "../../../assets/profile-icon-dm.svg";
 import homeIconLg from "../../../assets/home-icon-lg.svg";
 import createIconLg from "../../../assets/create-icon-lg.svg";
 import profileIconLg from "../../../assets/profile-icon-lg.svg";
 import relayIconLg from "../../../assets/server-icon-lg.svg";
 import relayIconDm from "../../../assets/server-icon-dm.svg";
+import notificationIconDm from "../../../assets/notification-icon-dm.svg";
+import notificationIconLg from "../../../assets/notification-icon-lg.svg";
 import logo from "../../../assets/Asset14.png";
-import deleteIcon from "../../../assets/delete-icon.svg";
-import active from "../../../assets/status-active.svg";
-import { nip19 } from "nostr-tools";
-{
-  /* <div className="flex">
-              <img
-                className="w-8 h-6 cursor-pointer my-auto"
-                src={active}
-                alt="delete icon"
-              ></img>
-              <p className="text-sm text-dark-text font-normal my-auto py-1  dark:text-gray-2 ">
-                connected to {defaultRelays.length} relays
-              </p>
-            </div> */
-}
 
 function SideBarMenu() {
   const navigate = useNavigate();
-  const isLogged = sessionStorage.getItem("isLogged");
+  const isLogged = sessionStorage.getItem("isLogged") === "true";
+  const [displayLogError, setDisplayLogError] = useState(false);
 
   function goToProfile() {
     getPubKey()
@@ -42,6 +32,9 @@ function SideBarMenu() {
 
   return (
     <div className="bg-sidebar-gray lg:h-screen md:h-screen p-8 text-center sm:p-4 h-1/2 dark:bg-sidebar-bg">
+      {displayLogError ? (
+        <IsNotLogged hideElement={setDisplayLogError} />
+      ) : null}
       <div className="space-y-3">
         <div className="text-start block">
           <div
@@ -63,7 +56,7 @@ function SideBarMenu() {
           >
             <img
               className="w-8 h-6 my-1"
-              src={isDarkTheme() ? addIcon : createIconLg}
+              src={isDarkTheme() ? createIconDm : createIconLg}
               alt="delete icon"
             ></img>
             <p className="content-start text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
@@ -84,12 +77,27 @@ function SideBarMenu() {
             </p>
           </div>
           <div
+            onClick={() => {
+              isLogged ? navigate("/notifications") : setDisplayLogError(true);
+            }}
+            className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm"
+          >
+            <img
+              className="w-8 h-6 my-1"
+              src={isDarkTheme() ? notificationIconDm : notificationIconLg}
+              alt="delete icon"
+            ></img>
+            <p className="content-start text-sm text-dark-text font-bold m-1 py-1   dark:text-gray-2 ">
+              Notifications
+            </p>
+          </div>
+          <div
             onClick={() => navigate("/relays")}
             className="flex cursor-pointer px-3 py-2 hover:bg-gray-2 dark:rounded-lg dark:hover:bg-input-bg-dm"
           >
             <img
               className="w-7 h-5 my-1"
-              src={isDarkTheme() ? relayIconLg : relayIconDm}
+              src={isDarkTheme() ? relayIconDm : relayIconLg}
               alt="delete icon"
             ></img>
             <p className="content-start text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
@@ -101,7 +109,17 @@ function SideBarMenu() {
         <div>
           <div className="p-3 rounded-md py-5">
             <div className="mt-5">
-              {isLogged !== "true" ? (
+              {isLogged ? (
+                <button
+                  onClick={() => {
+                    sessionStorage.clear();
+                    window.location.reload();
+                  }}
+                  className="w-full px-4 py-2 text-sm font-medium text-center text-white bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-white"
+                >
+                  Log out
+                </button>
+              ) : (
                 <button
                   onClick={() => {
                     let pubkey = getPubKey();
@@ -114,16 +132,6 @@ function SideBarMenu() {
                   className="w-full  px-4 py-2 text-sm font-medium text-center text-white bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-white"
                 >
                   Log in with extension
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    sessionStorage.clear();
-                    window.location.reload();
-                  }}
-                  className="w-full px-4 py-2 text-sm font-medium text-center text-white bg-blue-1 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:text-white"
-                >
-                  Log out
                 </button>
               )}
             </div>

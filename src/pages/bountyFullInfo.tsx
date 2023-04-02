@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp, getMetaData } from "../utils";
+import { convertTimestamp, getMetaData, decodeNpubMention } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
 
+import BountyLargeInfoOpen from "../components/bounty/bountyLargeInfo/bountyLargeInfoOpen";
 import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeInfo";
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
@@ -26,7 +27,14 @@ type event = {
   reward: number;
   status: string;
   title: string;
-  comments: any[];
+  bountyHunterMetaData: { name: string; profilePic: string; pubkey: string };
+  applications: {
+    pubkey: string;
+    content: string;
+    id: string;
+    createdAt: number;
+    links: { github: string; personalWebsite: string };
+  }[];
 };
 
 function BountyInfo() {
@@ -34,6 +42,7 @@ function BountyInfo() {
   let naddrData = nip19.decode(params.id);
   let [eventData, setEventData] = useState<event>();
   let [dataLoaded, setDataLoaded] = useState(false);
+  let [updateValues, setUpdateValues] = useState(false);
 
   useEffect(() => {
     let subFilterContent = [
@@ -67,7 +76,11 @@ function BountyInfo() {
         let tags_arr: string[] = [];
 
         getMetaData(event.pubkey)
-          .then((response) => response.json())
+          .then((response) => {
+            if (response.status === 404) ev.name = "";
+            ev.profilePic = "";
+            return response.json();
+          })
           .then((data) => {
             let parseContent = JSON.parse(data.content);
             ev.name = parseContent.name;
@@ -149,7 +162,8 @@ function BountyInfo() {
           {
             // @ts-ignore
             "#d": [naddrData.data.identifier],
-            "#t": ["bounty-reply"],
+            "#t": ["bounty-status"],
+            kinds: [1],
             limit: 1,
           },
         ];
@@ -158,52 +172,68 @@ function BountyInfo() {
           subFilterStatus,
           defaultRelays,
           (event, isAfterEose, relayURL) => {
-            ev.status = event.content;
+            let isInprogress = event.tags[1][1] === "in progress";
+            let isPaid = event.tags[1][1] === "paid";
+            console.log(event);
+            if (isInprogress || isPaid) {
+              let bountyHunterNpub = decodeNpubMention(event.content);
+              let bountyHunterPubkey = nip19.decode(bountyHunterNpub![0]);
+              // @ts-ignore
+              getMetaData(bountyHunterPubkey.data)
+                .then((response) => {
+                  if (response.status === 404)
+                    ev.bountyHunterMetaData = {
+                      name: "",
+                      profilePic: "",
+                      //@ts-ignore
+                      pubkey: bountyHunterPubkey.data,
+                    };
+                  return response.json();
+                })
+                .then((data) => {
+                  let parseContent = JSON.parse(data.content);
+                  ev.bountyHunterMetaData = {
+                    name: parseContent.name,
+                    profilePic: parseContent.picture,
+                    // @ts-ignore
+                    pubkey: bountyHunterPubkey.data,
+                  };
+                });
+
+              ev.status = event.tags[1][1];
+            } else {
+            }
+            ev.status = event.tags[1][1];
           }
         );
-        let subFilterComments = [
+
+        let subFilterApplications = [
           {
             // @ts-ignore
             "#d": [naddrData.data.identifier],
-            "#t": ["bounty-comment"],
-            kind: [1],
+            kinds: [1],
+            "#t": ["bounty-application"],
           },
         ];
-        // suscrbibe for bounty comments
+        // subscribe for bounty applications
         relayPool.subscribe(
-          subFilterComments,
+          subFilterApplications,
           defaultRelays,
           (event, isAfterEose, relayURL) => {
             console.log(event);
-            getMetaData(event.pubkey)
-              .then((response) => {
-                if (response.status === 404) {
-                  ev.comments = [
-                    {
-                      name: "",
-                      profilePic: "",
-                      comment: event.content,
-                      npub: nip19.npubEncode(event.pubkey),
-                      id: event.id,
-                    },
-                    ...ev.comments,
-                  ];
-                }
-                return response.json();
-              })
-              .then((data) => {
-                let parseContent = JSON.parse(data.content);
-                ev.comments = [
-                  {
-                    name: parseContent.name,
-                    profilePic: parseContent.picture,
-                    comment: event.content,
-                    npub: nip19.npubEncode(event.pubkey),
-                    id: event.id,
-                  },
-                  ...ev.comments,
-                ];
-              });
+            ev.applications = [
+              {
+                pubkey: event.pubkey,
+                content: event.content,
+                id: event.id,
+                createdAt: event.created_at,
+                links: {
+                  github: event.tags[2][1],
+                  personalWebsite: event.tags[3][1],
+                },
+              },
+              ...ev.applications,
+            ];
           }
         );
 
@@ -212,7 +242,7 @@ function BountyInfo() {
         }
 
         ev.pledged = [];
-        ev.comments = [];
+        ev.applications = [];
         ev.title = event.tags[1][1];
         ev.content = event.content;
         ev.reward = parseInt(event.tags[2][1]);
@@ -232,7 +262,7 @@ function BountyInfo() {
     setTimeout(() => {
       setDataLoaded(true);
     }, 2000);
-  }, []);
+  }, [updateValues]);
 
   return (
     <div className="flex justify-between sm:block">
@@ -244,7 +274,13 @@ function BountyInfo() {
       </div>
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen sm:mb-24 px-1 dark:bg-background-dark-mode">
         {dataLoaded ? (
-          <BountyLargeInfor ev={eventData!} />
+          <div>
+            {eventData?.status === "" ? (
+              <BountyLargeInfoOpen ev={eventData} updateValues={setUpdateValues} dataLoaded={setDataLoaded}/>
+            ) : (
+              <BountyLargeInfor ev={eventData} updateValues={setUpdateValues} dataLoaded={setDataLoaded} />
+            )}
+          </div>
         ) : (
           <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
             Loading...

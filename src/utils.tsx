@@ -1,11 +1,26 @@
 import { RelayPool } from "nostr-relaypool";
 import { nip19 } from "nostr-tools";
-import { defaultRelays, defaultRelaysToPublish } from "./const";
+import { defaultRelays, defaultRelaysToPublish, allRelays } from "./const";
 
 export function convertTimestamp(unixTimestamp: number): string {
-  var myDate = new Date(unixTimestamp * 1000);
-  let createdAt = myDate.toDateString();
-  return createdAt;
+  const now = Date.now();
+  const diff = now - unixTimestamp * 1000;
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days === 1) {
+    return `${days} day ago`;
+  } else if (days >= 2) {
+    return `${days} days ago`;
+  } else if (hours >= 1) {
+    return `${hours} hours ago`;
+  } else if (minutes >= 1) {
+    return `${minutes} minutes ago`;
+  } else {
+    return `${seconds} seconds ago`;
+  }
 }
 
 export async function editBounty(event: any) {
@@ -24,6 +39,19 @@ export async function editBounty(event: any) {
   return EventMessageSigned;
 }
 
+export function decodeNpubMention(content: string) {
+  let npubs: string[] = [];
+  const regex = /(nostr:)(.{1,63})/g;
+  const match = content.match(regex);
+
+  match?.map((item) => {
+    let arrWithNpub = item.split(":");
+    npubs.push(arrWithNpub[1]);
+  });
+
+  return npubs;
+}
+
 export async function getPersonalRelays() {
   // @ts-ignore
   let personalRelays = await window.nostr.getRelays();
@@ -37,24 +65,25 @@ export async function getPubKey() {
 }
 
 export async function sendReply(
-  status: string | null,
-  pubKey: string,
-  dTag: string
+  currentStatus: string | null,
+  bountyHunterNpub: string,
+  dTag: string,
+  posterPubkey: string
 ) {
   let relays = defaultRelays;
 
-  if (status === "") {
+  if (currentStatus === "") {
     let eventMessage = {
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
       kind: 1,
       tags: [
-        ["d", `${dTag}`],
-        ["t", `bounty-reply`],
-        ["a", `30023:${pubKey}:${dTag}`],
+        ["d", dTag],
+        ["status", "in progress"],
+        ["t", "bounty-status"],
       ],
-      content: "in progress",
+      content: `nostr:${bountyHunterNpub} is working in a new bounty from nostrbounties.com`,
       sig: null,
     };
     // @ts-ignore
@@ -63,7 +92,7 @@ export async function sendReply(
     }
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-    if (EventMessageSigned.pubkey === pubKey) {
+    if (EventMessageSigned.pubkey === posterPubkey) {
       let relayPool = new RelayPool(relays);
 
       relayPool.publish(EventMessageSigned, relays);
@@ -72,18 +101,18 @@ export async function sendReply(
     }
   }
 
-  if (status === "in progress") {
+  if (currentStatus === "in progress") {
     let eventMessage = {
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
       kind: 1,
       tags: [
-        ["d", `${dTag}`],
-        ["t", "bounty-reply"],
-        ["a", `30023:${pubKey}:${dTag}`],
+        ["d", dTag],
+        ["status", "paid"],
+        ["t", "bounty-status"],
       ],
-      content: "paid",
+      content: `nostr:${bountyHunterNpub} got paid for a bounty from nostrbounties.com`,
       sig: null,
     };
     // @ts-ignore
@@ -92,7 +121,7 @@ export async function sendReply(
     }
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-    if (EventMessageSigned.pubkey === pubKey) {
+    if (EventMessageSigned.pubkey === posterPubkey) {
       let relayPool = new RelayPool(relays);
 
       relayPool.publish(EventMessageSigned, relays);
@@ -101,18 +130,18 @@ export async function sendReply(
     }
   }
 
-  if (status === "paid") {
+  if (currentStatus === "paid") {
     let eventMessage = {
       id: null,
       pubkey: null,
       created_at: Math.floor(Date.now() / 1000),
       kind: 1,
       tags: [
-        ["d", `${dTag}`],
-        ["t", "bounty-reply"],
-        ["a", `30023:${pubKey}:${dTag}`],
+        ["d", dTag],
+        ["status", "in progress"],
+        ["t", "bounty-status"],
       ],
-      content: "in progress",
+      content: `nostr:${bountyHunterNpub} is working in a new bounty from nostrbounties.com`,
       sig: null,
     };
     // @ts-ignore
@@ -121,7 +150,7 @@ export async function sendReply(
     }
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-    if (EventMessageSigned.pubkey === pubKey) {
+    if (EventMessageSigned.pubkey === posterPubkey) {
       let relayPool = new RelayPool(relays);
 
       relayPool.publish(EventMessageSigned, relays);
@@ -187,14 +216,14 @@ export async function shareBounty(url: string) {
   }
 }
 
-export async function sendComment(
-  message: string,
-  pubkey: string,
-  dTag: string
+export async function sendApplication(
+  content: string,
+  dTag: string,
+  links: string[]
 ) {
   let relays = defaultRelays;
 
-  if (message === "") {
+  if (content === "") {
     console.log("add a comment");
   } else {
     let eventMessage = {
@@ -204,9 +233,11 @@ export async function sendComment(
       kind: 1,
       tags: [
         ["d", dTag],
-        ["t", "bounty-comment"],
+        ["t", "bounty-application"],
+        ["github", links[0]],
+        ["personalWeb", links[1]],
       ],
-      content: message,
+      content: content,
       sig: null,
     };
     // @ts-ignore
@@ -215,12 +246,11 @@ export async function sendComment(
     }
     // @ts-ignore
     let EventMessageSigned = await window.nostr.signEvent(eventMessage);
-    console.log(EventMessageSigned.content);
 
     let relayPool = new RelayPool(relays);
-
-    relayPool.publish(EventMessageSigned, defaultRelays);
     console.log("posted");
+    relayPool.publish(EventMessageSigned, defaultRelays);
+    return EventMessageSigned;
   }
 }
 
@@ -262,8 +292,8 @@ export function isDarkTheme() {
   );
 }
 
-export async function deleteBounty(id: string) {
-  let relays = defaultRelaysToPublish;
+export async function deleteEvent(id: string) {
+  let relays = allRelays;
 
   let eventMessage = {
     id: null,

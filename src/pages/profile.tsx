@@ -31,6 +31,7 @@ function Profile() {
   const params = useParams();
   let relays = defaultRelaysToPublish;
   let userMetaDataRelays = defaultRelays;
+  let currentTimestamp = Math.floor(Date.now() / 1000);
   let userPubkey = nip19.decode(params.id!).data;
   let last30DaysTimestamp = Math.floor(Date.now() / 1000) - 24 * 60 * 60 * 1000;
 
@@ -42,6 +43,11 @@ function Profile() {
   let [statuses, setStatuses] = useState<string[]>([]);
   let [Last30Days, setLast30Days] = useState(0);
   let [addedReward, setAddedReward] = useState<number>(0);
+  let [loadMore, setLoadMore] = useState(false);
+  let [loadingMessage, setLoadingMessage] = useState(false);
+  let [queryUntil, setQueryUntil] = useState(currentTimestamp);
+  let [currentBountyCount, setCurrentBountyCount] = useState<number>();
+  let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
 
   let subFilterMetaData = [
     {
@@ -69,6 +75,8 @@ function Profile() {
       authors: [`${userPubkey}`],
       kinds: [30023],
       "#t": ["bounty"],
+      until: queryUntil,
+      limit: 10,
     },
   ];
 
@@ -197,7 +205,7 @@ function Profile() {
 
         let subFilterStatus = [
           {
-            "#t": ["bounty-reply"],
+            "#t": ["bounty-status"],
             limit: 1,
             "#d": [ev.Dtag],
             kinds: [1],
@@ -208,23 +216,14 @@ function Profile() {
           subFilterStatus,
           defaultRelays,
           (event, isAfterEose, relayUrl) => {
-            if (event.kind !== 1) {
-              ev.status = "open";
-            } else {
-              ev.status = event.content;
+            if (event.kind === 1) {
+              ev.status = event.tags[1][1];
+              setStatuses((arr) => [...arr, event.tags[1][1]]);
             }
           }
         );
 
-        relayPool.subscribe(
-          [{ "#d": [`${ev.Dtag}`], "#t": ["bounty-reply"], limit: 1 }],
-          userMetaDataRelays,
-          (event, isAfterEose, relayURL) => {
-            setStatuses((arr) => [...arr, event.content]);
-          }
-        );
-
-        setEventData((arr) => [ev, ...arr]);
+        setEventData((arr) => [...arr, ev]);
         checkBountyExist.push(event.id);
         eventLength.push(ev);
       }
@@ -250,6 +249,10 @@ function Profile() {
       }
     }, 1000);
   }, []);
+
+  useEffect(() => {
+    setCurrentBountyCount(eventData.length);
+  }, [eventData]);
 
   return (
     <div className="flex justify-between sm:block">
@@ -284,6 +287,25 @@ function Profile() {
             <div className="animate-pulse text-center p-6 font-medium text-dark-text dark:text-gray-2">
               Loading...
             </div>
+          )}
+        </div>
+        <div>
+          {currentBountyCount === correctBountyCount ? (
+            <button
+              onClick={() => {
+                let lastElement = eventData.length - 1;
+                // @ts-ignore
+                setQueryUntil(eventData[lastElement].timestamp);
+                setLoadMore(!loadMore);
+                setLoadingMessage(true);
+                setCorrectBountyCount(correctBountyCount + 10);
+              }}
+              className="text-center text-gray-2"
+            >
+              {loadingMessage ? "Loading" : "load more bounties"}
+            </button>
+          ) : (
+            <p className="text-gray-2">We didn't find more bounties</p>
           )}
         </div>
         {bountyNotFound ? <BountiesNotFound /> : null}

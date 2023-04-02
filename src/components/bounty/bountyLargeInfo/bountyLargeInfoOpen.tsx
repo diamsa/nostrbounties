@@ -20,7 +20,7 @@ import editIconDm from "../../../assets/edit-icon-dm.svg";
 import editIconLg from "../../../assets/edit-icon-lg.svg";
 import deleteIcon from "../../../assets/delete-icon.svg";
 
-import ApplicantBox from "../bountyApplicantsBox/bountyApplicantsBox";
+import CommentBox from "../bountyApplicantsBox/bountyApplicantsBox";
 import BountyApplicationCard from "../bountyApplication/bountyApplicationCard";
 import BountyUpdateStatusCard from "../bountyStatus/bountyStatus";
 
@@ -37,7 +37,6 @@ type event = {
     reward: number;
     status: string;
     title: string;
-    bountyHunterMetaData: { name: string; profilePic: string; pubkey: string };
     applications: any[];
   };
 };
@@ -53,18 +52,17 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
   let [rewardNoteToAdd, setRewardNoteToAdd] = useState<string>("");
   let [notShared, setNotShared] = useState(false);
   let [applicationModal, setAppicationModal] = useState(false);
-  let [updateStatusModal, setUpdateStatusModal] = useState(false);
+  let [statusModal, setStatusModal] = useState(false);
+
   let totalReward = getFinalReward();
   let isLogged = sessionStorage.getItem("pubkey");
   let posterNpub = nip19.npubEncode(ev.pubkey);
   let posterNpubShortened = getNpub(ev.pubkey);
-  let bountyHunterNpub = nip19.npubEncode(ev.bountyHunterMetaData.pubkey);
-  let bountyHunterNpubShortened = getNpub(ev.bountyHunterMetaData.pubkey);
   let navigate = useNavigate();
 
   function getFinalReward() {
     let totalReward = ev.reward;
-    ev.pledged.map((item: any) => {
+    ev.pledged.map((item:any) => {
       let value = parseInt(item.amount);
       totalReward += value;
     });
@@ -84,12 +82,14 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           isOpen={applicationModal}
           closeModal={closeModal}
           dTag={ev.Dtag}
+          updateValues={updateValues}
+          dataLoaded={dataLoaded}
         />
       ) : null}
-      {updateStatusModal ? (
+      {statusModal ? (
         <BountyUpdateStatusCard
-          isModalOpen={updateStatusModal}
-          closeModal={setUpdateStatusModal}
+          isModalOpen={statusModal}
+          closeModal={setStatusModal}
           dTag={ev.Dtag}
           currentStatus={ev.status}
           applicants={ev.applications}
@@ -113,39 +113,17 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                       <p className="bg-status-open text-status-open-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
                         Status: Open
                       </p>
-                    ) : ev.status === "in progress" ? (
-                      <p className="bg-status-in-progress text-status-in-progress-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
-                        Status: In progress
-                      </p>
-                    ) : (
-                      <p className="bg-status-paid text-status-paid-text py-1 px-2 mt-2 rounded-lg sm:text-sm">
-                        Status: Paid
-                      </p>
-                    )}
+                    ) : null}
                     {isLogged === ev.pubkey ? (
                       <div>
-                        {ev.status !== "in progress" || ev.status === "paid" ? (
+                        {ev.status !== "in progress" ? (
                           <button
-                            onClick={() => setUpdateStatusModal(true)}
+                            onClick={() => setStatusModal(true)}
                             className="font-sans text-sm font-normal underline ml-2 mt-2  dark:text-gray-1"
                           >
                             Change status to: In progress
                           </button>
-                        ) : (
-                          <button
-                            onClick={() =>
-                              sendReply(
-                                ev.status,
-                                bountyHunterNpub,
-                                ev.Dtag,
-                                ev.pubkey
-                              ).then(()=> {updateValues(true); dataLoaded(false)})
-                            }
-                            className="font-sans text-sm font-normal underline ml-2 mt-2  dark:text-gray-1"
-                          >
-                            Change status to: Paid
-                          </button>
-                        )}
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -224,31 +202,6 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                   />
                 </div>
               </div>
-              {ev.status === "in progress" || "paid" ? (
-                <div className="flex">
-                  <p className="font-sans text-sm font-normal dark:text-gray-1">
-                    Bounty Hunter:
-                  </p>
-
-                  <Link
-                    to={`/profile/${bountyHunterNpub}`}
-                    className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
-                  >
-                    {ev.bountyHunterMetaData.name === "" || undefined
-                      ? bountyHunterNpubShortened
-                      : ev.bountyHunterMetaData.name}
-                  </Link>
-                  <img
-                    className="w-6 h-6 rounded-full shadow-lg ml-2"
-                    src={
-                      ev.bountyHunterMetaData.profilePic === "" || undefined
-                        ? avatarImage
-                        : ev.bountyHunterMetaData.profilePic
-                    }
-                    alt="avatar image"
-                  />
-                </div>
-              ) : null}
             </div>
           </div>
           <div className="my-5">
@@ -257,6 +210,16 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
             </ReactMarkdown>
           </div>
         </div>
+        {ev.pubkey !== isLogged ? (
+          <button
+            onClick={() => {
+              setAppicationModal(true);
+            }}
+            className="rounded-lg px-4 py-2 text-sm text-white dark:text-white font-semibold bg-blue-1 hover:bg-blue-800"
+          >
+            Apply to this bounty
+          </button>
+        ) : null}
 
         <div className="flex flex-col gap-2 py-4 mt-4">
           {ev.pledged.map((item: any) => {
@@ -331,10 +294,10 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
         )}
       </div>
       <div>
-        {ev.applications.map((applications: any) => {
+        {ev.applications.map((applications:any) => {
           return (
             <div>
-              <ApplicantBox
+              <CommentBox
                 pubkey={applications.pubkey}
                 content={applications.content}
                 id={applications.id}

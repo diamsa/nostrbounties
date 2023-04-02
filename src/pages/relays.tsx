@@ -10,7 +10,7 @@ function Relays() {
   let [relaysDefaultPublish, setRelaysDefaultPublish] = useState<string[]>([]);
 
   function relayId(id: string) {
-    if (id === "strfry default") {
+    if (id === "nos.lol") {
       return "wss://nos.lol";
     }
     if (id === "ynxRIb8tKvoGsR3DkYtrH21vkxCmHTRmehq8zyQ5y7s") {
@@ -19,8 +19,8 @@ function Relays() {
     if (id === "damus.io ") {
       return "wss://relay.damus.io";
     }
-    if (id === "nostr-pub1.southflorida.ninja") {
-      return "wss://nostr-pub1.southflorida.ninja";
+    if (id === "nostream.your-domain.com") {
+      return "wss://nostr.pleb.network";
     }
   }
 
@@ -28,6 +28,7 @@ function Relays() {
     defaultRelays.map((item) => {
       getRelayData(item).then((item) => {
         setRelaysDefaultInfo((arr) => [item, ...arr]);
+        console.log(item);
       });
     });
 

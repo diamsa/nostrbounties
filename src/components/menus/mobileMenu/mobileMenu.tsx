@@ -4,12 +4,11 @@ import { useState } from "react";
 import { defaultRelays, defaultRelaysToPublish } from "../../../const";
 
 import homeIcon from "../../../assets/home-icon-dm.svg";
-import addIcon from "../../../assets/add-icon-dm.svg";
+import createIconDm from "../../../assets/create-icon-dm.svg";
 import profileIcon from "../../../assets/profile-icon-dm.svg";
 import homeIconLg from "../../../assets/home-icon-lg.svg";
 import createIconLg from "../../../assets/create-icon-lg.svg";
 import profileIconLg from "../../../assets/profile-icon-lg.svg";
-import deleteIcon from "../../../assets/delete-icon.svg";
 import closeIconLg from "../../../assets/close-icon-lg.svg";
 import closeIconDm from "../../../assets/close-icon-dm.svg";
 import relayIconLg from "../../../assets/server-icon-lg.svg";
@@ -129,7 +128,7 @@ function MobileMenu() {
             <div>
               <img
                 className="w-8 h-6 my-1 mx-auto"
-                src={isDarkTheme() ? addIcon : createIconLg}
+                src={isDarkTheme() ? createIconDm : createIconLg}
                 alt="delete icon"
               ></img>
               <p className="content-start text-sm mx-auto text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
@@ -158,8 +157,8 @@ function MobileMenu() {
             <div>
               <img
                 className="w-8 h-6 my-1 mx-auto"
-                src={isDarkTheme() ? relayIconLg : relayIconDm}
-                alt="delete icon"
+                src={isDarkTheme() ? relayIconDm : relayIconLg}
+                alt="relay icon"
               ></img>
               <p className="content-start mx-auto text-sm text-dark-text font-bold m-1 py-1  dark:text-gray-2 ">
                 Relays

@@ -6,6 +6,15 @@ export let defaultRelaysToPublish = [
 export let defaultRelays = [
   "wss://nos.lol",
   "wss://relay.damus.io",
-  "wss://arnostr.permadao.io",
   "wss://relay.snort.social",
+  "wss://nostr.pleb.network"
+];
+
+export let allRelays = [
+  "wss://nos.lol",
+  "wss://relay.damus.io",
+  "wss://nostr.pleb.network",
+  "wss://relay.snort.social",
+  "wss://nostr-pub.wellorder.net/",
+  "wss://relay.nostr.scot",
 ];

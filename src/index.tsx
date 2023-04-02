@@ -17,6 +17,7 @@ import MarketingBounties from "./pages/tags/marketingBounties";
 import CybersecurityBounties from "./pages/tags/cybersecurityBounties";
 import Error404 from "./pages/error";
 import Relays from "./pages/relays";
+import Notifications from "./pages/notifications";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "/relays",
         element: <Relays />,
+      },
+      {
+        path: "/notifications",
+        element: <Notifications/>,
       },
     ],
   },

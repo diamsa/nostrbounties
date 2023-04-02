@@ -7,7 +7,7 @@ import BountyCard from "../../components/bounty/bountyCardShortInfo/bountyCardSh
 
 //functions
 import { useState, useEffect } from "react";
-import { convertTimestamp, formatReward, getMetaData } from "../../utils";
+import { convertTimestamp, formatReward } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish, defaultRelays } from "../../const";
 
@@ -21,12 +21,19 @@ type event = {
   status: string;
   tags: string[];
   title: string;
+  timestamp: number;
 };
 
 function MarketingBounties() {
+  let currentTimestamp = Math.floor(Date.now() / 1000);
   let [eventData, setEventData] = useState<event[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
+  let [loadMore, setLoadMore] = useState(false);
+  let [loadingMessage, setLoadingMessage] = useState(false);
+  let [queryUntil, setQueryUntil] = useState(currentTimestamp);
+  let [currentBountyCount, setCurrentBountyCount] = useState<number>();
+  let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
@@ -34,6 +41,8 @@ function MarketingBounties() {
       {
         kinds: [30023],
         "#t": ["marketing-bounty"],
+        until: queryUntil,
+        limit: 10,
       },
     ];
 
@@ -49,82 +58,89 @@ function MarketingBounties() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
-    relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
-      let parseDate = parseInt(event.tags[3][1]);
-      let date = convertTimestamp(parseDate);
-      let tags_arr: string[] = [];
-      // @ts-ignore
-      let ev: event = {};
+    relayPool.subscribe(
+      subFilter,
+      relays,
+      (event, isAfterEose, relayURL) => {
+        let parseDate = parseInt(event.tags[3][1]);
+        let date = convertTimestamp(parseDate);
+        let tags_arr: string[] = [];
+        // @ts-ignore
+        let ev: event = {};
 
-      let bountyTitle = event.tags[1][1];
-      let bountyReward = formatReward(event.tags[2][1]);
-      let bountyDatePosted = date;
+        let bountyTitle = event.tags[1][1];
+        let bountyReward = formatReward(event.tags[2][1]);
+        let bountyDatePosted = date;
 
-      event.tags.map((item) => {
-        if (item[0] === "t") {
-          switch (item[1]) {
-            case "design-bounty":
-              tags_arr.push("design");
-              break;
-            case "development-bounty":
-              tags_arr.push("development");
-              break;
-            case "debugging-bounty":
-              tags_arr.push("debugging");
-              break;
-            case "writing-bounty":
-              tags_arr.push("writing");
-              break;
-            case "cybersecurity-bounty":
-              tags_arr.push("cybersecurity");
-              break;
-            case "marketing-bounty":
-              tags_arr.push("marketing");
-              break;
+        event.tags.map((item) => {
+          if (item[0] === "t") {
+            switch (item[1]) {
+              case "design-bounty":
+                tags_arr.push("design");
+                break;
+              case "development-bounty":
+                tags_arr.push("development");
+                break;
+              case "debugging-bounty":
+                tags_arr.push("debugging");
+                break;
+              case "writing-bounty":
+                tags_arr.push("writing");
+                break;
+              case "cybersecurity-bounty":
+                tags_arr.push("cybersecurity");
+                break;
+              case "marketing-bounty":
+                tags_arr.push("marketing");
+                break;
+            }
           }
-        }
 
-        if (item[0] === "d") {
-          ev.Dtag = item[1];
-        }
-
-        ev.tags = tags_arr;
-      });
-
-      ev.title = bountyTitle;
-      ev.reward = bountyReward;
-      ev.createdAt = bountyDatePosted;
-      ev.pubkey = event.pubkey;
-
-      let subFilterStatus = [
-        {
-          "#t": ["bounty-reply"],
-          limit: 1,
-          "#d": [ev.Dtag],
-          kinds: [1],
-        },
-      ];
-
-      relayPool.subscribe(
-        subFilterStatus,
-        defaultRelays,
-        (event, isAfterEose, relayUrl) => {
-          if (event.kind !== 1) {
-            ev.status = "open";
-          } else {
-            ev.status = event.content;
+          if (item[0] === "d") {
+            ev.Dtag = item[1];
           }
-        }
-      );
 
-      setEventData((arr) => [ev, ...arr]);
-      checkBountyExist.push(event.id);
-      eventLength.push(ev);
-    });
+          ev.tags = tags_arr;
+        });
+
+        ev.title = bountyTitle;
+        ev.reward = bountyReward;
+        ev.createdAt = bountyDatePosted;
+        ev.pubkey = event.pubkey;
+        ev.timestamp = event.created_at;
+
+        let subFilterStatus = [
+          {
+            // @ts-ignore
+            "#d": [`${ev.Dtag}`],
+            "#t": ["bounty-status"],
+            kinds: [1],
+            limit: 1,
+          },
+        ];
+
+        relayPool.subscribe(
+          subFilterStatus,
+          defaultRelays,
+          (event, isAfterEose, relayUrl) => {
+            if (event.kind === 1) {
+              ev.status = event.tags[1][1];
+            }
+          }
+        );
+
+        setEventData((arr) => [...arr, ev]);
+        eventLength.push(ev);
+        checkBountyExist.push(event.id);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
+    );
 
     setTimeout(() => {
       relayPool.close().then(() => {
-        console.log("connection closed");
+        console.log("connection closed", "it is still running");
       });
       if (checkBountyExist.length === 0) {
         setBountyNotFound(true);
@@ -138,10 +154,15 @@ function MarketingBounties() {
         eventLength.length >= 1
       ) {
         setDataLoaded(true);
+        setLoadingMessage(false);
         clearInterval(closeMyInterval);
       }
-    }, 1000);
-  }, []);
+    }, 1800);
+  }, [loadMore]);
+
+  useEffect(() => {
+    setCurrentBountyCount(eventData.length);
+  }, [eventData]);
 
   return (
     <div className="flex justify-between sm:block">
@@ -152,7 +173,7 @@ function MarketingBounties() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 sm:mb-24 dark:bg-background-dark-mode">
-        <CategoryList currentPage="marketing" />
+        <CategoryList currentPage="cybersecurity" />
         <div>
           {dataLoaded ? (
             <div>
@@ -169,6 +190,24 @@ function MarketingBounties() {
               Loading...
             </div>
           )}
+          <div>
+            {currentBountyCount === correctBountyCount ? (
+              <button
+                onClick={() => {
+                  let lastElement = eventData.length - 1;
+                  setQueryUntil(eventData[lastElement].timestamp);
+                  setLoadMore(!loadMore);
+                  setLoadingMessage(true);
+                  setCorrectBountyCount(correctBountyCount + 10);
+                }}
+                className="text-center text-gray-2"
+              >
+                {loadingMessage ? "Loading" : "load more bounties"}
+              </button>
+            ) : (
+              <p className="text-gray-2">We didn't find more bounties</p>
+            )}
+          </div>
         </div>
         {bountyNotFound ? <BountiesNotFound /> : null}
       </div>
