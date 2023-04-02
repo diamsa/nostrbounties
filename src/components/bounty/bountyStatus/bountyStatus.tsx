@@ -12,6 +12,8 @@ function BountyUpdateStatusCard({
   currentStatus,
   applicants,
   posterPubkey,
+  naddr,
+  id,
   updateValues,
   dataLoaded,
 }: any) {
@@ -64,7 +66,9 @@ function BountyUpdateStatusCard({
                     currentStatus,
                     bountyHunterNpub,
                     dTag,
-                    posterPubkey
+                    posterPubkey,
+                    naddr,
+                    id
                   ).then(() => {
                     updateValues(true);
                     dataLoaded(false);

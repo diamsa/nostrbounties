@@ -68,9 +68,12 @@ export async function sendReply(
   currentStatus: string | null,
   bountyHunterNpub: string,
   dTag: string,
-  posterPubkey: string
+  posterPubkey: string,
+  id: string,
+  naddr: string
 ) {
   let relays = defaultRelays;
+  let rootBountyUrl = `https://nostrbounties.com/b/${naddr}`;
 
   if (currentStatus === "") {
     let eventMessage = {
@@ -82,8 +85,9 @@ export async function sendReply(
         ["d", dTag],
         ["status", "in progress"],
         ["t", "bounty-status"],
+        ["e", `${id}`, "", "root"],
       ],
-      content: `nostr:${bountyHunterNpub} is working in a new bounty from nostrbounties.com`,
+      content: `nostr:${bountyHunterNpub} was assigned to work on this bounty: ${rootBountyUrl} from nostrbounties.com`,
       sig: null,
     };
     // @ts-ignore
@@ -111,8 +115,9 @@ export async function sendReply(
         ["d", dTag],
         ["status", "paid"],
         ["t", "bounty-status"],
+        ["e", `${id}`, "", "root"],
       ],
-      content: `nostr:${bountyHunterNpub} got paid for a bounty from nostrbounties.com`,
+      content: `nostr:${bountyHunterNpub} got paid for completing this bounty: ${rootBountyUrl} from nostrbounties.com`,
       sig: null,
     };
     // @ts-ignore
@@ -140,8 +145,9 @@ export async function sendReply(
         ["d", dTag],
         ["status", "in progress"],
         ["t", "bounty-status"],
+        ["e", `${id}`, "", "root"],
       ],
-      content: `nostr:${bountyHunterNpub} is working in a new bounty from nostrbounties.com`,
+      content: `nostr:${bountyHunterNpub} was assigned to work on this bounty: ${rootBountyUrl} from nostrbounties.com`,
       sig: null,
     };
     // @ts-ignore
@@ -163,7 +169,7 @@ export async function sendReply(
 export async function addReward(
   amount: string,
   note: string,
-  id:string,
+  id: string,
   pubkey: string,
   dTag: string,
   naddr: string

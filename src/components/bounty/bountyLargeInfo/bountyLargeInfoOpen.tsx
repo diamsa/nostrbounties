@@ -1,5 +1,4 @@
 import {
-  sendReply,
   getNpub,
   addReward,
   formatReward,
@@ -94,6 +93,8 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           currentStatus={ev.status}
           applicants={ev.applications}
           posterPubkey={ev.pubkey}
+          naddr={naddr}
+          id={ev.id}
           updateValues={updateValues}
           dataLoaded={dataLoaded}
         />

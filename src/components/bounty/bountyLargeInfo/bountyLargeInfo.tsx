@@ -21,7 +21,6 @@ import editIconLg from "../../../assets/edit-icon-lg.svg";
 import deleteIcon from "../../../assets/delete-icon.svg";
 
 import ApplicantBox from "../bountyApplicantsBox/bountyApplicantsBox";
-import BountyApplicationCard from "../bountyApplication/bountyApplicationCard";
 import BountyUpdateStatusCard from "../bountyStatus/bountyStatus";
 
 type event = {
@@ -52,7 +51,6 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
   let [rewardNoteToAdd, setRewardNoteToAdd] = useState<string>("");
   let [notShared, setNotShared] = useState(false);
-  let [applicationModal, setAppicationModal] = useState(false);
   let [updateStatusModal, setUpdateStatusModal] = useState(false);
   let totalReward = getFinalReward();
   let isLogged = sessionStorage.getItem("pubkey");
@@ -72,20 +70,9 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
     return totalReward;
   }
 
-  function closeModal() {
-    setAppicationModal(false);
-  }
-
   return (
     <div>
       {notShared ? <CouldNotShare /> : null}
-      {applicationModal ? (
-        <BountyApplicationCard
-          isOpen={applicationModal}
-          closeModal={closeModal}
-          dTag={ev.Dtag}
-        />
-      ) : null}
       {updateStatusModal ? (
         <BountyUpdateStatusCard
           isModalOpen={updateStatusModal}
@@ -94,6 +81,8 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           currentStatus={ev.status}
           applicants={ev.applications}
           posterPubkey={ev.pubkey}
+          naddr={naddr}
+          id={ev.id}
           updateValues={updateValues}
           dataLoaded={dataLoaded}
         />
@@ -138,7 +127,9 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                                 ev.status,
                                 bountyHunterNpub,
                                 ev.Dtag,
-                                ev.pubkey
+                                ev.pubkey,
+                                ev.id,
+                                naddr
                               ).then(() => {
                                 updateValues(true);
                                 dataLoaded(false);
