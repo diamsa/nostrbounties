@@ -94,24 +94,31 @@ function CommentBox({
                       <div className="flex">
                         {links.github !== "" ? (
                           <div>
-                            <img
-                              className="w-4 h-4 rounded-full shadow-lg mr-2 cursor-pointer"
-                              onClick={() => deleteEvent(id)}
-                              src={isDarkTheme() ? githubIconDm : githubIconLg}
-                              alt="github icon"
-                            />
+                            <Link to={`${links.github}`} target="_blank">
+                              <img
+                                className="w-4 h-4 rounded-full shadow-lg mr-2 cursor-pointer"
+                                src={
+                                  isDarkTheme() ? githubIconDm : githubIconLg
+                                }
+                                alt="github icon"
+                              />
+                            </Link>
                           </div>
                         ) : null}
                         {links.personalWebsite !== "" ? (
                           <div>
-                            <img
-                              className="w-4 h-4 rounded-full shadow-lg mr-2 cursor-pointer"
-                              onClick={() => deleteEvent(id)}
-                              src={
-                                isDarkTheme() ? websiteIconDm : websiteIconLg
-                              }
-                              alt="website icon"
-                            />
+                            <Link
+                              to={`${links.personalWebsite}`}
+                              target="_blank"
+                            >
+                              <img
+                                className="w-4 h-4 rounded-full shadow-lg mr-2 cursor-pointer"
+                                src={
+                                  isDarkTheme() ? websiteIconDm : websiteIconLg
+                                }
+                                alt="website icon"
+                              />
+                            </Link>
                           </div>
                         ) : null}
                       </div>
