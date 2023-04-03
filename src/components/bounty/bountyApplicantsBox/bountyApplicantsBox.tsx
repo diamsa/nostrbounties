@@ -93,7 +93,7 @@ function CommentBox({
                       </p>
                       <div className="flex">
                         {links.github !== "" ? (
-                          <div>
+                          <div className="mb-2">
                             <Link to={`${links.github}`} target="_blank">
                               <img
                                 className="w-4 h-4 rounded-full shadow-lg mr-2 cursor-pointer"
@@ -106,7 +106,7 @@ function CommentBox({
                           </div>
                         ) : null}
                         {links.personalWebsite !== "" ? (
-                          <div>
+                          <div className="mb-2">
                             <Link
                               to={`${links.personalWebsite}`}
                               target="_blank"
@@ -127,7 +127,7 @@ function CommentBox({
                         <Link
                           to={`https://snort.social/messages/${npub}`}
                           target="_blank"
-                          className="font-sans text-xs bg-blue-1 px-2 py-1 font-normal mr-1 text-white"
+                          className="font-sans text-xs bg-blue-1 text-dark-text px-2 py-1 font-normal rounded-lg mr-1 dark:text-white"
                         >
                           send a message
                         </Link>

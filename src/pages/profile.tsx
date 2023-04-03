@@ -25,6 +25,7 @@ type event = {
   status: string;
   tags: string[];
   title: string;
+  timestamp: number;
 };
 
 function Profile() {
@@ -132,6 +133,7 @@ function Profile() {
         setLast30Days((item) => item + 1);
       }
     );
+
     relayPool.subscribe(
       subFilterAddedReward,
       userMetaDataRelays,
@@ -202,6 +204,7 @@ function Profile() {
         ev.reward = bountyReward;
         ev.createdAt = bountyDatePosted;
         ev.pubkey = event.pubkey;
+        ev.timestamp = event.created_at;
 
         let subFilterStatus = [
           {
@@ -248,7 +251,7 @@ function Profile() {
         clearInterval(closeMyInterval);
       }
     }, 1000);
-  }, []);
+  }, [queryUntil]);
 
   useEffect(() => {
     setCurrentBountyCount(eventData.length);
@@ -304,9 +307,12 @@ function Profile() {
             >
               {loadingMessage ? "Loading" : "load more bounties"}
             </button>
-          ) : (
-            <p className="text-gray-2">We didn't find more bounties</p>
-          )}
+          ) : null}
+          {currentBountyCount !== correctBountyCount ? (
+            <p className="mt-3 text-dark-text dark:text-gray-2">
+              We didn't find more bounties
+            </p>
+          ) : null}
         </div>
         {bountyNotFound ? <BountiesNotFound /> : null}
       </div>
