@@ -34,14 +34,14 @@ function BountyUpdateStatusCard({
                   className="w-8 h-6 my-1 cursor-pointer"
                   onClick={() => closeModal()}
                   src={isDarkTheme() ? closeIconLg : closeIconDm}
-                  alt="delete icon"
+                  alt="close icon"
                 ></img>
               </div>
               <input
                 type="text"
                 onChange={(e) => setBountyHunterNpub(e.target.value)}
                 className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
-                placeholder="Bounty hunter's npub"
+                placeholder="Enter bounty hunter's npub"
                 value={bountyHunterNpub}
                 required
               />
@@ -50,35 +50,43 @@ function BountyUpdateStatusCard({
             {applicants.map((applications: any) => {
               return (
                 <div>
-                  <ApplicationBox
-                    pubkey={applications.pubkey}
-                    createdAt={applications.createdAt}
-                    changedNpubValue={setBountyHunterNpub}
-                  />
+                  <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1 sm:text-base">
+                    Copy npub from one of the applicants:
+                  </label>
+                  <div className="my-1">
+                    <ApplicationBox
+                      pubkey={applications.pubkey}
+                      createdAt={applications.createdAt}
+                      changedNpubValue={setBountyHunterNpub}
+                    />
+                  </div>
                 </div>
               );
             })}
 
-            <div className="mt-4">
-              <button
-                onClick={() => {
-                  sendReply(
-                    currentStatus,
-                    bountyHunterNpub,
-                    dTag,
-                    posterPubkey,
-                    naddr,
-                    id
-                  ).then(() => {
-                    updateValues(true);
-                    dataLoaded(false);
-                  });
-                }}
-                className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-1 dark:text-white"
-              >
-                Change status to <i>In progress</i>
-              </button>
-            </div>
+            {bountyHunterNpub.startsWith("npub1") &&
+            bountyHunterNpub.length === 63 ? (
+              <div className="mt-4">
+                <button
+                  onClick={() => {
+                    sendReply(
+                      currentStatus,
+                      bountyHunterNpub,
+                      dTag,
+                      posterPubkey,
+                      naddr,
+                      id
+                    ).then(() => {
+                      updateValues(true);
+                      dataLoaded(false);
+                    });
+                  }}
+                  className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-1 dark:text-white"
+                >
+                  Change status to <i>In progress</i>
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
