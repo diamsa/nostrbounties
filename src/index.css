@@ -20,10 +20,16 @@
   }
 
   .markdown > blockquote {
-    @apply border-l-8 bg-sidebar-gray py-3 pl-2 border-blue-1 text-dark-text font-normal text-base italic dark:text-dark-text;
+    @apply border-l-8 bg-sidebar-gray py-3 pl-2 border-blue-1 text-dark-text font-normal text-base italic dark:text-gray-2 dark:bg-input-bg-dm;
   }
   .markdown > hr {
     @apply border-l-2 border-dark-text dark:text-gray-2 dark:border-gray-2;
+  }
+  .markdown > pre {
+    @apply bg-sidebar-gray text-sm px-3 py-2 whitespace-pre-wrap text-dark-text dark:text-gray-2 dark:bg-input-bg-dm;
+  }
+  .markdown > p > code {
+    @apply bg-sidebar-gray text-sm italic px-2 py-1 whitespace-pre-wrap text-dark-text dark:text-gray-2 dark:bg-input-bg-dm;
   }
 }
 @layer utilities {

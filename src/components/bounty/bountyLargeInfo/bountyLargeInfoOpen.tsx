@@ -287,9 +287,9 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                 addReward(
                   rewardToAdd,
                   rewardNoteToAdd,
+                  ev.id,
                   ev.pubkey,
                   ev.Dtag,
-                  ev.id,
                   naddr
                 );
                 setRewardToAdd("");

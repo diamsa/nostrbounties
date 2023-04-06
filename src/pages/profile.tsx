@@ -205,12 +205,17 @@ function Profile() {
         ev.createdAt = bountyDatePosted;
         ev.pubkey = event.pubkey;
         ev.timestamp = event.created_at;
+        let naddr = nip19.naddrEncode({
+          identifier: ev.Dtag,
+          pubkey: event.pubkey,
+          kind: 30023,
+        });
 
         let subFilterStatus = [
           {
             "#t": ["bounty-status"],
             limit: 1,
-            "#d": [ev.Dtag],
+            "#d": [`${ev.Dtag}`],
             kinds: [1],
           },
         ];

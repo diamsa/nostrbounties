@@ -1,11 +1,11 @@
 import {
-  sendReply,
   getNpub,
   addReward,
   formatReward,
   deleteEvent,
   isDarkTheme,
   shareBounty,
+  sendReply,
 } from "../../../utils";
 import { Link, useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
@@ -21,6 +21,7 @@ import editIconLg from "../../../assets/edit-icon-lg.svg";
 import deleteIcon from "../../../assets/delete-icon.svg";
 
 import ApplicantBox from "../bountyApplicantsBox/bountyApplicantsBox";
+import LNInvoice from "../../payment/LNInvoice";
 import BountyUpdateStatusCard from "../bountyStatus/bountyStatus";
 
 type event = {
@@ -36,7 +37,12 @@ type event = {
     reward: number;
     status: string;
     title: string;
-    bountyHunterMetaData: { name: string; profilePic: string; pubkey: string };
+    bountyHunterMetaData: {
+      name: string;
+      profilePic: string;
+      pubkey: string;
+      lnAddress: string | null;
+    };
     applications: any[];
   };
 };
@@ -52,6 +58,8 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
   let [rewardNoteToAdd, setRewardNoteToAdd] = useState<string>("");
   let [notShared, setNotShared] = useState(false);
   let [updateStatusModal, setUpdateStatusModal] = useState(false);
+  let [LNInvoiceModal, setLNInvoiceModal] = useState(false);
+
   let totalReward = getFinalReward();
   let isLogged = sessionStorage.getItem("pubkey");
   let posterNpub = nip19.npubEncode(ev.pubkey);
@@ -83,6 +91,18 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           posterPubkey={ev.pubkey}
           naddr={naddr}
           id={ev.id}
+          updateValues={updateValues}
+          dataLoaded={dataLoaded}
+        />
+      ) : null}
+      {LNInvoiceModal ? (
+        <LNInvoice
+          amount={ev.reward}
+          bountyHunterMetadata={ev.bountyHunterMetaData}
+          posterPubkey={ev.pubkey}
+          naddr={naddr}
+          closeModal={setLNInvoiceModal}
+          eventId={ev.id}
           updateValues={updateValues}
           dataLoaded={dataLoaded}
         />
@@ -120,8 +140,21 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                           >
                             Change status to: In progress
                           </button>
-                        ) : (
+                        ) : null}
+                        {ev.status === "in progress" &&
+                        ev.bountyHunterMetaData.lnAddress !== undefined &&
+                        ev.bountyHunterMetaData.lnAddress !== null ? (
                           <button
+                            onClick={() => setLNInvoiceModal(true)}
+                            className="font-sans text-sm font-normal underline ml-2 mt-2  dark:text-gray-1"
+                          >
+                            Change status to: Paid
+                          </button>
+                        ) : null}
+                        {(ev.status === "in progress" &&
+                          ev.bountyHunterMetaData.lnAddress === null) ||
+                        ev.bountyHunterMetaData.lnAddress === undefined ? (
+                          <p
                             onClick={() =>
                               sendReply(
                                 ev.status,
@@ -135,11 +168,13 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                                 dataLoaded(false);
                               })
                             }
-                            className="font-sans text-sm font-normal underline ml-2 mt-2  dark:text-gray-1"
+                            className="font-sans text-sm font-normal underline ml-2 mt-2 cursor-pointer  dark:text-gray-1"
                           >
-                            Change status to: Paid
-                          </button>
-                        )}
+                            We couldn't find bounty hunter's LN address.
+                            <br></br>Click here to change status to <i>Paid</i>{" "}
+                            manually
+                          </p>
+                        ) : null}
                       </div>
                     ) : null}
                   </div>
@@ -317,9 +352,9 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                 addReward(
                   rewardToAdd,
                   rewardNoteToAdd,
+                  ev.id,
                   ev.pubkey,
                   ev.Dtag,
-                  ev.id,
                   naddr
                 );
                 setRewardToAdd("");

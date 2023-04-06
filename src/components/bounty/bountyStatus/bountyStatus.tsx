@@ -46,13 +46,12 @@ function BountyUpdateStatusCard({
                 required
               />
             </div>
-
+            <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1 sm:text-base">
+              Copy npub from one of the applicants:
+            </label>
             {applicants.map((applications: any) => {
               return (
                 <div>
-                  <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1 sm:text-base">
-                    Copy npub from one of the applicants:
-                  </label>
                   <div className="my-1">
                     <ApplicationBox
                       pubkey={applications.pubkey}
@@ -74,8 +73,8 @@ function BountyUpdateStatusCard({
                       bountyHunterNpub,
                       dTag,
                       posterPubkey,
-                      naddr,
-                      id
+                      id,
+                      naddr
                     ).then(() => {
                       updateValues(true);
                       dataLoaded(false);

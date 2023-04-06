@@ -7,7 +7,7 @@ import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortI
 
 //functions
 import { useState, useEffect } from "react";
-import { convertTimestamp, formatReward } from "./utils";
+import { convertTimestamp, formatReward, getLNService } from "./utils";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish, defaultRelays } from "./const";
 
@@ -48,6 +48,7 @@ function App() {
 
     let checkBountyExist = [];
     let eventLength = [];
+
 
     let relayPool = new RelayPool(relays, { useEventCache: true });
 
