@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import {
   getLNService,
   getZapEvent,
@@ -24,8 +24,9 @@ function LNInvoice({
   closeModal,
   eventId,
   updateValues,
-  dataLoaded,
+  dataLoaded
 }: any) {
+
   let miliSatsAmount = amount * 1000;
   let miliSatsAmountStr = miliSatsAmount.toString();
   let currentStatus = "in progress";
@@ -182,7 +183,7 @@ function LNInvoice({
                     id,
                     naddr
                   ).then(() => {
-                    updateValues(true);
+                    updateValues(false);
                     dataLoaded(false);
                   });
                 }}

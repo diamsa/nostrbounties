@@ -15,7 +15,7 @@ function BountyUpdateStatusCard({
   naddr,
   id,
   updateValues,
-  dataLoaded,
+  dataLoaded
 }: any) {
   let [bountyHunterNpub, setBountyHunterNpub] = useState<string>("");
 
@@ -62,6 +62,11 @@ function BountyUpdateStatusCard({
                 </div>
               );
             })}
+            {applicants < 1 ? (
+              <p className="text-sm text-dark-text dark:text-gray-1">
+                No one has applied to your bounty yet.
+              </p>
+            ) : null}
 
             {bountyHunterNpub.startsWith("npub1") &&
             bountyHunterNpub.length === 63 ? (

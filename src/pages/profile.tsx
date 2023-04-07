@@ -50,6 +50,15 @@ function Profile() {
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
 
+  function loadMoreBounties() {
+    let lastElement = eventData.length - 1;
+    // @ts-ignore
+    setQueryUntil(eventData[lastElement].timestamp);
+    setLoadMore(!loadMore);
+    setLoadingMessage(true);
+    setCorrectBountyCount(correctBountyCount + 10);
+  }
+
   let subFilterMetaData = [
     {
       authors: [`${userPubkey}`],
@@ -301,12 +310,7 @@ function Profile() {
           {currentBountyCount === correctBountyCount ? (
             <button
               onClick={() => {
-                let lastElement = eventData.length - 1;
-                // @ts-ignore
-                setQueryUntil(eventData[lastElement].timestamp);
-                setLoadMore(!loadMore);
-                setLoadingMessage(true);
-                setCorrectBountyCount(correctBountyCount + 10);
+                loadMoreBounties();
               }}
               className="text-center text-gray-2"
             >

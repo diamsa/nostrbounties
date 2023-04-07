@@ -78,6 +78,38 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
     return totalReward;
   }
 
+  async function shareBountyFn() {
+    let wasShared = await shareBounty(`https://nostrbounties/b/${naddr}`);
+    if (wasShared !== undefined) {
+      setNotShared(!notShared);
+
+      setTimeout(() => {
+        setNotShared(false);
+      }, 2000);
+    }
+  }
+
+  function changeStatusToPaid() {
+    sendReply(
+      ev.status,
+      bountyHunterNpub,
+      ev.Dtag,
+      ev.pubkey,
+      ev.id,
+      naddr
+    ).then(() => {
+      updateValues(false);
+      dataLoaded(false);
+    });
+  }
+
+  function deleteEventFn() {
+    let event = deleteEvent(ev.id);
+    event.then((data) => {
+      navigate(`/`);
+    });
+  }
+
   return (
     <div>
       {notShared ? <CouldNotShare /> : null}
@@ -91,8 +123,6 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           posterPubkey={ev.pubkey}
           naddr={naddr}
           id={ev.id}
-          updateValues={updateValues}
-          dataLoaded={dataLoaded}
         />
       ) : null}
       {LNInvoiceModal ? (
@@ -103,8 +133,6 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           naddr={naddr}
           closeModal={setLNInvoiceModal}
           eventId={ev.id}
-          updateValues={updateValues}
-          dataLoaded={dataLoaded}
         />
       ) : null}
 
@@ -155,19 +183,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                           ev.bountyHunterMetaData.lnAddress === null) ||
                         ev.bountyHunterMetaData.lnAddress === undefined ? (
                           <p
-                            onClick={() =>
-                              sendReply(
-                                ev.status,
-                                bountyHunterNpub,
-                                ev.Dtag,
-                                ev.pubkey,
-                                ev.id,
-                                naddr
-                              ).then(() => {
-                                updateValues(true);
-                                dataLoaded(false);
-                              })
-                            }
+                            onClick={() => changeStatusToPaid()}
                             className="font-sans text-sm font-normal underline ml-2 mt-2 cursor-pointer  dark:text-gray-1"
                           >
                             We couldn't find bounty hunter's LN address.
@@ -185,18 +201,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                   title="share bounty"
                   className="w-7 h-5 my-1 cursor-pointer sm:mt-3"
                   src={isDarkTheme() ? shareIconDm : shareIconLg}
-                  onClick={async () => {
-                    let wasShared = await shareBounty(
-                      `https://nostrbounties/b/${naddr}`
-                    );
-                    if (wasShared !== undefined) {
-                      setNotShared(!notShared);
-
-                      setTimeout(() => {
-                        setNotShared(false);
-                      }, 2000);
-                    }
-                  }}
+                  onClick={() => shareBountyFn()}
                   alt="share icon"
                 ></img>
                 {isLogged === ev.pubkey ? (
@@ -213,10 +218,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                       className="w-7 h-5 my-1 cursor-pointer sm:mt-3"
                       src={deleteIcon}
                       onClick={() => {
-                        let event = deleteEvent(ev.id);
-                        event.then((data) => {
-                          navigate(`/`);
-                        });
+                        deleteEventFn();
                       }}
                       alt="delete icon"
                     ></img>
@@ -299,7 +301,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                 >
                   <div>
                     <img
-                      className="w-6 h-6 rounded-full shadow-lg mt-2 sm:ml-0"
+                      className="w-9 h-6 rounded-full shadow-lg mt-2 sm:ml-0"
                       src={
                         item.profilePic === "" ? avatarImage : item.profilePic
                       }
@@ -318,9 +320,11 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                       {formatReward(item.amount)} sats
                     </span>{" "}
                     {item.note.length > 0 && (
-                      <span>
+                      <span className="break-words">
                         with the note:{" "}
-                        <span className="italic block">{item.note}</span>
+                        <span className="italic block break-all">
+                          {item.note}
+                        </span>
                       </span>
                     )}
                   </div>

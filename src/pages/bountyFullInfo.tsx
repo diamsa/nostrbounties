@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp, getMetaData, decodeNpubMention } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
@@ -9,11 +9,6 @@ import BountyLargeInfor from "../components/bounty/bountyLargeInfo/bountyLargeIn
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import MobileMenu from "../components/menus/mobileMenu/mobileMenu";
 import { nip19 } from "nostr-tools";
-
-type addToReward = {
-  posterPubkey: string;
-  amount: string;
-};
 
 type event = {
   Dtag: string;
@@ -315,19 +310,6 @@ function BountyInfo() {
       }
     );
 
-    // relayPool.subscribe(
-    //   [
-    //     {
-    //       kinds: [9735],
-    //       limit: 10,
-    //     },
-    //   ],
-    //   defaultRelays,
-    //   (event, isAfterEose, relayURL) => {
-    //     console.log(event);
-    //   }
-    // );
-
     setTimeout(() => {
       relayPool.close().then(() => {
         console.log("connection closed");
@@ -347,6 +329,7 @@ function BountyInfo() {
       <div className="basis-12/12 lg:hidden md:hidden">
         <MobileMenu />
       </div>
+
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen sm:mb-24 px-1 dark:bg-background-dark-mode">
         {dataLoaded ? (
           <div>

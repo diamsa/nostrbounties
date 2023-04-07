@@ -1,13 +1,11 @@
-//components
 import SideBarMenu from "./components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "./components/errors/bountiesNotFound";
 import MobileMenu from "./components/menus/mobileMenu/mobileMenu";
 import CategoryList from "./components/categoriesList/categoryList";
 import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 
-//functions
 import { useState, useEffect } from "react";
-import { convertTimestamp, formatReward, getLNService } from "./utils";
+import { convertTimestamp, formatReward } from "./utils";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish, defaultRelays } from "./const";
 
@@ -35,6 +33,14 @@ function App() {
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
 
+  function loadMoreBounties() {
+    let lastElement = eventData.length - 1;
+    setQueryUntil(eventData[lastElement].timestamp);
+    setLoadMore(!loadMore);
+    setLoadingMessage(true);
+    setCorrectBountyCount(correctBountyCount + 10);
+  }
+
   useEffect(() => {
     let relays = defaultRelaysToPublish;
     let subFilter = [
@@ -48,7 +54,6 @@ function App() {
 
     let checkBountyExist = [];
     let eventLength = [];
-
 
     let relayPool = new RelayPool(relays, { useEventCache: true });
 
@@ -141,7 +146,7 @@ function App() {
 
     setTimeout(() => {
       relayPool.close().then(() => {
-        console.log("connection closed", "it is still running");
+        console.log("connection closed");
       });
       if (checkBountyExist.length === 0) {
         setBountyNotFound(true);
@@ -195,11 +200,7 @@ function App() {
             {currentBountyCount === correctBountyCount ? (
               <button
                 onClick={() => {
-                  let lastElement = eventData.length - 1;
-                  setQueryUntil(eventData[lastElement].timestamp);
-                  setLoadMore(!loadMore);
-                  setLoadingMessage(true);
-                  setCorrectBountyCount(correctBountyCount + 10);
+                  loadMoreBounties();
                 }}
                 className="text-center mt-3 text-dark-text dark:text-gray-2"
               >

@@ -176,7 +176,6 @@ export async function addReward(
   naddr: string
 ) {
   let relays = defaultRelays;
-  console.log(amount, note, id, pubkey, dTag, naddr);
 
   if (amount === "") {
     console.log("add a value");
@@ -347,7 +346,6 @@ export async function getRelayData(relay: string) {
 }
 
 export function getLNService(address: string) {
-  console.log(address);
   let isLNUrl = address.toLowerCase().startsWith("lnurl");
   let isDecodedAddress = address.includes("@");
 
@@ -402,6 +400,15 @@ export async function getLNInvoice(
       return data;
     }
   } else {
+    if (comment !== "") {
+      let baseUrl = `${LNService.callback}?amount=${amount}&comment=${comment}`;
+      let data = getLNURL(baseUrl);
+      return data;
+    } else {
+      let baseUrl = `${LNService.callback}?amount=${amount}`;
+      let data = getLNURL(baseUrl);
+      return data;
+    }
   }
 }
 
