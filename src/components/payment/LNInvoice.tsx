@@ -1,4 +1,4 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import {
   getLNService,
   getZapEvent,
@@ -24,9 +24,8 @@ function LNInvoice({
   closeModal,
   eventId,
   updateValues,
-  dataLoaded
+  dataLoaded,
 }: any) {
-
   let miliSatsAmount = amount * 1000;
   let miliSatsAmountStr = miliSatsAmount.toString();
   let currentStatus = "in progress";
@@ -47,6 +46,49 @@ function LNInvoice({
     setTimeout(() => {
       setWasLNurlCopied(false);
     }, 2500);
+  }
+
+  async function openLNExtension(LNInvoice: string) {
+    // @ts-ignore
+    let hasAccessToExtension = await window.webln.enable();
+    if (hasAccessToExtension) {
+      // @ts-ignore
+      await window.webln.sendPayment(LNInvoice);
+    }
+  }
+
+  function payLNInvoice() {
+    getZapEvent(
+      comment,
+      bountyHunterMetadata.pubkey,
+      posterPubkey,
+      miliSatsAmountStr,
+      naddr
+    ).then((event) => {
+      let zapEvent = JSON.stringify(event);
+      getLNInvoice(zapEvent, comment, LNservice, miliSatsAmountStr)
+        .then((response) => response?.json())
+        .then((data) => {
+          let LNInvoice = data.pr;
+          setLNurl(LNInvoice);
+          openLNExtension(LNInvoice);
+          setDisplayLNInvoice(true);
+        });
+    });
+  }
+
+  function updateStatus() {
+    sendReply(
+      currentStatus,
+      bountyHunterNpub,
+      dTag,
+      posterPubkey,
+      id,
+      naddr
+    ).then(() => {
+      updateValues(false);
+      dataLoaded(false);
+    });
   }
 
   useEffect(() => {
@@ -104,26 +146,7 @@ function LNInvoice({
             <div className="mt-4">
               <button
                 onClick={() => {
-                  getZapEvent(
-                    comment,
-                    bountyHunterMetadata.pubkey,
-                    posterPubkey,
-                    miliSatsAmountStr,
-                    naddr
-                  ).then((event) => {
-                    let zapEvent = JSON.stringify(event);
-                    getLNInvoice(
-                      zapEvent,
-                      comment,
-                      LNservice,
-                      miliSatsAmountStr
-                    )
-                      .then((response) => response?.json())
-                      .then((data) => {
-                        setLNurl(data.pr);
-                        setDisplayLNInvoice(true);
-                      });
-                  });
+                  payLNInvoice();
                 }}
                 className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-1 dark:text-white"
               >
@@ -175,17 +198,7 @@ function LNInvoice({
             <div className="mt-4">
               <button
                 onClick={() => {
-                  sendReply(
-                    currentStatus,
-                    bountyHunterNpub,
-                    dTag,
-                    posterPubkey,
-                    id,
-                    naddr
-                  ).then(() => {
-                    updateValues(false);
-                    dataLoaded(false);
-                  });
+                  updateStatus();
                 }}
                 className="w-full  px-4 py-2 text-sm font-medium text-center text-gray-2 bg-blue-1 rounded-lg hover:bg-blue-1 dark:text-white"
               >

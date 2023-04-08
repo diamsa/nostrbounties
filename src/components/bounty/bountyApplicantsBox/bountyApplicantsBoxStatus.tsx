@@ -22,7 +22,7 @@ function CommentBox({ pubkey, createdAt, changedNpubValue }: any) {
   useEffect(() => {
     getMetaData(pubkey)
       .then((response) => {
-        if (response.status === 404) setName("");
+        if (response.status !== 200) setName("");
         setProfilePic("");
         return response.json();
       })
@@ -57,19 +57,25 @@ function CommentBox({ pubkey, createdAt, changedNpubValue }: any) {
               )}
               <div className="block">
                 {name === "" ? (
-                  <Link
-                    to={`/profile/${npub}`}
-                    className="font-sans text-xs font-normal ml-1 dark:text-gray-1"
-                  >
-                    {npubShortened} applied to this bounty {datePosted}.
-                  </Link>
+                  <div className="flex mt-1">
+                    <p className="font-sans text-xs font-normal ml-1 dark:text-gray-1">
+                      {npubShortened}
+                    </p>
+                    <p className="font-sans text-xs font-normal ml-1 dark:text-gray-1">
+                      {" "}
+                      applied to this bounty {datePosted}.
+                    </p>
+                  </div>
                 ) : (
-                  <Link
-                    to={`/profile/${npub}`}
-                    className="font-sans text-xs font-normal ml-1 dark:text-gray-1"
-                  >
-                    {name} applied to this bounty {datePosted}.
-                  </Link>
+                  <div className="flex mt-1">
+                    <p className="font-sans text-xs font-normal ml-1 dark:text-gray-1">
+                      {name}
+                    </p>
+                    <p className="font-sans text-xs font-normal ml-1 dark:text-gray-1">
+                      {" "}
+                      applied to this bounty {datePosted}.
+                    </p>
+                  </div>
                 )}
               </div>
             </div>

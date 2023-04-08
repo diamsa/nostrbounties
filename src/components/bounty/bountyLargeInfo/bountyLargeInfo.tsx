@@ -123,6 +123,8 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           posterPubkey={ev.pubkey}
           naddr={naddr}
           id={ev.id}
+          updateValues={updateValues}
+          dataLoaded={dataLoaded}
         />
       ) : null}
       {LNInvoiceModal ? (
@@ -133,6 +135,8 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
           naddr={naddr}
           closeModal={setLNInvoiceModal}
           eventId={ev.id}
+          updateValues={updateValues}
+          dataLoaded={dataLoaded}
         />
       ) : null}
 

@@ -314,7 +314,7 @@ function BountyInfo() {
       relayPool.close().then(() => {
         console.log("connection closed");
       });
-    }, 40000);
+    }, 15000);
 
     setTimeout(() => {
       setDataLoaded(true);
