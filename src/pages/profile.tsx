@@ -49,6 +49,7 @@ function Profile() {
   let [queryUntil, setQueryUntil] = useState(currentTimestamp);
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
+  let [subscribeStatus, setSubscribeStatus] = useState<RelayPool>();
 
   function loadMoreBounties() {
     let lastElement = eventData.length - 1;
@@ -214,11 +215,6 @@ function Profile() {
         ev.createdAt = bountyDatePosted;
         ev.pubkey = event.pubkey;
         ev.timestamp = event.created_at;
-        let naddr = nip19.naddrEncode({
-          identifier: ev.Dtag,
-          pubkey: event.pubkey,
-          kind: 30023,
-        });
 
         let subFilterStatus = [
           {
@@ -234,13 +230,13 @@ function Profile() {
           defaultRelays,
           (event, isAfterEose, relayUrl) => {
             if (event.kind === 1) {
-              ev.status = event.tags[1][1];
               setStatuses((arr) => [...arr, event.tags[1][1]]);
             }
           }
         );
 
         setEventData((arr) => [...arr, ev]);
+        setSubscribeStatus(relayPool);
         checkBountyExist.push(event.id);
         eventLength.push(ev);
       }
@@ -281,7 +277,11 @@ function Profile() {
       </div>
 
       <div className="p-3 h-screen overflow-y-scroll basis-9/12 lg:px-10 sm:h-screen px-2 sm:mb-24 dark:bg-background-dark-mode">
-        <ProfileCard metaData={metaData} userNip05={userNip05} />
+        <ProfileCard
+          metaData={metaData}
+          userNip05={userNip05}
+          npub={params.id}
+        />
 
         <div className="flex flex-col md:flex-row items-center justify-between my-6 sm:block">
           <BountiesPaid bountiesPaid={statuses} />
@@ -295,7 +295,10 @@ function Profile() {
               {eventData.map((item, index) => {
                 return (
                   <div>
-                    <BountyCard ev={eventData[index]} />
+                    <BountyCard
+                      ev={eventData[index]}
+                      status={subscribeStatus}
+                    />
                   </div>
                 );
               })}

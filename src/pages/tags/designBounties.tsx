@@ -34,6 +34,7 @@ function DesignBounties() {
   let [queryUntil, setQueryUntil] = useState(currentTimestamp);
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
+  let [subscribeStatus, setSubscribeStatus] = useState<RelayPool>();
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
@@ -109,25 +110,7 @@ function DesignBounties() {
         ev.pubkey = event.pubkey;
         ev.timestamp = event.created_at;
 
-        let subFilterStatus = [
-          {
-            // @ts-ignore
-            "#d": [`${ev.Dtag}`],
-            "#t": ["bounty-status"],
-            kinds: [1],
-            limit: 1,
-          },
-        ];
-
-        relayPool.subscribe(
-          subFilterStatus,
-          defaultRelays,
-          (event, isAfterEose, relayUrl) => {
-            if (event.kind === 1) {
-              ev.status = event.tags[1][1];
-            }
-          }
-        );
+        setSubscribeStatus(relayPool);
 
         setEventData((arr) => [...arr, ev]);
         eventLength.push(ev);
@@ -180,7 +163,10 @@ function DesignBounties() {
               {eventData.map((item, index) => {
                 return (
                   <div>
-                    <BountyCard ev={eventData[index]} />
+                    <BountyCard
+                      ev={eventData[index]}
+                      status={subscribeStatus}
+                    />
                   </div>
                 );
               })}

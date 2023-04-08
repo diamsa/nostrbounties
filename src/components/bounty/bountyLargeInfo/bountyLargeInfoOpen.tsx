@@ -238,7 +238,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                 >
                   <div>
                     <img
-                      className="w-9 h-6 rounded-full shadow-lg mt-2 sm:ml-0"
+                      className="w-6 h-6 rounded-full shadow-lg mt-2 sm:ml-0"
                       src={
                         item.profilePic === "" ? avatarImage : item.profilePic
                       }

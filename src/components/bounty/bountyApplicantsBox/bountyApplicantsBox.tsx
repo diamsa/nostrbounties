@@ -75,14 +75,14 @@ function CommentBox({
                     {name === "" ? (
                       <Link
                         to={`/profile/${npub}`}
-                        className="font-sans text-xs font-normal ml-1 dark:text-gray-1"
+                        className="font-sans text-xs font-normal ml-2 dark:text-gray-1"
                       >
                         {npubShortened} applied to this bounty {datePosted}:
                       </Link>
                     ) : (
                       <Link
                         to={`/profile/${npub}`}
-                        className="font-sans text-xs font-normal ml-1 dark:text-gray-1"
+                        className="font-sans text-xs font-normal ml-2 dark:text-gray-1"
                       >
                         {name} applied to this bounty {datePosted}:
                       </Link>

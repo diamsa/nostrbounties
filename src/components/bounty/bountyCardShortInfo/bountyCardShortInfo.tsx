@@ -2,6 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { getNpub, getMetaData } from "../../../utils";
 import { nip19 } from "nostr-tools";
 import { useEffect, useState } from "react";
+import { defaultRelays } from "../../../const";
 
 import bitcoinIcon from "../../../assets/bitcoin-icon.png";
 import defaultAvatar from "../../../assets/nostr-icon-user.avif";
@@ -12,13 +13,12 @@ type props = {
     createdAt: string;
     pubkey: string;
     reward: string;
-    status: string;
     tags: string[];
     title: string;
   };
 };
 
-function ShortBountyInfo({ ev }: props) {
+function ShortBountyInfo({ ev, status }: props | any) {
   const navigate = useNavigate();
   let npub = getNpub(ev.pubkey);
   let naddr = nip19.naddrEncode({
@@ -29,22 +29,45 @@ function ShortBountyInfo({ ev }: props) {
 
   let bountyInfoPath = `/b/${naddr}`;
   let bountyPosterPath = `/profile/${nip19.npubEncode(ev.pubkey)}`;
-  let [name, setName] = useState("")
-  let [profilePic, setProfilePic] = useState("")
+  let [name, setName] = useState("");
+  let [profilePic, setProfilePic] = useState("");
+  let [currentStatus, setCurrentStatus] = useState<string | null>(null);
+  let subFilterStatus = [
+    {
+      // @ts-ignore
+      "#d": [ev.Dtag],
+      "#t": ["bounty-status"],
+      kinds: [1],
+      limit: 1,
+    },
+  ];
 
-  useEffect(()=>{
+  useEffect(() => {
     getMetaData(ev.pubkey)
-        .then((response) => {
-          if (response.status === 404) setName("");
-          setProfilePic("");
-          return response.json();
-        })
-        .then((data) => {
-          let parseContent = JSON.parse(data.content);
-          setName(parseContent.name);
-          setProfilePic(parseContent.picture);
-        });
-  },[])
+      .then((response) => {
+        if (response.status !== 200) setName("");
+        setProfilePic("");
+        return response.json();
+      })
+      .then((data) => {
+        let parseContent = JSON.parse(data.content);
+        setName(parseContent.name);
+        setProfilePic(parseContent.picture);
+      });
+
+    status.subscribe(
+      subFilterStatus,
+      defaultRelays,
+      (event: any, isAfterEose: string, relayUrl: string) => {
+        let hasSameDtag = event.tags[0][1] === ev.Dtag;
+        let isKind1 = event.kind === 1;
+        if (isKind1 && hasSameDtag) {
+          setCurrentStatus(event.tags[1][1]);
+          console.log(event);
+        }
+      }
+    );
+  }, []);
 
   return (
     <div>
@@ -90,19 +113,21 @@ function ShortBountyInfo({ ev }: props) {
               {ev.createdAt}
             </span>
           </div>
-          {ev.status === "open" || !ev.hasOwnProperty("status") ? (
+          {currentStatus === null ? (
             <p className="bg-status-open text-xs text-status-open-text py-1 px-2 mt-2 mb-2 mx-2 rounded-lg sm:text-xs">
-              Open
+              open
             </p>
-          ) : ev.status === "in progress" ? (
+          ) : null}
+          {currentStatus === "in progress" ? (
             <p className="bg-status-in-progress text-xs text-status-in-progress-text py-1 px-2 mt-2 mb-2 mx-2 rounded-lg sm:text-xs">
-              In progress
+              in progress
             </p>
-          ) : (
+          ) : null}
+          {currentStatus === "paid" ? (
             <p className="bg-status-paid text-xs text-status-paid-text py-1 px-2 mt-2 mb-2 mx-2 rounded-lg sm:text-xs">
-              Paid
+              paid
             </p>
-          )}
+          ) : null}
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect, createContext } from "react";
+import { useState, useEffect} from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp, getMetaData, decodeNpubMention } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
@@ -305,6 +305,7 @@ function BountyInfo() {
           ev.publishedAt = date;
           ev.pubkey = event.pubkey;
           ev.id = event.id;
+          console.log(ev)
           setEventData(ev);
         }
       }
