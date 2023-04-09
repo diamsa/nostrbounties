@@ -7,7 +7,7 @@ import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortI
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "./utils";
 import { RelayPool } from "nostr-relaypool";
-import { defaultRelaysToPublish} from "./const";
+import { defaultRelaysToPublish } from "./const";
 
 type event = {
   Dtag: string;
@@ -182,7 +182,7 @@ function App() {
             </div>
           )}
           <div className="text-center">
-            {currentBountyCount === correctBountyCount ? (
+            {currentBountyCount! >= correctBountyCount ? (
               <button
                 onClick={() => {
                   loadMoreBounties();
@@ -192,7 +192,7 @@ function App() {
                 {loadingMessage ? "Loading" : "Load more bounties"}
               </button>
             ) : null}
-            {currentBountyCount !== correctBountyCount ? (
+            {currentBountyCount! < correctBountyCount ? (
               <p className="mt-3 text-dark-text dark:text-gray-2">
                 We didn't find more bounties
               </p>

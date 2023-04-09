@@ -177,7 +177,7 @@ function MarketingBounties() {
             </div>
           )}
           <div>
-            {currentBountyCount === correctBountyCount ? (
+            {currentBountyCount! >= correctBountyCount ? (
               <button
                 onClick={() => {
                   let lastElement = eventData.length - 1;
@@ -192,7 +192,7 @@ function MarketingBounties() {
               </button>
             ) : null}
 
-            {currentBountyCount !== correctBountyCount ? (
+            {currentBountyCount! < correctBountyCount ? (
               <p className="mt-3 text-dark-text dark:text-gray-2">
                 We didn't find more bounties
               </p>
