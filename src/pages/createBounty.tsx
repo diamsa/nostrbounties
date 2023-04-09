@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish } from "../const";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
@@ -18,6 +19,7 @@ function CreateBounty() {
   let [relay, setRelay] = useState<string>("");
   let [customRelays, setCustomRelays] = useState<string[]>([]);
   let [extensionError, setExtensionError] = useState(false);
+  let [displayPreview, setDisplayPreview] = useState(false);
   let [emptyFields, setEmptyFields] = useState(false);
   let [isDesign, setIsDesign] = useState(false);
   let [isDevelopment, setIsDevelopment] = useState(false);
@@ -127,19 +129,6 @@ function CreateBounty() {
         </div>
         <div className="mt-4">
           <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
-            Bounty description in markdown
-          </label>
-          <textarea
-            onChange={(e) => setContent(e.target.value)}
-            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
-            placeholder="markdown elements supported: #, ##, *, 1, ---, (title)[https://nostr.com], >, **text**, *text*, "
-            value={content}
-            rows={9}
-            required
-          ></textarea>
-        </div>
-        <div className="mt-4">
-          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
             Which tags fit the best with your bounty? (optional)
           </label>
           <div className="flex flex-wrap space-x-5">
@@ -229,6 +218,91 @@ function CreateBounty() {
             </div>
           </div>
         </div>
+        <div className="mt-4">
+          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
+            Bounty description in markdown
+          </label>
+          <div className="flex overflow-x-scroll no-scrollbar ">
+            <button
+              onClick={() =>
+                setContent(content + " [link title](your link goes here)")
+              }
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Link
+            </button>
+            <button
+              onClick={() => setContent(content + " \n\n# text")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              H1
+            </button>
+            <button
+              onClick={() => setContent(content + " \n\n## text")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              H2
+            </button>
+            <button
+              onClick={() => setContent(content + " \n* item")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Unordered List
+            </button>
+            <button
+              onClick={() => setContent(content + " \n\n>text")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Blockquote
+            </button>
+            <button
+              onClick={() => setContent(content + " \n\n---")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Horizontal rule
+            </button>
+            <button
+              onClick={() => setContent(content + " **text**")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Bold
+            </button>
+            <button
+              onClick={() => setContent(content + " *text*")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Italic
+            </button>
+            <button
+              onClick={() => setContent(content + " \n\n```your code```")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Code snippet
+            </button>
+          </div>
+
+          <textarea
+            onChange={(e) => {
+              setContent(e.target.value);
+              setDisplayPreview(true);
+            }}
+            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
+            placeholder="Explain your bounty. You can use the elements above to customize your markdown."
+            value={content}
+            rows={9}
+            required
+          ></textarea>
+        </div>
+        {displayPreview ? (
+          <div className="my-4">
+            <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
+              Preview:
+            </label>
+            <ReactMarkdown className="markdown prose-a:underline bg-gray-50 border border-dark-text rounded-lg px-4 py-2 dark:bg-sidebar-bg dark:border-none">
+              {content!}
+            </ReactMarkdown>
+          </div>
+        ) : null}
 
         <div className="mt-7">
           <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">

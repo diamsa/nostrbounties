@@ -2,6 +2,7 @@ import { editBounty } from "../../../utils";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 
 type props = {
   oldEvent: {
@@ -18,6 +19,7 @@ type props = {
 function BountyEditor({ oldEvent }: props) {
   let [newContent, setNewContent] = useState<string>(oldEvent.content);
   let [newTitle, setNewTitle] = useState<string>(oldEvent.tags[1][1]);
+  let [displayPreview, setDisplayPreview] = useState(false)
   oldEvent.tags[1].splice(1, 1, newTitle);
 
   let navigate = useNavigate();
@@ -57,6 +59,91 @@ function BountyEditor({ oldEvent }: props) {
           rows={9}
           required
         ></textarea>
+                <div className="mt-4">
+          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
+            Bounty description in markdown
+          </label>
+          <div className="flex overflow-x-scroll no-scrollbar ">
+            <button
+              onClick={() =>
+                setNewContent(newContent + " [link title](your link goes here)")
+              }
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Link
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " \n\n# text")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              H1
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " \n\n## text")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              H2
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " \n* item")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Unordered List
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " \n\n>text")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Blockquote
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " \n\n---")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Horizontal rule
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " **text**")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Bold
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " *text*")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Italic
+            </button>
+            <button
+              onClick={() => setNewContent(newContent + " \n\n```your code```")}
+              className="py-1.5 px-4 mr-2 mb-2 text-xs font-medium whitespace-nowrap text-dark-text rounded-full border border-gray-200  dark:focus:ring-gray-700 dark:bg-sidebar-bg dark:text-gray-2 dark:border-blue-1"
+            >
+              Code snippet
+            </button>
+          </div>
+
+          <textarea
+            onChange={(e) => {
+              setNewContent(e.target.value);
+              setDisplayPreview(true);
+            }}
+            className="peer min-h-[auto] bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
+            placeholder="Explain your bounty. You can use the elements above to customize your markdown."
+            value={newContent}
+            rows={9}
+            required
+          ></textarea>
+        </div>
+        {displayPreview ? (
+          <div className="my-5">
+            <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
+              Preview:
+            </label>
+            <ReactMarkdown className="markdown prose-a:underline bg-gray-50 border border-dark-text rounded-lg px-4 py-2 dark:bg-sidebar-bg dark:border-none">
+              {newContent}
+            </ReactMarkdown>
+          </div>
+        ) : null}
         <button
           onClick={() => {
             let event = editBounty(newEvent);
