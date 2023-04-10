@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish } from "../const";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
+import { getBTCPrice } from "../utils";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
@@ -17,6 +18,7 @@ function CreateBounty() {
   let [content, setContent] = useState<string>();
   let [reward, setReward] = useState<string>();
   let [relay, setRelay] = useState<string>("");
+  let [BTCPrice, setBTCPrice] = useState<number>(0);
   let [customRelays, setCustomRelays] = useState<string[]>([]);
   let [extensionError, setExtensionError] = useState(false);
   let [displayPreview, setDisplayPreview] = useState(false);
@@ -27,6 +29,8 @@ function CreateBounty() {
   let [isWriting, setIsWriting] = useState(false);
   let [isCybersecurity, setIsCybersecurity] = useState(false);
   let [isMarketing, setIsMarketing] = useState(false);
+  // @ts-ignore
+  let USDAmount = (reward / 100000000) * BTCPrice;
 
   async function postEvent() {
     let eventMessage = {
@@ -92,6 +96,11 @@ function CreateBounty() {
     }
   }
 
+  getBTCPrice().then((data) => {
+    let price = parseInt(data.price);
+    setBTCPrice(price);
+  });
+
   return (
     <div className="flex justify-between sm:block">
       <div className="basis-3/12 sm:hidden">
@@ -115,9 +124,19 @@ function CreateBounty() {
           />
         </div>
         <div className="mt-4">
-          <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
-            Bounty reward in Sats
-          </label>
+          <div className="flex">
+            <label className="block text-xl font-medium my-3 text-gray-900 dark:text-gray-1">
+              Bounty reward in Sats
+            </label>
+            <p className="block text-sm font-light my-3 ml-3 text-gray-900 dark:text-gray-1">
+              {Number.isNaN(USDAmount) ? (
+                "~0.00 USD"
+              ) : (
+                <div>~{USDAmount.toFixed(2)} USD</div>
+              )}
+            </p>
+          </div>
+
           <input
             type="number"
             onChange={(e) => setReward(e.target.value)}

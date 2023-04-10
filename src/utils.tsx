@@ -461,3 +461,13 @@ export function shortenedLNurl(element: string) {
   let elementShortened = arr_shortElementVersion.join("");
   return elementShortened + "...";
 }
+
+export async function getBTCPrice() {
+  let price = fetch(
+    "https://data.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
+  ).then((response) => {
+    return response.json();
+  });
+
+  return price;
+}
