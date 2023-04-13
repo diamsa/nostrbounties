@@ -1,11 +1,9 @@
-//components
 import SideBarMenu from "../../components/menus/sidebarMenu/sidebarMenu";
 import BountiesNotFound from "../../components/errors/bountiesNotFound";
 import MobileMenu from "../../components/menus/mobileMenu/mobileMenu";
 import CategoryList from "../../components/categoriesList/categoryList";
 import BountyCard from "../../components/bounty/bountyCardShortInfo/bountyCardShortInfo";
 
-//functions
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "../../utils";
 import { RelayPool } from "nostr-relaypool";
@@ -18,13 +16,12 @@ type event = {
   profilePic: string;
   pubkey: string;
   reward: string;
-  status: string;
   tags: string[];
   title: string;
   timestamp: number;
 };
 
-function DebuggingBounties() {
+function App() {
   let currentTimestamp = Math.floor(Date.now() / 1000);
   let [eventData, setEventData] = useState<event[]>([]);
   let [bountyNotFound, setBountyNotFound] = useState(false);
@@ -34,16 +31,34 @@ function DebuggingBounties() {
   let [queryUntil, setQueryUntil] = useState(currentTimestamp);
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
-  let [subscribeStatus, setSubscribeStatus] = useState<RelayPool>();
+  let [currentStatus, setCurrentStatus] = useState<any>({});
+
+  function loadMoreBounties() {
+    let lastElement = eventData.length - 1;
+    setQueryUntil(eventData[lastElement].timestamp);
+    setLoadMore(!loadMore);
+    setLoadingMessage(true);
+    setCorrectBountyCount(correctBountyCount + 20);
+  }
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
+    let statuses: any = {};
     let subFilter = [
       {
         kinds: [30023],
         "#t": ["debugging-bounty"],
         until: queryUntil,
-        limit: 10,
+        limit: 20,
+      },
+    ];
+
+    let subFilterStatus = [
+      {
+        // @ts-ignore
+        "#t": ["bounty-status"],
+        kinds: [1],
+        until: queryUntil,
       },
     ];
 
@@ -110,8 +125,6 @@ function DebuggingBounties() {
         ev.pubkey = event.pubkey;
         ev.timestamp = event.created_at;
 
-        setSubscribeStatus(relayPool);
-
         setEventData((arr) => [...arr, ev]);
         eventLength.push(ev);
         checkBountyExist.push(event.id);
@@ -121,9 +134,29 @@ function DebuggingBounties() {
       { unsubscribeOnEose: true }
     );
 
+    relayPool.subscribe(
+      subFilterStatus,
+      defaultRelays,
+      (event, isAfterEose, relayUrl) => {
+        let dTag = `${event.tags[0][1]}`;
+        let hasdTag = statuses.hasOwnProperty(dTag);
+
+        if (!hasdTag) {
+          statuses[`${dTag}`] = [event.tags[1][1], event.created_at];
+        } else {
+          if (event.created_at > statuses[`${dTag}`][1])
+            statuses[`${dTag}`] = [event.tags[1][1], event.created_at];
+        }
+        setCurrentStatus(statuses);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
+    );
+
     setTimeout(() => {
       relayPool.close().then(() => {
-        console.log("connection closed", "it is still running");
+        console.log("connection closed");
       });
       if (checkBountyExist.length === 0) {
         setBountyNotFound(true);
@@ -156,17 +189,14 @@ function DebuggingBounties() {
         <MobileMenu />
       </div>
       <div className="p-3 h-screen overflow-y-scroll no-scrollbar basis-9/12 lg:px-10 sm:h-screen px-0.5 sm:mb-24 dark:bg-background-dark-mode">
-        <CategoryList currentPage="cybersecurity" />
+        <CategoryList currentPage="debugging" />
         <div>
           {dataLoaded ? (
             <div>
               {eventData.map((item, index) => {
                 return (
                   <div>
-                    <BountyCard
-                      ev={eventData[index]}
-                      status={subscribeStatus}
-                    />
+                    <BountyCard ev={eventData[index]} status={currentStatus} />
                   </div>
                 );
               })}
@@ -176,22 +206,17 @@ function DebuggingBounties() {
               Loading...
             </div>
           )}
-          <div>
+          <div className="text-center">
             {currentBountyCount! >= correctBountyCount ? (
               <button
                 onClick={() => {
-                  let lastElement = eventData.length - 1;
-                  setQueryUntil(eventData[lastElement].timestamp);
-                  setLoadMore(!loadMore);
-                  setLoadingMessage(true);
-                  setCorrectBountyCount(correctBountyCount + 10);
+                  loadMoreBounties();
                 }}
-                className="text-center text-gray-2"
+                className="text-center mt-3 text-dark-text dark:text-gray-2"
               >
-                {loadingMessage ? "Loading" : "load more bounties"}
+                {loadingMessage ? "Loading" : "Load more bounties"}
               </button>
             ) : null}
-
             {currentBountyCount! < correctBountyCount ? (
               <p className="mt-3 text-dark-text dark:text-gray-2">
                 We didn't find more bounties
@@ -205,4 +230,4 @@ function DebuggingBounties() {
   );
 }
 
-export default DebuggingBounties;
+export default App;

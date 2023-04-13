@@ -7,7 +7,7 @@ import BountyCard from "./components/bounty/bountyCardShortInfo/bountyCardShortI
 import { useState, useEffect } from "react";
 import { convertTimestamp, formatReward } from "./utils";
 import { RelayPool } from "nostr-relaypool";
-import { defaultRelaysToPublish } from "./const";
+import { defaultRelaysToPublish, defaultRelays } from "./const";
 
 type event = {
   Dtag: string;
@@ -21,6 +21,10 @@ type event = {
   timestamp: number;
 };
 
+type statusesObject = {
+  [key: string]: [string, number];
+};
+
 function App() {
   let currentTimestamp = Math.floor(Date.now() / 1000);
   let [eventData, setEventData] = useState<event[]>([]);
@@ -31,24 +35,34 @@ function App() {
   let [queryUntil, setQueryUntil] = useState(currentTimestamp);
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
-  let [subscribeStatus, setSubscribeStatus] = useState<RelayPool>();
+  let [currentStatus, setCurrentStatus] = useState<statusesObject>({});
 
   function loadMoreBounties() {
     let lastElement = eventData.length - 1;
     setQueryUntil(eventData[lastElement].timestamp);
     setLoadMore(!loadMore);
     setLoadingMessage(true);
-    setCorrectBountyCount(correctBountyCount + 10);
+    setCorrectBountyCount(correctBountyCount + 20);
   }
 
   useEffect(() => {
     let relays = defaultRelaysToPublish;
+    let statuses: any = {};
     let subFilter = [
       {
         kinds: [30023],
         "#t": ["bounty"],
         until: queryUntil,
-        limit: 10,
+        limit: 20,
+      },
+    ];
+
+    let subFilterStatus = [
+      {
+        // @ts-ignore
+        "#t": ["bounty-status"],
+        kinds: [1],
+        until: queryUntil,
       },
     ];
 
@@ -115,11 +129,29 @@ function App() {
         ev.pubkey = event.pubkey;
         ev.timestamp = event.created_at;
 
-        setSubscribeStatus(relayPool);
-
         setEventData((arr) => [...arr, ev]);
         eventLength.push(ev);
         checkBountyExist.push(event.id);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
+    );
+
+    relayPool.subscribe(
+      subFilterStatus,
+      defaultRelays,
+      (event, isAfterEose, relayUrl) => {
+        let dTag = `${event.tags[0][1]}`;
+        let hasdTag = statuses.hasOwnProperty(dTag);
+
+        if (!hasdTag) {
+          statuses[`${dTag}`] = [event.tags[1][1], event.created_at];
+        } else {
+          if (event.created_at > statuses[`${dTag}`][1])
+            statuses[`${dTag}`] = [event.tags[1][1], event.created_at];
+        }
+        setCurrentStatus(statuses);
       },
       undefined,
       undefined,
@@ -168,10 +200,7 @@ function App() {
               {eventData.map((item, index) => {
                 return (
                   <div>
-                    <BountyCard
-                      ev={eventData[index]}
-                      status={subscribeStatus}
-                    />
+                    <BountyCard ev={eventData[index]} status={currentStatus} />
                   </div>
                 );
               })}

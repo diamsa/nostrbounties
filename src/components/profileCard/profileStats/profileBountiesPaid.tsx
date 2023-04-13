@@ -1,6 +1,7 @@
 function BountiesPaid({ bountiesPaid }: any) {
   function bountyQuantity() {
-    let itemAmount = bountiesPaid.filter((item: string) => item === "paid");
+    let arrBountiesPaid = Object.values(bountiesPaid);
+    let itemAmount = arrBountiesPaid.filter((item: any) => item[0] === "paid");
     return itemAmount.length;
   }
 

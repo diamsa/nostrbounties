@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish } from "../const";
@@ -96,10 +96,12 @@ function CreateBounty() {
     }
   }
 
-  getBTCPrice().then((data) => {
-    let price = parseInt(data.price);
-    setBTCPrice(price);
-  });
+  useEffect(() => {
+    getBTCPrice().then((data) => {
+      let price = parseInt(data.price);
+      setBTCPrice(price);
+    });
+  }, []);
 
   return (
     <div className="flex justify-between sm:block">

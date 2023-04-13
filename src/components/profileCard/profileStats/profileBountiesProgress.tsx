@@ -1,7 +1,8 @@
 function BountiesProgress({ bountiesProgress }: any) {
   function bountyQuantity() {
-    let itemAmount = bountiesProgress.filter(
-      (item: string) => item === "in progress"
+    let arrBountiesInProgress = Object.values(bountiesProgress);
+    let itemAmount = arrBountiesInProgress.filter(
+      (item: any) => item[0] === "in progress"
     );
     return itemAmount.length;
   }

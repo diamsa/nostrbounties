@@ -8,6 +8,7 @@ export let defaultRelays = [
   "wss://relay.damus.io",
   "wss://relay.snort.social",
   "wss://nostr.pleb.network",
+  "wss://nostr01.opencult.com",
 ];
 
 export let allRelays = [
@@ -17,4 +18,5 @@ export let allRelays = [
   "wss://relay.snort.social",
   "wss://nostr-pub.wellorder.net/",
   "wss://relay.nostr.scot",
+  "wss://nostr01.opencult.com",
 ];

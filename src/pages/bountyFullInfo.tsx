@@ -50,8 +50,7 @@ function BountyInfo() {
         // @ts-ignore
         "#d": [naddrData.data.identifier],
         kind: [30023],
-        // @ts-ignore
-        authors: [naddrData.data.pubkey],
+ 
       },
     ];
 

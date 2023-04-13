@@ -2,7 +2,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { getNpub, getMetaData } from "../../../utils";
 import { nip19 } from "nostr-tools";
 import { useEffect, useState } from "react";
-import { defaultRelays } from "../../../const";
 
 import bitcoinIcon from "../../../assets/bitcoin-icon.png";
 import defaultAvatar from "../../../assets/nostr-icon-user.avif";
@@ -55,18 +54,12 @@ function ShortBountyInfo({ ev, status }: props | any) {
         setProfilePic(parseContent.picture);
       });
 
-    status.subscribe(
-      subFilterStatus,
-      defaultRelays,
-      (event: any, isAfterEose: string, relayUrl: string) => {
-        let hasSameDtag = event.tags[0][1] === ev.Dtag;
-        let isKind1 = event.kind === 1;
-        if (isKind1 && hasSameDtag) {
-          setCurrentStatus(event.tags[1][1]);
-          console.log(event);
-        }
-      }
-    );
+    let dTagExist = status.hasOwnProperty(ev.Dtag);
+
+    if (dTagExist) {
+      let bountyCurrentStatus = status[ev.Dtag][0];
+      setCurrentStatus(bountyCurrentStatus);
+    }
   }, []);
 
   return (

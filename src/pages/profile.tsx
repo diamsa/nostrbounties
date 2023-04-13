@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp, formatReward, getMetaData } from "../utils";
+import { convertTimestamp, formatReward } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
 import { nip19 } from "nostr-tools";
 
@@ -28,6 +28,10 @@ type event = {
   timestamp: number;
 };
 
+type statusesObject = {
+  [key: string]: [string, number];
+};
+
 function Profile() {
   const params = useParams();
   let relays = defaultRelaysToPublish;
@@ -41,7 +45,7 @@ function Profile() {
   let [bountyNotFound, setBountyNotFound] = useState(false);
   let [dataLoaded, setDataLoaded] = useState(false);
   let [userNip05, setUserNip05] = useState(false);
-  let [statuses, setStatuses] = useState<string[]>([]);
+  let [bountyStatuses, setBountyStatuses] = useState<statusesObject>({});
   let [Last30Days, setLast30Days] = useState(0);
   let [addedReward, setAddedReward] = useState<number>(0);
   let [loadMore, setLoadMore] = useState(false);
@@ -49,7 +53,6 @@ function Profile() {
   let [queryUntil, setQueryUntil] = useState(currentTimestamp);
   let [currentBountyCount, setCurrentBountyCount] = useState<number>();
   let [correctBountyCount, setCorrectBountyCount] = useState<number>(10);
-  let [subscribeStatus, setSubscribeStatus] = useState<RelayPool>();
 
   function loadMoreBounties() {
     let lastElement = eventData.length - 1;
@@ -87,12 +90,23 @@ function Profile() {
       kinds: [30023],
       "#t": ["bounty"],
       until: queryUntil,
-      limit: 10,
+      limit: 20,
+    },
+  ];
+
+  let subFilterStatus = [
+    {
+      // @ts-ignore
+      "#t": ["bounty-status"],
+      kinds: [1],
+      until: queryUntil,
+      authors: [`${userPubkey}`],
     },
   ];
 
   let checkBountyExist = [];
   let eventLength = [];
+  let bountyHunterStatuses: statusesObject = {};
 
   useEffect(() => {
     let relayPool = new RelayPool(relays);
@@ -103,8 +117,6 @@ function Profile() {
     relayPool.onnotice((relayUrl, notice) => {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
-
-    console.log("STATUS: ", statuses);
 
     relayPool.subscribe(
       subFilterMetaData,
@@ -225,21 +237,36 @@ function Profile() {
           },
         ];
 
-        relayPool.subscribe(
-          subFilterStatus,
-          defaultRelays,
-          (event, isAfterEose, relayUrl) => {
-            if (event.kind === 1) {
-              setStatuses((arr) => [...arr, event.tags[1][1]]);
-            }
-          }
-        );
-
         setEventData((arr) => [...arr, ev]);
-        setSubscribeStatus(relayPool);
         checkBountyExist.push(event.id);
         eventLength.push(ev);
       }
+    );
+
+    relayPool.subscribe(
+      subFilterStatus,
+      defaultRelays,
+      (event, isAfterEose, relayUrl) => {
+        let dTag = `${event.tags[0][1]}`;
+        let hasdTag = bountyHunterStatuses.hasOwnProperty(dTag);
+
+        if (!hasdTag) {
+          bountyHunterStatuses[`${dTag}`] = [
+            event.tags[1][1],
+            event.created_at,
+          ];
+        } else {
+          if (event.created_at > bountyHunterStatuses[`${dTag}`][1])
+            bountyHunterStatuses[`${dTag}`] = [
+              event.tags[1][1],
+              event.created_at,
+            ];
+        }
+        setBountyStatuses(bountyHunterStatuses);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
     );
 
     setTimeout(() => {
@@ -284,8 +311,8 @@ function Profile() {
         />
 
         <div className="flex flex-col md:flex-row items-center justify-between my-6 sm:block">
-          <BountiesPaid bountiesPaid={statuses} />
-          <BountiesProgress bountiesProgress={statuses} />
+          <BountiesPaid bountiesPaid={bountyStatuses} />
+          <BountiesProgress bountiesProgress={bountyStatuses} />
           <SatsAdded amount={formatReward(addedReward)} />
           <ProfileActivity activity={Last30Days} />
         </div>
@@ -295,10 +322,7 @@ function Profile() {
               {eventData.map((item, index) => {
                 return (
                   <div>
-                    <BountyCard
-                      ev={eventData[index]}
-                      status={subscribeStatus}
-                    />
+                    <BountyCard ev={eventData[index]} status={bountyStatuses} />
                   </div>
                 );
               })}
