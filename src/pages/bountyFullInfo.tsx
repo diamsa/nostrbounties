@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
 import { convertTimestamp, getMetaData, decodeNpubMention } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
@@ -50,7 +50,6 @@ function BountyInfo() {
         // @ts-ignore
         "#d": [naddrData.data.identifier],
         kind: [30023],
- 
       },
     ];
 
@@ -117,7 +116,6 @@ function BountyInfo() {
             subFilterAddedReward,
             defaultRelays,
             (event, isAfterEose, relayURL) => {
-              console.log(event);
               let compatAmount: string;
               let compatNote: string;
               // Get the reward tag from the list of tags
@@ -304,7 +302,6 @@ function BountyInfo() {
           ev.publishedAt = date;
           ev.pubkey = event.pubkey;
           ev.id = event.id;
-          console.log(ev)
           setEventData(ev);
         }
       }

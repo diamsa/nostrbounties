@@ -38,6 +38,7 @@ function Relays() {
       });
     });
   }, []);
+
   return (
     <div className="flex justify-between sm:block">
       <div className="basis-3/12 sm:hidden">
