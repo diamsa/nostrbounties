@@ -74,7 +74,7 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
   }
 
   async function shareBountyFn() {
-    let wasShared = await shareBounty(`https://nostrbounties/b/${naddr}`);
+    let wasShared = await shareBounty(`https://nostrbounties.com/b/${naddr}`);
     if (wasShared !== undefined) {
       setNotShared(!notShared);
 
