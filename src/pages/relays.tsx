@@ -37,6 +37,7 @@ function Relays() {
         setRelaysDefaultPublish((arr) => [item, ...arr]);
       });
     });
+
   }, []);
 
   return (

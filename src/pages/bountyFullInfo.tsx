@@ -315,7 +315,7 @@ function BountyInfo() {
 
     setTimeout(() => {
       setDataLoaded(true);
-    }, 15000);
+    }, 2000);
   }, [updateValues]);
 
   return (
