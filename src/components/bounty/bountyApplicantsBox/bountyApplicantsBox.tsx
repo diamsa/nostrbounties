@@ -1,13 +1,14 @@
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
 import { useState, useEffect } from "react";
+import { defaultRelays } from "../../../const";
 import {
-  getMetaData,
   getNpub,
   deleteEvent,
   convertTimestamp,
   isDarkTheme,
 } from "../../../utils";
+import { RelayPool } from "nostr-relaypool";
 
 import avatarImage from "../../../assets/nostr-icon-user.avif";
 import deleteIcon from "../../../assets/delete-icon.svg";
@@ -32,17 +33,29 @@ function CommentBox({
   let datePosted = convertTimestamp(createdAt);
 
   useEffect(() => {
-    getMetaData(pubkey)
-      .then((response) => {
-        if (response.status === 404) setName("");
-        setProfilePic("");
-        return response.json();
-      })
-      .then((data) => {
-        let parseContent = JSON.parse(data.content);
-        setName(parseContent.name);
-        setProfilePic(parseContent.picture);
-      });
+    let relayPool = new RelayPool(defaultRelays);
+
+    relayPool.onerror((err, relayUrl) => {
+      console.log("RelayPool error", err, " from relay ", relayUrl);
+    });
+    relayPool.onnotice((relayUrl, notice) => {
+      console.log("RelayPool notice", notice, " from relay ", relayUrl);
+    });
+
+    let userMetadataFilter = [{ kinds: [0], authors: [pubkey] }];
+    relayPool.subscribe(
+      userMetadataFilter,
+      defaultRelays,
+      (event, isAfterEose, relayURL) => {
+        let metadata = JSON.parse(event.content);
+
+        setName(metadata.name);
+        setProfilePic(metadata.picture);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
+    );
   }, []);
   return (
     <div>

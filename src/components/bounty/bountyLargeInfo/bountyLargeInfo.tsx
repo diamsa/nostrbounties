@@ -25,26 +25,32 @@ import LNInvoice from "../../payment/LNInvoice";
 import BountyUpdateStatusCard from "../bountyStatus/bountyStatus";
 
 type event = {
-  ev: {
-    Dtag: string;
-    content: string;
-    id: string;
+  Dtag: string;
+  content: string;
+  id: string;
+  name: string;
+  pledged: any[];
+  profilePic: string;
+  pubkey: string;
+  publishedAt: string;
+  reward: number;
+  status: string;
+  title: string;
+  bountyHunterMetaData: {
     name: string;
-    pledged: any[];
     profilePic: string;
     pubkey: string;
-    publishedAt: string;
-    reward: number;
-    status: string;
-    title: string;
-    bountyHunterMetaData: {
-      name: string;
-      profilePic: string;
-      pubkey: string;
-      lnAddress: string | null;
-    };
-    applications: any[];
+    lnAddress: string | null;
   };
+  applications: {
+    pubkey: string;
+    name: string;
+    profilePic: string;
+    content: string;
+    id: string;
+    createdAt: number;
+    links: { github: string; personalWebsite: string };
+  }[];
 };
 
 function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
@@ -53,6 +59,8 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
     pubkey: ev.pubkey,
     kind: 30023,
   });
+
+  console.log(ev);
 
   let [rewardToAdd, setRewardToAdd] = useState<string>("");
   let [rewardNoteToAdd, setRewardNoteToAdd] = useState<string>("");
@@ -244,14 +252,14 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                     to={`/profile/${posterNpub}`}
                     className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
                   >
-                    {ev.name === "" || undefined
+                    {ev.name === "" || ev.name === undefined
                       ? posterNpubShortened
                       : ev.name}
                   </Link>
                   <img
                     className="w-6 h-6 rounded-full shadow-lg ml-2"
                     src={
-                      ev.profilePic === "" || undefined
+                      ev.profilePic === "" || ev.profilePic === undefined
                         ? avatarImage
                         : ev.profilePic
                     }
@@ -269,14 +277,16 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                     to={`/profile/${bountyHunterNpub}`}
                     className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
                   >
-                    {ev.bountyHunterMetaData.name === "" || undefined
+                    {ev.bountyHunterMetaData.name === "" ||
+                    ev.bountyHunterMetaData.name === undefined
                       ? bountyHunterNpubShortened
                       : ev.bountyHunterMetaData.name}
                   </Link>
                   <img
                     className="w-6 h-6 rounded-full shadow-lg ml-2"
                     src={
-                      ev.bountyHunterMetaData.profilePic === "" || undefined
+                      ev.bountyHunterMetaData.profilePic === "" ||
+                      ev.bountyHunterMetaData.profilePic === undefined
                         ? avatarImage
                         : ev.bountyHunterMetaData.profilePic
                     }

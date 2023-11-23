@@ -15,7 +15,7 @@ function BountyUpdateStatusCard({
   naddr,
   id,
   updateValues,
-  dataLoaded
+  dataLoaded,
 }: any) {
   let [bountyHunterNpub, setBountyHunterNpub] = useState<string>("");
 
@@ -55,6 +55,8 @@ function BountyUpdateStatusCard({
                   <div className="my-1">
                     <ApplicationBox
                       pubkey={applications.pubkey}
+                      name={applications.name}
+                      profilePic={applications.profilePic}
                       createdAt={applications.createdAt}
                       changedNpubValue={setBountyHunterNpub}
                     />

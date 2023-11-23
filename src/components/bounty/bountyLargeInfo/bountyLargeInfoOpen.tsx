@@ -192,14 +192,14 @@ function BountyLargeInfor({ ev, updateValues, dataLoaded }: event | any) {
                     to={`/profile/${posterNpub}`}
                     className="font-sans text-sm font-light ml-1 underline dark:text-gray-1"
                   >
-                    {ev.name === "" || undefined
+                    {ev.name === "" || ev.name === undefined
                       ? posterNpubShortened
                       : ev.name}
                   </Link>
                   <img
                     className="w-6 h-6 rounded-full shadow-lg ml-2"
                     src={
-                      ev.profilePic === "" || undefined
+                      ev.profilePic === "" || ev.profilePic === undefined
                         ? avatarImage
                         : ev.profilePic
                     }

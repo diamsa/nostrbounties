@@ -119,6 +119,21 @@ function App() {
           ev.tags = tags_arr;
         });
 
+        let userMetadataFilter = [{ kinds: [0], authors: [event.pubkey] }];
+        relayPool.subscribe(
+          userMetadataFilter,
+          defaultRelays,
+          (event, isAfterEose, relayURL) => {
+            let metadata = JSON.parse(event.content);
+
+            ev.name = metadata.username;
+            ev.profilePic = metadata.picture;
+          },
+          undefined,
+          undefined,
+          { unsubscribeOnEose: true }
+        );
+
         ev.title = bountyTitle;
         ev.reward = bountyReward;
         ev.createdAt = bountyDatePosted;

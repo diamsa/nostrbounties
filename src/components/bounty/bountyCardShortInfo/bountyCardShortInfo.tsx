@@ -1,5 +1,5 @@
 import { useNavigate, Link } from "react-router-dom";
-import { getNpub, getMetaData } from "../../../utils";
+import { getNpub } from "../../../utils";
 import { nip19 } from "nostr-tools";
 import { useEffect, useState } from "react";
 
@@ -10,6 +10,8 @@ type props = {
   ev: {
     Dtag: string;
     createdAt: string;
+    name: string;
+    profilePic: string;
     pubkey: string;
     reward: string;
     tags: string[];
@@ -31,28 +33,10 @@ function ShortBountyInfo({ ev, status }: props | any) {
   let [name, setName] = useState("");
   let [profilePic, setProfilePic] = useState("");
   let [currentStatus, setCurrentStatus] = useState<string | null>(null);
-  let subFilterStatus = [
-    {
-      // @ts-ignore
-      "#d": [ev.Dtag],
-      "#t": ["bounty-status"],
-      kinds: [1],
-      limit: 1,
-    },
-  ];
 
   useEffect(() => {
-    getMetaData(ev.pubkey)
-      .then((response) => {
-        if (response.status !== 200) setName("");
-        setProfilePic("");
-        return response.json();
-      })
-      .then((data) => {
-        let parseContent = JSON.parse(data.content);
-        setName(parseContent.name);
-        setProfilePic(parseContent.picture);
-      });
+    setProfilePic(ev.profilePic);
+    setName(ev.name);
 
     let dTagExist = status.hasOwnProperty(ev.Dtag);
 
@@ -89,7 +73,11 @@ function ShortBountyInfo({ ev, status }: props | any) {
               <div>
                 <img
                   className="w-5 h-5 rounded-full shadow-lg ml-2 sm:ml-0"
-                  src={profilePic === "" ? defaultAvatar : profilePic}
+                  src={
+                    profilePic === "" || profilePic === undefined
+                      ? defaultAvatar
+                      : profilePic
+                  }
                   alt="avatar image"
                 />
               </div>
@@ -97,7 +85,7 @@ function ShortBountyInfo({ ev, status }: props | any) {
                 to={bountyPosterPath}
                 className="font-sans text-xs font-normal ml-1 underline dark:text-gray-1"
               >
-                {name === "" ? npub : name}
+                {name === "" || name === undefined ? npub : name}
               </Link>
             </div>
           </div>

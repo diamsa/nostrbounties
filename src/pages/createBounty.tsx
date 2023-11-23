@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { RelayPool } from "nostr-relaypool";
 import { defaultRelaysToPublish } from "../const";
 import { ReactMarkdown } from "react-markdown/lib/react-markdown";
-import { getBTCPrice } from "../utils";
+import { getBTCPrice, formatReward } from "../utils";
 
 import SideBarMenu from "../components/menus/sidebarMenu/sidebarMenu";
 import ExtensionError from "../components/errors/extensionError";
@@ -16,7 +16,7 @@ function CreateBounty() {
 
   let [title, setTitle] = useState<string>();
   let [content, setContent] = useState<string>();
-  let [reward, setReward] = useState<string>();
+  let [reward, setReward] = useState<string>("");
   let [relay, setRelay] = useState<string>("");
   let [BTCPrice, setBTCPrice] = useState<number>(0);
   let [customRelays, setCustomRelays] = useState<string[]>([]);
@@ -98,7 +98,8 @@ function CreateBounty() {
 
   useEffect(() => {
     getBTCPrice().then((data) => {
-      let price = parseInt(data.price);
+      console.log(data);
+      let price = data.data.rates["BUSD"];
       setBTCPrice(price);
     });
   }, []);
@@ -134,16 +135,18 @@ function CreateBounty() {
               {Number.isNaN(USDAmount) ? (
                 "~0.00 USD"
               ) : (
-                <div>~{USDAmount.toFixed(2)} USD</div>
+                <div>~{USDAmount} USD</div>
               )}
             </p>
           </div>
 
           <input
             type="number"
-            onChange={(e) => setReward(e.target.value)}
+            onChange={(e) => {
+              setReward(e.target.value);
+            }}
             className="bg-gray-50 border-y border-x border-dark-text text-dark-text text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-sidebar-bg dark:text-gray-1 border-0"
-            placeholder="1200 sats"
+            placeholder="1.200 sats"
             value={reward}
             required
           />

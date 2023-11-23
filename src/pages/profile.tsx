@@ -118,6 +118,7 @@ function Profile() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
+    //subscribe metadata
     relayPool.subscribe(
       subFilterMetaData,
       userMetaDataRelays,
@@ -145,17 +146,25 @@ function Profile() {
               if (isSamePubkey) setUserNip05(true);
             });
         }
-      }
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
     );
 
+    //subscribe older posts
     relayPool.subscribe(
       subFilterOlderPost,
       userMetaDataRelays,
       (event, isAfterEose, relayURL) => {
         setLast30Days((item) => item + 1);
-      }
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
     );
 
+    //subscribe to know how many sats this user has pledged
     relayPool.subscribe(
       subFilterAddedReward,
       userMetaDataRelays,
@@ -175,8 +184,13 @@ function Profile() {
         }
         let amount = parseInt(compatAmount);
         setAddedReward((item) => item + amount);
-      }
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
     );
+
+    //subscribe for bounties
     relayPool.subscribe(
       subFilterContent,
       relays,
@@ -228,21 +242,16 @@ function Profile() {
         ev.pubkey = event.pubkey;
         ev.timestamp = event.created_at;
 
-        let subFilterStatus = [
-          {
-            "#t": ["bounty-status"],
-            limit: 1,
-            "#d": [`${ev.Dtag}`],
-            kinds: [1],
-          },
-        ];
-
         setEventData((arr) => [...arr, ev]);
         checkBountyExist.push(event.id);
         eventLength.push(ev);
-      }
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
     );
 
+    //subscribe for bounty statuses
     relayPool.subscribe(
       subFilterStatus,
       defaultRelays,

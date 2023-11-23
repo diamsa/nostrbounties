@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { RelayPool } from "nostr-relaypool";
-import { convertTimestamp, getMetaData, decodeNpubMention } from "../utils";
+import { convertTimestamp, decodeNpubMention } from "../utils";
 import { defaultRelaysToPublish, defaultRelays } from "../const";
 
 import BountyLargeInfoOpen from "../components/bounty/bountyLargeInfo/bountyLargeInfoOpen";
@@ -30,6 +30,8 @@ type event = {
   };
   applications: {
     pubkey: string;
+    name: string;
+    profilePic: string;
     content: string;
     id: string;
     createdAt: number;
@@ -74,23 +76,23 @@ function BountyInfo() {
           let date = convertTimestamp(parseDate);
           let tags_arr: string[] = [];
 
-          getMetaData(event.pubkey)
-            .then((response) => {
-              if (response.status !== 200) ev.name = "";
-              ev.profilePic = "";
-              return response.json();
-            })
-            .then((data) => {
-              let isNotEmptyString = data.content !== "";
-              if (isNotEmptyString) {
-                let parseContent = JSON.parse(data.content);
-                ev.name = parseContent.name;
-                ev.profilePic = parseContent.picture;
-              } else {
-                ev.name = "";
-                ev.profilePic = "";
-              }
-            });
+          //Subscribe bounty poster metadata
+          let bountyPosterMetadataFilter = [
+            { kinds: [0], authors: [event.pubkey] },
+          ];
+          relayPool.subscribe(
+            bountyPosterMetadataFilter,
+            defaultRelays,
+            (event, isAfterEose, relayURL) => {
+              let metadata = JSON.parse(event.content);
+
+              ev.name = metadata.username;
+              ev.profilePic = metadata.picture;
+            },
+            undefined,
+            undefined,
+            { unsubscribeOnEose: true }
+          );
 
           event.tags.map((item) => {
             if (item[0] === "rootId") {
@@ -101,6 +103,7 @@ function BountyInfo() {
             }
           });
 
+          //subscribe for bounty-added-reward
           let subFilterAddedReward = [
             {
               "#a": [
@@ -111,7 +114,6 @@ function BountyInfo() {
               kinds: [1],
             },
           ];
-          //subscribe for bounty-added-reward
           relayPool.subscribe(
             subFilterAddedReward,
             defaultRelays,
@@ -132,38 +134,38 @@ function BountyInfo() {
                 compatNote = "";
                 compatAmount = event.content;
               }
-              getMetaData(event.pubkey)
-                .then((response) => {
-                  if (response.status === 404) {
-                    ev.pledged = [
-                      {
-                        name: "",
-                        profilePic: "",
-                        amount: compatAmount,
-                        note: compatNote,
-                        pubkey: event.pubkey,
-                      },
-                      ...ev.pledged,
-                    ];
-                  }
-                  return response.json();
-                })
-                .then((data) => {
-                  let parseContent = JSON.parse(data.content);
+
+              let pledgersMetadataFilter = [
+                { kinds: [0], authors: [event.pubkey] },
+              ];
+              relayPool.subscribe(
+                pledgersMetadataFilter,
+                defaultRelays,
+                (event, isAfterEose, relayURL) => {
+                  let metadata = JSON.parse(event.content);
+
                   ev.pledged = [
                     {
-                      name: parseContent.name,
-                      profilePic: parseContent.picture,
+                      name: metadata.username,
+                      profilePic: metadata.picture,
                       amount: compatAmount,
                       note: compatNote,
                       pubkey: event.pubkey,
                     },
                     ...ev.pledged,
                   ];
-                });
-            }
+                },
+                undefined,
+                undefined,
+                { unsubscribeOnEose: true }
+              );
+            },
+            undefined,
+            undefined,
+            { unsubscribeOnEose: true }
           );
 
+          // suscrbibe for bounty status
           let subFilterStatus = [
             {
               // @ts-ignore
@@ -173,92 +175,50 @@ function BountyInfo() {
               limit: 1,
             },
           ];
-          // suscrbibe for bounty status
           relayPool.subscribe(
             subFilterStatus,
             defaultRelays,
             (event, isAfterEose, relayURL) => {
-              let isInprogress = event.tags[1][1] === "in progress";
-              let isPaid = event.tags[1][1] === "paid";
+              let isInprogressOrPaid =
+                event.tags[1][1] === "in progress" ||
+                event.tags[1][1] === "paid";
 
-              if (isInprogress || isPaid) {
+              if (isInprogressOrPaid) {
+                ev.status = event.tags[1][1];
                 let bountyHunterNpub = decodeNpubMention(event.content);
                 let bountyHunterPubkey = nip19.decode(bountyHunterNpub![0]);
-                // @ts-ignore
-                getMetaData(bountyHunterPubkey.data)
-                  .then((response) => {
-                    if (response.status !== 200)
-                      ev.bountyHunterMetaData = {
-                        name: "",
-                        profilePic: "",
-                        //@ts-ignore
-                        pubkey: bountyHunterPubkey.data,
-                        lnAddress: null,
-                      };
-                    return response.json();
-                  })
-                  .then((data) => {
-                    let isNotEmptyString = data.content !== "";
+                let bountyHunterMetadataFilter = [
+                  { kinds: [0], authors: [bountyHunterPubkey.data] },
+                ];
+                relayPool.subscribe(
+                  //@ts-ignore
+                  bountyHunterMetadataFilter,
+                  defaultRelays,
+                  (event, isAfterEose, relayURL) => {
+                    let metadata = JSON.parse(event.content);
+                    let haslud06 = metadata.lud06 !== "";
+                    let haslud16 = metadata.lud16 !== "";
 
-                    if (isNotEmptyString) {
-                      let parseContent = JSON.parse(data.content);
-                      let LNAddreses = "lud06" || "lud16";
-
-                      let hasLUD06orLUD16 =
-                        parseContent.hasOwnProperty(LNAddreses);
-
-                      if (hasLUD06orLUD16) {
-                        let hasLUD06 = parseContent.lud06 !== "";
-                        let hasLUD16 = parseContent.lud16 !== "";
-
-                        if (hasLUD06) {
-                          ev.bountyHunterMetaData = {
-                            name: parseContent.name,
-                            profilePic: parseContent.picture,
-                            // @ts-ignore
-                            pubkey: bountyHunterPubkey.data,
-                            lnAddress: parseContent.lud06,
-                          };
-                        } else if (hasLUD16) {
-                          ev.bountyHunterMetaData = {
-                            name: parseContent.name,
-                            profilePic: parseContent.picture,
-                            // @ts-ignore
-                            pubkey: bountyHunterPubkey.data,
-                            lnAddress: parseContent.lud16,
-                          };
-                        } else {
-                          ev.bountyHunterMetaData = {
-                            name: parseContent.name,
-                            profilePic: parseContent.picture,
-                            // @ts-ignore
-                            pubkey: bountyHunterPubkey.data,
-                            lnAddress: null,
-                          };
-                        }
-                      } else {
-                        ev.bountyHunterMetaData = {
-                          name: parseContent.name,
-                          profilePic: parseContent.picture,
-                          // @ts-ignore
-                          pubkey: bountyHunterPubkey.data,
-                          lnAddress: null,
-                        };
-                      }
-                    } else {
-                      ev.bountyHunterMetaData = {
-                        name: "",
-                        profilePic: "",
-                        // @ts-ignore
-                        pubkey: bountyHunterPubkey.data,
-                        lnAddress: null,
-                      };
-                    }
-                  });
-                ev.status = event.tags[1][1];
+                    ev.bountyHunterMetaData = {
+                      name: metadata.username,
+                      lnAddress: haslud06
+                        ? metadata.lud06
+                        : haslud16
+                        ? metadata.lud16
+                        : "",
+                      profilePic: metadata.picture,
+                      pubkey: event.pubkey,
+                    };
+                  },
+                  undefined,
+                  undefined,
+                  { unsubscribeOnEose: true }
+                );
               }
-              ev.status = event.tags[1][1];
-            }
+            },
+            undefined,
+            undefined,
+            { unsubscribeOnEose: true }
           );
 
           let subFilterApplications = [
@@ -274,20 +234,49 @@ function BountyInfo() {
             subFilterApplications,
             defaultRelays,
             (event, isAfterEose, relayURL) => {
-              ev.applications = [
+              const pubkey = event.pubkey;
+              const content = event.content;
+              const id = event.id;
+              const createdAt = event.created_at;
+              const links = {
+                github: event.tags[2][1],
+                personalWebsite: event.tags[3][1],
+              };
+
+              let applicantsMetadataFilter = [
                 {
-                  pubkey: event.pubkey,
-                  content: event.content,
-                  id: event.id,
-                  createdAt: event.created_at,
-                  links: {
-                    github: event.tags[2][1],
-                    personalWebsite: event.tags[3][1],
-                  },
+                  authors: [event.pubkey],
+                  kinds: [0],
                 },
-                ...ev.applications,
               ];
-            }
+
+              relayPool.subscribe(
+                applicantsMetadataFilter,
+                defaultRelays,
+                (event, isAfterEose, relayURL) => {
+                  const metadata = JSON.parse(event.content);
+
+                  ev.applications = [
+                    {
+                      pubkey: pubkey,
+                      name: metadata.username,
+                      profilePic: metadata.picture,
+                      content: content,
+                      id: id,
+                      createdAt: createdAt,
+                      links: links,
+                    },
+                    ...ev.applications,
+                  ];
+                },
+                undefined,
+                undefined,
+                { unsubscribeOnEose: true }
+              );
+            },
+            undefined,
+            undefined,
+            { unsubscribeOnEose: true }
           );
 
           if (!ev.hasOwnProperty("status")) {
@@ -302,6 +291,7 @@ function BountyInfo() {
           ev.publishedAt = date;
           ev.pubkey = event.pubkey;
           ev.id = event.id;
+
           setEventData(ev);
         }
       }
@@ -315,7 +305,7 @@ function BountyInfo() {
 
     setTimeout(() => {
       setDataLoaded(true);
-    }, 2000);
+    }, 3500);
   }, [updateValues]);
 
   return (

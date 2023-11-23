@@ -1,5 +1,4 @@
 import {
-  getMetaData,
   convertTimestamp,
   getNpub,
   isDarkTheme,
@@ -8,6 +7,8 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { nip19 } from "nostr-tools";
+import { RelayPool } from "nostr-relaypool";
+import { defaultRelays } from "../../const";
 
 import defaultAvatar from "../../assets/nostr-icon-user.avif";
 import externalLinkDm from "../../assets/external-link-icon-dm.svg";
@@ -45,17 +46,28 @@ function NotificationPledgedSats({ ev }: allBountiesNotifications) {
   }
 
   useEffect(() => {
-    getMetaData(ev[1])
-      .then((response) => {
-        if (response.status === 404) setName("");
-        setProfilePic("");
-        return response.json();
-      })
-      .then((data) => {
-        let parseContent = JSON.parse(data.content);
-        setName(parseContent.name);
-        setProfilePic(parseContent.picture);
-      });
+    let relayPool = new RelayPool(defaultRelays, { useEventCache: true });
+
+    relayPool.onerror((err, relayUrl) => {
+      console.log("RelayPool error", err, " from relay ", relayUrl);
+    });
+    relayPool.onnotice((relayUrl, notice) => {
+      console.log("RelayPool notice", notice, " from relay ", relayUrl);
+    });
+
+    let bountyPosterMetadataFilter = [{ kinds: [0], authors: [ev[1]] }];
+    relayPool.subscribe(
+      bountyPosterMetadataFilter,
+      defaultRelays,
+      (event, isAfterEose, relayURL) => {
+        let metadata = JSON.parse(event.content);
+        setName(metadata.username);
+        setProfilePic(metadata.picture);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
+    );
   }, []);
 
   return (

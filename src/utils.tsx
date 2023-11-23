@@ -286,16 +286,6 @@ export function formatReward(event: string | number) {
   }
 }
 
-export function getMetaData(pubkey: string) {
-  let url = `https://rbr.bio/${pubkey}/metadata.json`;
-  let data = fetch(url, {
-    method: "get",
-    mode: "cors",
-  });
-
-  return data;
-}
-
 export function isDarkTheme() {
   return (
     window.matchMedia &&
@@ -464,7 +454,7 @@ export function shortenedLNurl(element: string) {
 
 export async function getBTCPrice() {
   let price = fetch(
-    "https://data.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
+    "https://api.coinbase.com/v2/exchange-rates?currency=BTC"
   ).then((response) => {
     return response.json();
   });

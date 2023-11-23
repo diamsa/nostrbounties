@@ -1,37 +1,22 @@
 import { Link } from "react-router-dom";
 import { nip19 } from "nostr-tools";
-import { useState, useEffect } from "react";
-import {
-  getMetaData,
-  getNpub,
-  isDarkTheme,
-  convertTimestamp,
-} from "../../../utils";
+import { getNpub, isDarkTheme, convertTimestamp } from "../../../utils";
 
 import avatarImage from "../../../assets/nostr-icon-user.avif";
 import copyIconDm from "../../../assets/copy-icon-dm.svg";
 import copyIconLg from "../../../assets/copy-icon-lg.svg";
 
-function CommentBox({ pubkey, createdAt, changedNpubValue }: any) {
-  let [name, setName] = useState("");
-  let [profilePic, setProfilePic] = useState("");
+function CommentBox({
+  pubkey,
+  name,
+  profilePic,
+  createdAt,
+  changedNpubValue,
+}: any) {
   let npub = nip19.npubEncode(pubkey);
   let npubShortened = getNpub(pubkey);
   let datePosted = convertTimestamp(createdAt);
 
-  useEffect(() => {
-    getMetaData(pubkey)
-      .then((response) => {
-        if (response.status !== 200) setName("");
-        setProfilePic("");
-        return response.json();
-      })
-      .then((data) => {
-        let parseContent = JSON.parse(data.content);
-        setName(parseContent.name);
-        setProfilePic(parseContent.picture);
-      });
-  }, []);
   return (
     <div>
       <div className="items-center block rounded-lg my-3 shadow-md max-w-5xl lg:py-5 md: flex-wrap sm:flex-wrap px-5 py-3 dark:bg-sidebar-bg">

@@ -33,28 +33,35 @@ function EditBounty() {
       console.log("RelayPool notice", notice, " from relay ", relayUrl);
     });
 
-    relayPool.subscribe(subFilter, relays, (event, isAfterEose, relayURL) => {
-      let tags_arr: string[] = [];
-      event.tags.map((item) => {
-        if (item[0] === "rootId") {
-          tags_arr.push(item[1]);
+    relayPool.subscribe(
+      subFilter,
+      relays,
+      (event, isAfterEose, relayURL) => {
+        let tags_arr: string[] = [];
+        event.tags.map((item) => {
+          if (item[0] === "rootId") {
+            tags_arr.push(item[1]);
+          }
+        });
+        if (tags_arr.length === 0) {
+          event.tags.push(["rootId", event.id]);
         }
-      });
-      if (tags_arr.length === 0) {
-        event.tags.push(["rootId", event.id]);
-      }
-      setOldEvent({
-        id: event.id,
-        pubkey: event.pubkey,
-        created_at: event.created_at,
-        kind: event.kind,
-        tags: event.tags,
-        content: event.content,
-        sig: event.sig,
-      });
+        setOldEvent({
+          id: event.id,
+          pubkey: event.pubkey,
+          created_at: event.created_at,
+          kind: event.kind,
+          tags: event.tags,
+          content: event.content,
+          sig: event.sig,
+        });
 
-      setLoaded(true);
-    });
+        setLoaded(true);
+      },
+      undefined,
+      undefined,
+      { unsubscribeOnEose: true }
+    );
 
     setTimeout(() => {
       relayPool.close().then(() => {
