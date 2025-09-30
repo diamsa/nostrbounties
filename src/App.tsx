@@ -159,12 +159,14 @@ function App() {
       (event, isAfterEose, relayUrl) => {
         let dTag = `${event.tags[0][1]}`;
         let hasdTag = statuses.hasOwnProperty(dTag);
+        const status = event.tags[1][1];
 
         if (!hasdTag) {
-          statuses[`${dTag}`] = [event.tags[1][1], event.created_at];
-        } else {
+          statuses[`${dTag}`] = [status, event.created_at];
+        }
+        {
           if (event.created_at > statuses[`${dTag}`][1])
-            statuses[`${dTag}`] = [event.tags[1][1], event.created_at];
+            statuses[`${dTag}`] = [status, event.created_at];
         }
         setCurrentStatus(statuses);
       },
@@ -236,7 +238,10 @@ function App() {
                 {loadingMessage ? "Loading" : "Load more bounties"}
               </button>
             ) : null}
-            {currentBountyCount! < correctBountyCount ? (
+            {dataLoaded &&
+            currentBountyCount! > 0 &&
+            currentBountyCount! < correctBountyCount &&
+            correctBountyCount > 10 ? (
               <p className="mt-3 text-dark-text dark:text-gray-2">
                 We didn't find more bounties
               </p>

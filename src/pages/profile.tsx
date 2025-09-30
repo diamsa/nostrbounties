@@ -353,7 +353,10 @@ function Profile() {
               {loadingMessage ? "Loading" : "load more bounties"}
             </button>
           ) : null}
-          {currentBountyCount! < correctBountyCount ? (
+          {dataLoaded &&
+          currentBountyCount! > 0 &&
+          currentBountyCount! < correctBountyCount &&
+          correctBountyCount > 10 ? (
             <p className="mt-3 text-dark-text dark:text-gray-2">
               We didn't find more bounties
             </p>
