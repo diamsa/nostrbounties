@@ -25,7 +25,7 @@ export function convertTimestamp(unixTimestamp: number): string {
 }
 
 export async function editBounty(event: any) {
-  let relays = defaultRelaysToPublish;
+  let relays = allRelays;
 
   // @ts-ignore
   if (!window.nostr) {
@@ -73,7 +73,7 @@ export async function sendReply(
   eventId: string,
   naddr: string
 ) {
-  let relays = defaultRelays;
+  let relays = allRelays;
   let rootBountyUrl = `https://nostrbounties.com/b/${naddr}`;
 
   if (currentStatus === "") {
@@ -175,7 +175,7 @@ export async function addReward(
   dTag: string,
   naddr: string
 ) {
-  let relays = defaultRelays;
+  let relays = allRelays;
 
   if (amount === "") {
     console.log("add a value");
@@ -232,7 +232,7 @@ export async function sendApplication(
   dTag: string,
   links: string[]
 ) {
-  let relays = defaultRelays;
+  let relays = allRelays;
 
   if (content === "") {
     console.log("add a comment");
